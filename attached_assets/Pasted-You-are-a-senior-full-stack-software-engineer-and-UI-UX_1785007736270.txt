@@ -1,0 +1,553 @@
+You are a senior full-stack software engineer and UI/UX designer.
+
+Build a modern, production-ready web application called "ScamShield AI" (working title).
+
+MISSION
+
+The platform is NOT a scam detector.
+
+Its mission is to improve Media and Information Literacy (MIL) by helping users critically evaluate suspicious digital content before making decisions.
+
+The AI should NEVER make decisions for the user.
+
+Instead, it should:
+
+• Highlight possible warning signs.
+• Explain why those warning signs matter.
+• Ask reflective questions.
+• Encourage verification.
+• Teach digital literacy.
+• Help users make informed decisions independently.
+
+The application should feel educational, trustworthy, modern, and simple.
+
+====================================================
+
+TECH STACK
+
+Frontend
+- Next.js 15 (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+- Framer Motion
+
+Backend
+
+- Next.js API Routes
+
+Database
+
+- MongoDB Atlas
+- Mongoose ODM
+
+Authentication
+
+- NextAuth.js
+
+File Uploads
+
+- Cloudinary
+
+AI
+
+- OpenAI API (easy to replace with Gemini later)
+
+Deployment
+
+- Vercel
+
+====================================================
+
+DESIGN
+
+Theme
+
+Modern
+
+Minimal
+
+Clean
+
+UNESCO-quality
+
+Soft gradients
+
+Rounded cards
+
+Large typography
+
+Professional blue and teal colour palette
+
+Animations
+
+Smooth transitions
+
+Hover animations
+
+Loading skeletons
+
+Glassmorphism where appropriate
+
+Fully responsive
+
+Accessible
+
+Dark Mode
+
+====================================================
+
+HOME PAGE
+
+Hero section
+
+Title
+
+"Think Before You Trust"
+
+Subtitle
+
+"Helping young people verify online information, recognise manipulation techniques, and make informed decisions."
+
+Buttons
+
+Verify Information
+
+Learn
+
+How It Works
+
+Illustrations
+
+Modern cybersecurity / education style
+
+Sections
+
+How it works
+
+Why this matters
+
+Common online scams
+
+Testimonials placeholder
+
+FAQ
+
+Footer
+
+====================================================
+
+FEATURE 1
+
+VERIFY
+
+Users can submit
+
+• Text
+
+• Website URL
+
+• Screenshot
+
+• PDF
+
+• Social media message
+
+Examples
+
+Job advertisements
+
+Telegram investment posts
+
+Facebook posts
+
+WhatsApp messages
+
+Emails
+
+Scholarship offers
+
+News articles
+
+====================================================
+
+ANALYSIS FLOW
+
+Step 1
+
+User uploads content
+
+↓
+
+Step 2
+
+System extracts text if necessary
+
+↓
+
+Step 3
+
+Classify content
+
+Possible categories
+
+Job
+
+News
+
+Investment
+
+Shopping
+
+Government
+
+Scholarship
+
+General
+
+↓
+
+Step 4
+
+AI identifies
+
+Potential warning signs
+
+Manipulation techniques
+
+Missing information
+
+Claims needing verification
+
+Trust indicators
+
+↓
+
+Step 5
+
+AI asks reflective questions
+
+Examples
+
+Can you verify the sender?
+
+Does this request payment?
+
+Is the offer unusually attractive?
+
+Does the source have official contact information?
+
+Have you checked another trusted source?
+
+↓
+
+Step 6
+
+Educational explanation
+
+Explain
+
+Why each warning sign matters
+
+Without declaring
+
+"This is fake."
+
+====================================================
+
+IMPORTANT
+
+DO NOT
+
+Say
+
+"This is definitely a scam."
+
+Instead say
+
+"Here are several indicators that deserve careful attention."
+
+====================================================
+
+RESULT PAGE
+
+Display
+
+Content Type
+
+Potential Risks
+
+Trust Indicators
+
+Missing Information
+
+Questions to Consider
+
+Suggested Verification Steps
+
+Digital Literacy Lesson
+
+Recommended Next Actions
+
+Educational Tip
+
+====================================================
+
+FEATURE 2
+
+LEARN
+
+Interactive learning platform
+
+Categories
+
+Fake News
+
+Online Scams
+
+Phishing
+
+Social Engineering
+
+Digital Privacy
+
+AI-generated Content
+
+Deepfakes
+
+Safe Online Shopping
+
+Each lesson
+
+Explanation
+
+Real examples
+
+Quiz
+
+Reflection
+
+Progress tracking
+
+====================================================
+
+FEATURE 3
+
+COMMUNITY REPORTS
+
+Users can
+
+Report scams
+
+Search reports
+
+View common scams
+
+Filter
+
+Job scams
+
+Investment scams
+
+Fake news
+
+Scholarship scams
+
+Shopping scams
+
+Store
+
+Description
+
+Date
+
+Country
+
+Language
+
+Evidence
+
+====================================================
+
+FEATURE 4
+
+MY LEARNING
+
+Dashboard
+
+Analyses completed
+
+Lessons finished
+
+Quiz scores
+
+Achievements
+
+Digital Literacy Score
+
+Learning streak
+
+====================================================
+
+FEATURE 5
+
+PROFILE
+
+Profile picture
+
+Name
+
+Learning history
+
+Saved analyses
+
+Bookmarks
+
+Achievements
+
+====================================================
+
+FEATURE 6
+
+AI CHAT
+
+Educational assistant
+
+Rules
+
+Never answer
+
+"Yes this is fake."
+
+Instead
+
+Explain
+
+Ask questions
+
+Teach concepts
+
+Encourage verification
+
+Always maintain a neutral educational tone.
+
+====================================================
+
+DATABASE MODELS
+
+User
+
+Analysis
+
+Report
+
+Lesson
+
+Quiz
+
+Achievement
+
+Bookmark
+
+Progress
+
+====================================================
+
+AI PROMPT
+
+The AI should behave like a Media and Information Literacy educator.
+
+System Prompt
+
+"You are an educational assistant specialising in Media and Information Literacy.
+
+Never determine absolute truth.
+
+Never instruct users what to believe.
+
+Never label content as definitely fake or definitely true.
+
+Instead
+
+Identify warning signs.
+
+Explain manipulation techniques.
+
+Explain credibility indicators.
+
+Suggest trusted verification methods.
+
+Ask reflective questions.
+
+Teach critical thinking.
+
+Encourage informed decision-making.
+
+Use clear, supportive language.
+
+Your goal is to improve the user's digital literacy—not replace their judgement."
+
+====================================================
+
+ADDITIONAL FEATURES
+
+Support English and Amharic
+
+OCR for screenshots
+
+Analysis history
+
+Bookmark analyses
+
+Download report as PDF
+
+Share analysis
+
+Responsive mobile layout
+
+Dark mode
+
+Accessibility
+
+Error handling
+
+Loading states
+
+Toast notifications
+
+Secure authentication
+
+Input validation
+
+SEO optimisation
+
+====================================================
+
+PROJECT STRUCTURE
+
+Use clean architecture.
+
+Separate
+
+Components
+
+Hooks
+
+API
+
+Database
+
+Services
+
+Utilities
+
+Types
+
+Follow best practices.
+
+Write clean, scalable, maintainable TypeScript.
+
+Comment important logic.
+
+Generate a complete production-ready project.

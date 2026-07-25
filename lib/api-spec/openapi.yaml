@@ -3,13 +3,24 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: ScamShield AI - Media and Information Literacy Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: analyses
+    description: Content analysis operations
+  - name: reports
+    description: Community scam reports
+  - name: lessons
+    description: Learning content and lessons
+  - name: chat
+    description: AI educational chat assistant
+  - name: dashboard
+    description: User dashboard and stats
+
 paths:
   /healthz:
     get:
@@ -24,6 +35,418 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  # ── ANALYSES ────────────────────────────────────────────────────────────────
+  /analyses:
+    get:
+      operationId: listAnalyses
+      tags: [analyses]
+      summary: List user analyses
+      parameters:
+        - name: bookmarked
+          in: query
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of analyses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Analysis"
+    post:
+      operationId: createAnalysis
+      tags: [analyses]
+      summary: Submit content for analysis
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AnalysisInput"
+      responses:
+        "201":
+          description: Analysis created and processed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analysis"
+
+  /analyses/stats:
+    get:
+      operationId: getAnalysisStats
+      tags: [analyses]
+      summary: Get analysis statistics
+      responses:
+        "200":
+          description: Analysis stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AnalysisStats"
+
+  /analyses/{id}:
+    get:
+      operationId: getAnalysis
+      tags: [analyses]
+      summary: Get a single analysis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Analysis found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analysis"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteAnalysis
+      tags: [analyses]
+      summary: Delete an analysis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /analyses/{id}/bookmark:
+    patch:
+      operationId: toggleAnalysisBookmark
+      tags: [analyses]
+      summary: Toggle bookmark on analysis
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookmarkToggle"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analysis"
+
+  # ── COMMUNITY REPORTS ────────────────────────────────────────────────────────
+  /reports:
+    get:
+      operationId: listReports
+      tags: [reports]
+      summary: List community scam reports
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [job, investment, shopping, news, scholarship, phishing, romance, other]
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Report"
+    post:
+      operationId: createReport
+      tags: [reports]
+      summary: Submit a community scam report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportInput"
+      responses:
+        "201":
+          description: Report created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+
+  /reports/trending:
+    get:
+      operationId: getTrendingReports
+      tags: [reports]
+      summary: Get trending scam categories and recent reports
+      responses:
+        "200":
+          description: Trending data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendingReports"
+
+  /reports/{id}:
+    get:
+      operationId: getReport
+      tags: [reports]
+      summary: Get a single report
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Report found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+        "404":
+          description: Not found
+
+  # ── LESSONS ──────────────────────────────────────────────────────────────────
+  /lessons:
+    get:
+      operationId: listLessons
+      tags: [lessons]
+      summary: List lessons optionally filtered by category
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [fake-news, online-scams, phishing, social-engineering, digital-privacy, ai-content, deepfakes, safe-shopping]
+      responses:
+        "200":
+          description: List of lessons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Lesson"
+
+  /lessons/categories:
+    get:
+      operationId: getLessonCategories
+      tags: [lessons]
+      summary: Get all lesson categories with counts
+      responses:
+        "200":
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LessonCategory"
+
+  /lessons/{id}:
+    get:
+      operationId: getLesson
+      tags: [lessons]
+      summary: Get a lesson with its quiz
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Lesson found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LessonDetail"
+        "404":
+          description: Not found
+
+  /lessons/{id}/complete:
+    post:
+      operationId: completeLesson
+      tags: [lessons]
+      summary: Mark a lesson as complete and record quiz score
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LessonCompletion"
+      responses:
+        "200":
+          description: Progress updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Progress"
+
+  # ── AI CHAT ──────────────────────────────────────────────────────────────────
+  /chat/conversations:
+    get:
+      operationId: listConversations
+      tags: [chat]
+      summary: List chat conversations
+      responses:
+        "200":
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Conversation"
+    post:
+      operationId: createConversation
+      tags: [chat]
+      summary: Create a new chat conversation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConversationInput"
+      responses:
+        "201":
+          description: Conversation created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Conversation"
+
+  /chat/conversations/{id}:
+    get:
+      operationId: getConversation
+      tags: [chat]
+      summary: Get conversation with messages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConversationWithMessages"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteConversation
+      tags: [chat]
+      summary: Delete a conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /chat/conversations/{id}/messages:
+    post:
+      operationId: sendChatMessage
+      tags: [chat]
+      summary: Send a message to the AI assistant (SSE streaming)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageInput"
+      responses:
+        "200":
+          description: Streaming SSE response
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  # ── DASHBOARD ─────────────────────────────────────────────────────────────────
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get user dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
+  /dashboard/activity:
+    get:
+      operationId: getDashboardActivity
+      tags: [dashboard]
+      summary: Get recent activity feed
+      responses:
+        "200":
+          description: Activity feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ActivityItem"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +457,412 @@ components:
       required:
         - status
 
+    # ── ANALYSIS ──────────────────────────────────────────────────────────────
+    Analysis:
+      type: object
+      required: [id, contentType, inputText, status, createdAt, isBookmarked]
+      properties:
+        id:
+          type: integer
+        contentType:
+          type: string
+          enum: [text, url, social-media, email, job, scholarship, news, general]
+        inputText:
+          type: string
+        sourceUrl:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        isBookmarked:
+          type: boolean
+        warningSignCount:
+          type: ["integer", "null"]
+        trustIndicatorCount:
+          type: ["integer", "null"]
+        result:
+          $ref: "#/components/schemas/AnalysisResult"
+        createdAt:
+          type: string
+          format: date-time
+
+    AnalysisResult:
+      type: object
+      required: [contentCategory, warningSigns, trustIndicators, missingInfo, reflectiveQuestions, verificationSteps, literacyLesson, recommendedActions, educationalTip]
+      properties:
+        contentCategory:
+          type: string
+        warningSigns:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalysisPoint"
+        trustIndicators:
+          type: array
+          items:
+            $ref: "#/components/schemas/AnalysisPoint"
+        missingInfo:
+          type: array
+          items:
+            type: string
+        reflectiveQuestions:
+          type: array
+          items:
+            type: string
+        verificationSteps:
+          type: array
+          items:
+            type: string
+        literacyLesson:
+          type: string
+        recommendedActions:
+          type: array
+          items:
+            type: string
+        educationalTip:
+          type: string
+
+    AnalysisPoint:
+      type: object
+      required: [title, explanation]
+      properties:
+        title:
+          type: string
+        explanation:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high]
+
+    AnalysisInput:
+      type: object
+      required: [contentType, inputText]
+      properties:
+        contentType:
+          type: string
+          enum: [text, url, social-media, email, job, scholarship, news, general]
+        inputText:
+          type: string
+          minLength: 1
+        sourceUrl:
+          type: string
+
+    AnalysisStats:
+      type: object
+      required: [total, bookmarked, byContentType]
+      properties:
+        total:
+          type: integer
+        bookmarked:
+          type: integer
+        byContentType:
+          type: array
+          items:
+            type: object
+            required: [contentType, count]
+            properties:
+              contentType:
+                type: string
+              count:
+                type: integer
+
+    BookmarkToggle:
+      type: object
+      required: [isBookmarked]
+      properties:
+        isBookmarked:
+          type: boolean
+
+    # ── REPORTS ───────────────────────────────────────────────────────────────
+    Report:
+      type: object
+      required: [id, title, description, category, country, createdAt, upvoteCount]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+          enum: [job, investment, shopping, news, scholarship, phishing, romance, other]
+        country:
+          type: ["string", "null"]
+        language:
+          type: ["string", "null"]
+        evidenceUrl:
+          type: ["string", "null"]
+        upvoteCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    ReportInput:
+      type: object
+      required: [title, description, category]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          enum: [job, investment, shopping, news, scholarship, phishing, romance, other]
+        country:
+          type: string
+        language:
+          type: string
+        evidenceUrl:
+          type: string
+
+    TrendingReports:
+      type: object
+      required: [topCategories, recentReports]
+      properties:
+        topCategories:
+          type: array
+          items:
+            type: object
+            required: [category, count]
+            properties:
+              category:
+                type: string
+              count:
+                type: integer
+        recentReports:
+          type: array
+          items:
+            $ref: "#/components/schemas/Report"
+
+    # ── LESSONS ───────────────────────────────────────────────────────────────
+    Lesson:
+      type: object
+      required: [id, title, category, summary, durationMinutes, difficulty, isCompleted, completedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          type: string
+          enum: [fake-news, online-scams, phishing, social-engineering, digital-privacy, ai-content, deepfakes, safe-shopping]
+        summary:
+          type: string
+        durationMinutes:
+          type: integer
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        isCompleted:
+          type: boolean
+        completedAt:
+          type: ["string", "null"]
+          format: date-time
+
+    LessonDetail:
+      type: object
+      required: [id, title, category, summary, content, durationMinutes, difficulty, isCompleted, quiz]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          type: string
+          enum: [fake-news, online-scams, phishing, social-engineering, digital-privacy, ai-content, deepfakes, safe-shopping]
+        summary:
+          type: string
+        content:
+          type: string
+        durationMinutes:
+          type: integer
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        isCompleted:
+          type: boolean
+        quiz:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuizQuestion"
+
+    QuizQuestion:
+      type: object
+      required: [id, question, options, correctIndex, explanation]
+      properties:
+        id:
+          type: integer
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctIndex:
+          type: integer
+        explanation:
+          type: string
+
+    LessonCategory:
+      type: object
+      required: [category, label, lessonCount, completedCount]
+      properties:
+        category:
+          type: string
+        label:
+          type: string
+        lessonCount:
+          type: integer
+        completedCount:
+          type: integer
+        iconName:
+          type: string
+
+    LessonCompletion:
+      type: object
+      required: [quizScore]
+      properties:
+        quizScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    Progress:
+      type: object
+      required: [id, lessonId, quizScore, completedAt]
+      properties:
+        id:
+          type: integer
+        lessonId:
+          type: integer
+        quizScore:
+          type: integer
+        completedAt:
+          type: string
+          format: date-time
+
+    # ── CHAT ──────────────────────────────────────────────────────────────────
+    Conversation:
+      type: object
+      required: [id, title, messageCount, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        messageCount:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ConversationInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+
+    ConversationWithMessages:
+      type: object
+      required: [id, title, messages, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatMessage"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ChatMessage:
+      type: object
+      required: [id, conversationId, role, content, createdAt]
+      properties:
+        id:
+          type: integer
+        conversationId:
+          type: integer
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ChatMessageInput:
+      type: object
+      required: [content]
+      properties:
+        content:
+          type: string
+          minLength: 1
+
+    # ── DASHBOARD ─────────────────────────────────────────────────────────────
+    DashboardStats:
+      type: object
+      required: [analysesCompleted, lessonsFinished, averageQuizScore, currentStreak, literacyScore, achievements]
+      properties:
+        analysesCompleted:
+          type: integer
+        lessonsFinished:
+          type: integer
+        averageQuizScore:
+          type: ["number", "null"]
+        currentStreak:
+          type: integer
+        literacyScore:
+          type: integer
+        achievements:
+          type: array
+          items:
+            $ref: "#/components/schemas/Achievement"
+
+    Achievement:
+      type: object
+      required: [id, title, description, iconName, earnedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        iconName:
+          type: string
+        earnedAt:
+          type: ["string", "null"]
+          format: date-time
+
+    ActivityItem:
+      type: object
+      required: [id, type, title, description, createdAt]
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+          enum: [analysis, lesson, report, achievement]
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
