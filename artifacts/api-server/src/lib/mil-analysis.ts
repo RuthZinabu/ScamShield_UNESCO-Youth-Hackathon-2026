@@ -1,4 +1,16 @@
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
+
+export interface MILAnalysisResult {
+  contentCategory: string;
+  warningSigns: Array<{ title: string; explanation: string; severity: "low" | "medium" | "high" }>;
+  trustIndicators: Array<{ title: string; explanation: string }>;
+  missingInfo: string[];
+  reflectiveQuestions: string[];
+  verificationSteps: string[];
+  literacyLesson: string;
+  recommendedActions: string[];
+  educationalTip: string;
+}
 
 const MIL_ANALYSIS_PROMPT = `You are a Media and Information Literacy educator. Analyse the provided content and return a structured JSON response.
 
@@ -29,8 +41,8 @@ Return ONLY valid JSON in this exact structure:
 export async function runMILAnalysis(
   contentType: string,
   inputText: string
-): Promise<object> {
-  const apiKey = process.env.OPENAI_API_KEY;
+): Promise<MILAnalysisResult> {
+  const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
     // Return a structured placeholder when no API key is set
@@ -39,7 +51,7 @@ export async function runMILAnalysis(
       warningSigns: [
         {
           title: "AI analysis not yet configured",
-          explanation: "Add your OpenAI API key to the Replit Secrets to enable AI-powered analysis. In the meantime, consider the general indicators below.",
+          explanation: "Add your GEMINI_API_KEY to the Replit Secrets to enable AI-powered analysis. In the meantime, consider the general indicators below.",
           severity: "low",
         },
         {
@@ -49,7 +61,7 @@ export async function runMILAnalysis(
         },
       ],
       trustIndicators: [],
-      missingInfo: ["AI-powered analysis requires an OpenAI API key"],
+      missingInfo: ["AI-powered analysis requires a GEMINI_API_KEY"],
       reflectiveQuestions: [
         "Can you independently verify who sent or published this?",
         "Does this content create a sense of urgency or fear? Why might that be?",
@@ -69,23 +81,25 @@ export async function runMILAnalysis(
     };
   }
 
-  const openai = new OpenAI({ apiKey });
+  const genai = new GoogleGenAI({ apiKey });
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    max_completion_tokens: 2048,
-    messages: [
-      { role: "system", content: MIL_ANALYSIS_PROMPT },
+  const response = await genai.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents: [
       {
         role: "user",
-        content: `Content type: ${contentType}\n\nContent to analyse:\n\n${inputText}`,
+        parts: [{ text: `Content type: ${contentType}\n\nContent to analyse:\n\n${inputText}` }],
       },
     ],
-    response_format: { type: "json_object" },
+    config: {
+      systemInstruction: MIL_ANALYSIS_PROMPT,
+      responseMimeType: "application/json",
+      maxOutputTokens: 2048,
+    },
   });
 
-  const raw = response.choices[0]?.message?.content;
+  const raw = response.text;
   if (!raw) throw new Error("Empty response from AI");
 
-  return JSON.parse(raw) as object;
+  return JSON.parse(raw) as MILAnalysisResult;
 }

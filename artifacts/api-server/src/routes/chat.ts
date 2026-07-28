@@ -8,7 +8,7 @@ import {
   SendChatMessageParams,
   SendChatMessageBody,
 } from "@workspace/api-zod";
-import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
 const MIL_SYSTEM_PROMPT = `You are an educational assistant specialising in Media and Information Literacy (MIL).
 
@@ -29,10 +29,10 @@ Rules:
 Your goal is to improve digital literacy — not replace the user's judgement.
 Use clear, supportive language suitable for young people.`;
 
-function getOpenAIClient(): OpenAI | null {
-  const apiKey = process.env.OPENAI_API_KEY;
+function getGeminiClient(): GoogleGenAI | null {
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
-  return new OpenAI({ apiKey });
+  return new GoogleGenAI({ apiKey });
 }
 
 const router: IRouter = Router();
@@ -131,7 +131,7 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
     return;
   }
 
-  const openai = getOpenAIClient();
+  const genai = getGeminiClient();
 
   // Save user message
   await db.insert(chatMessagesTable).values({
@@ -151,10 +151,10 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
-  if (!openai) {
+  if (!genai) {
     // No API key — send an educational placeholder response
     const placeholder =
-      "I'm your Media and Information Literacy assistant. To enable AI-powered responses, please add your OpenAI API key in the Replit Secrets panel. In the meantime, I encourage you to ask yourself: What is the source of this information? Can you verify it through an independent, trusted source? What emotions does this content trigger, and why?";
+      "I'm your Media and Information Literacy assistant. To enable AI-powered responses, please add your GEMINI_API_KEY in the Replit Secrets panel. In the meantime, I encourage you to ask yourself: What is the source of this information? Can you verify it through an independent, trusted source? What emotions does this content trigger, and why?";
     res.write(`data: ${JSON.stringify({ content: placeholder })}\n\n`);
     await db.insert(chatMessagesTable).values({
       conversationId: params.data.id,
@@ -166,25 +166,25 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
     return;
   }
 
-  const chatMessages = [
-    { role: "system" as const, content: MIL_SYSTEM_PROMPT },
-    ...history.map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    })),
-  ];
+  // Gemini uses "model" for the assistant role
+  const contents = history.map((m) => ({
+    role: m.role === "assistant" ? "model" : "user",
+    parts: [{ text: m.content }],
+  }));
 
   let fullResponse = "";
 
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
-    max_completion_tokens: 1024,
-    messages: chatMessages,
-    stream: true,
+  const stream = await genai.models.generateContentStream({
+    model: "gemini-2.0-flash",
+    contents,
+    config: {
+      systemInstruction: MIL_SYSTEM_PROMPT,
+      maxOutputTokens: 1024,
+    },
   });
 
   for await (const chunk of stream) {
-    const content = chunk.choices[0]?.delta?.content;
+    const content = chunk.text;
     if (content) {
       fullResponse += content;
       res.write(`data: ${JSON.stringify({ content })}\n\n`);
