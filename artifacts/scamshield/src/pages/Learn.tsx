@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,14 +12,15 @@ import type { ListLessonsCategory } from "@workspace/api-client-react/src/genera
 export default function Learn() {
   const [selectedCategory, setSelectedCategory] = useState<ListLessonsCategory | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation();
 
   const { data: categories } = useGetLessonCategories();
   const { data: lessons, isLoading } = useListLessons(
     selectedCategory === "all" ? {} : { category: selectedCategory }
   );
 
-  const filteredLessons = lessons?.filter(lesson => 
-    lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredLessons = lessons?.filter(lesson =>
+    lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     lesson.summary.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -27,16 +29,16 @@ export default function Learn() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
         <div>
           <h1 className="text-4xl font-bold font-display tracking-tight text-foreground mb-4">
-            Interactive Lessons
+            {t("learn.title")}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Build your digital resilience. Learn how to spot manipulation tactics, identify deepfakes, and protect your information.
+            {t("learn.subtitle")}
           </p>
         </div>
         <div className="w-full md:w-72 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search lessons..." 
+          <Input
+            placeholder={t("learn.search_placeholder")}
             className="pl-9 h-11 bg-background"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -49,26 +51,26 @@ export default function Learn() {
         <div className="space-y-6 lg:sticky lg:top-24">
           <div className="bg-slate-50 dark:bg-slate-900/50 p-5 rounded-2xl border border-border">
             <h3 className="font-semibold flex items-center gap-2 mb-4">
-              <Filter className="w-4 h-4" /> Categories
+              <Filter className="w-4 h-4" /> {t("learn.categories_label")}
             </h3>
             <div className="space-y-1">
               <button
                 onClick={() => setSelectedCategory("all")}
                 className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  selectedCategory === "all" 
-                    ? "bg-primary text-primary-foreground font-medium" 
+                  selectedCategory === "all"
+                    ? "bg-primary text-primary-foreground font-medium"
                     : "hover:bg-slate-200 dark:hover:bg-slate-800 text-muted-foreground"
                 }`}
               >
-                All Topics
+                {t("learn.all_topics")}
               </button>
               {categories?.map((cat) => (
                 <button
                   key={cat.category}
                   onClick={() => setSelectedCategory(cat.category as ListLessonsCategory)}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex justify-between items-center ${
-                    selectedCategory === cat.category 
-                      ? "bg-primary text-primary-foreground font-medium" 
+                    selectedCategory === cat.category
+                      ? "bg-primary text-primary-foreground font-medium"
                       : "hover:bg-slate-200 dark:hover:bg-slate-800 text-muted-foreground"
                   }`}
                 >
@@ -84,9 +86,9 @@ export default function Learn() {
           <Card className="bg-primary/5 border-primary/20 shadow-none">
             <CardContent className="p-5">
               <BookOpen className="w-8 h-8 text-primary mb-3" />
-              <h4 className="font-semibold mb-2">Why Learn With Us?</h4>
+              <h4 className="font-semibold mb-2">{t("learn.why_title")}</h4>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                Our curriculum is designed to teach patterns, not just facts. Scams change, but the psychological triggers remain the same.
+                {t("learn.why_desc")}
               </p>
             </CardContent>
           </Card>
@@ -96,17 +98,17 @@ export default function Learn() {
         <div>
           {isLoading ? (
             <div className="grid sm:grid-cols-2 gap-6">
-              {[1,2,3,4].map(i => (
+              {[1, 2, 3, 4].map(i => (
                 <div key={i} className="h-[280px] rounded-2xl bg-muted animate-pulse" />
               ))}
             </div>
           ) : filteredLessons?.length === 0 ? (
             <div className="text-center py-20 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed">
               <BookOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold mb-2">No lessons found</h3>
-              <p className="text-muted-foreground">Try adjusting your filters or search term.</p>
-              <Button variant="outline" className="mt-4" onClick={() => {setSearchQuery(""); setSelectedCategory("all");}}>
-                Clear Filters
+              <h3 className="text-lg font-semibold mb-2">{t("learn.no_lessons_title")}</h3>
+              <p className="text-muted-foreground">{t("learn.no_lessons_desc")}</p>
+              <Button variant="outline" className="mt-4" onClick={() => { setSearchQuery(""); setSelectedCategory("all"); }}>
+                {t("learn.clear_filters")}
               </Button>
             </div>
           ) : (
@@ -137,7 +139,7 @@ export default function Learn() {
                     <CardFooter className="pt-4 border-t flex justify-between items-center bg-muted/20">
                       <div className="flex items-center gap-4 text-xs text-muted-foreground font-medium">
                         <span className="flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5" /> {lesson.durationMinutes} min
+                          <Clock className="w-3.5 h-3.5" /> {lesson.durationMinutes} {t("learn.min_label")}
                         </span>
                         <span className="capitalize px-2 py-0.5 rounded bg-background border">
                           {lesson.difficulty}

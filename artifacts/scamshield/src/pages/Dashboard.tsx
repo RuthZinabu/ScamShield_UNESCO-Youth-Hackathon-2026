@@ -1,11 +1,13 @@
+import { useTranslation } from "react-i18next";
 import { useGetDashboardStats, useGetDashboardActivity } from "@workspace/api-client-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
-import { 
+import {
   Trophy, Flame, Target, BookOpen, Search, Medal, ShieldCheck, Zap, Activity, Loader2
 } from "lucide-react";
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats();
   const { data: activity, isLoading: activityLoading } = useGetDashboardActivity();
 
@@ -23,10 +25,10 @@ export default function Dashboard() {
     <div className="container mx-auto px-4 py-12 max-w-6xl">
       <div className="mb-10">
         <h1 className="text-4xl font-bold font-display tracking-tight text-foreground mb-2">
-          My Learning Journey
+          {t("dashboard.title")}
         </h1>
         <p className="text-muted-foreground text-lg">
-          Track your progress and continue building your media literacy skills.
+          {t("dashboard.subtitle")}
         </p>
       </div>
 
@@ -35,21 +37,21 @@ export default function Dashboard() {
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10"></div>
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-xl">
-            <h2 className="text-lg font-medium opacity-90 mb-2 uppercase tracking-widest">Media Literacy Score</h2>
+            <h2 className="text-lg font-medium opacity-90 mb-2 uppercase tracking-widest">{t("dashboard.score_label")}</h2>
             <div className="text-6xl md:text-8xl font-bold font-display mb-4">
-              {stats.literacyScore} <span className="text-2xl md:text-3xl opacity-70">/ 100</span>
+              {stats.literacyScore} <span className="text-2xl md:text-3xl opacity-70">{t("dashboard.score_unit")}</span>
             </div>
             <p className="text-primary-foreground/80 text-lg">
-              {stats.literacyScore < 30 ? "You're just getting started! Complete lessons to boost your score." : 
-               stats.literacyScore < 70 ? "Good progress! You're developing a strong critical eye." : 
-               "Excellent! You're highly resistant to digital manipulation."}
+              {stats.literacyScore < 30 ? t("dashboard.score_low") :
+               stats.literacyScore < 70 ? t("dashboard.score_mid") :
+               t("dashboard.score_high")}
             </p>
           </div>
-          
+
           <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 text-center min-w-[200px]">
             <Flame className="w-12 h-12 text-orange-300 mx-auto mb-3" />
-            <div className="text-4xl font-bold font-display mb-1">{stats.currentStreak} Day</div>
-            <div className="text-sm font-medium opacity-80 uppercase tracking-wider">Current Streak</div>
+            <div className="text-4xl font-bold font-display mb-1">{stats.currentStreak} {t("dashboard.streak_unit")}</div>
+            <div className="text-sm font-medium opacity-80 uppercase tracking-wider">{t("dashboard.streak_label")}</div>
           </div>
         </div>
       </div>
@@ -57,10 +59,10 @@ export default function Dashboard() {
       {/* Quick Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
         {[
-          { label: "Analyses Performed", value: stats.analysesCompleted, icon: Search, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-950/30" },
-          { label: "Lessons Finished", value: stats.lessonsFinished, icon: BookOpen, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
-          { label: "Avg Quiz Score", value: `${stats.averageQuizScore || 0}%`, icon: Target, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/30" },
-          { label: "Achievements", value: stats.achievements?.length || 0, icon: Trophy, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/30" },
+          { label: t("dashboard.stat_analyses"), value: stats.analysesCompleted, icon: Search, color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-950/30" },
+          { label: t("dashboard.stat_lessons"), value: stats.lessonsFinished, icon: BookOpen, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
+          { label: t("dashboard.stat_quiz"), value: `${stats.averageQuizScore || 0}%`, icon: Target, color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-950/30" },
+          { label: t("dashboard.stat_achievements"), value: stats.achievements?.length || 0, icon: Trophy, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/30" },
         ].map((stat, i) => (
           <Card key={i} className="border-border/50 bg-card">
             <CardContent className="p-6">
@@ -78,7 +80,7 @@ export default function Dashboard() {
         {/* Recent Activity */}
         <div className="space-y-6">
           <h3 className="text-2xl font-bold font-display flex items-center gap-2">
-            <Activity className="w-6 h-6 text-primary" /> Recent Activity
+            <Activity className="w-6 h-6 text-primary" /> {t("dashboard.activity_title")}
           </h3>
           <Card className="border-border/50">
             <CardContent className="p-0">
@@ -109,7 +111,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <div className="p-8 text-center text-muted-foreground">
-                  No activity yet. Start by taking a lesson or verifying a link!
+                  {t("dashboard.no_activity")}
                 </div>
               )}
             </CardContent>
@@ -119,7 +121,7 @@ export default function Dashboard() {
         {/* Achievements */}
         <div className="space-y-6">
           <h3 className="text-2xl font-bold font-display flex items-center gap-2">
-            <Medal className="w-6 h-6 text-amber-500" /> Badges
+            <Medal className="w-6 h-6 text-amber-500" /> {t("dashboard.badges_title")}
           </h3>
           <div className="grid gap-4">
             {stats.achievements && stats.achievements.length > 0 ? (
@@ -139,7 +141,7 @@ export default function Dashboard() {
             ) : (
               <div className="bg-slate-50 dark:bg-slate-900 rounded-2xl p-6 text-center border border-dashed">
                 <Zap className="w-8 h-8 text-muted-foreground opacity-50 mx-auto mb-3" />
-                <p className="text-sm text-muted-foreground">Complete tasks to earn achievements.</p>
+                <p className="text-sm text-muted-foreground">{t("dashboard.no_badges")}</p>
               </div>
             )}
           </div>

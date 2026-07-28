@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRoute, Link, useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetLesson, useCompleteLesson, getListLessonsQueryKey, getGetDashboardStatsQueryKey } from "@workspace/api-client-react";
@@ -12,6 +13,7 @@ export default function LessonDetail() {
   const [, setLocation] = useLocation();
   const id = Number(params?.id);
   const { toast } = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: lesson, isLoading, error } = useGetLesson(id, { query: { enabled: !!id } });
@@ -32,8 +34,8 @@ export default function LessonDetail() {
     return (
       <div className="container py-20 text-center">
         <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Lesson not found</h2>
-        <Link href="/learn"><Button>Return to Lessons</Button></Link>
+        <h2 className="text-2xl font-bold mb-2">{t("lesson.not_found_title")}</h2>
+        <Link href="/learn"><Button>{t("lesson.return_lessons")}</Button></Link>
       </div>
     );
   }
@@ -46,7 +48,6 @@ export default function LessonDetail() {
 
   const handleSubmitAnswer = () => {
     if (selectedOption === null) return;
-    
     setIsAnswered(true);
     const isCorrect = selectedOption === lesson.quiz[currentQuestionIndex].correctIndex;
     if (isCorrect) setScore(s => s + 1);
@@ -65,10 +66,10 @@ export default function LessonDetail() {
   const finishQuiz = () => {
     setQuizFinished(true);
     const finalScore = Math.round(((score + (selectedOption === lesson.quiz[currentQuestionIndex].correctIndex ? 1 : 0)) / lesson.quiz.length) * 100);
-    
+
     completeLesson.mutate({ id, data: { quizScore: finalScore } }, {
       onSuccess: () => {
-        toast({ title: "Lesson Completed!", description: `You scored ${finalScore}% on the quiz.` });
+        toast({ title: t("lesson.toast_complete"), description: t("lesson.toast_score", { score: finalScore }) });
         queryClient.invalidateQueries({ queryKey: getListLessonsQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetDashboardStatsQueryKey() });
       }
@@ -78,7 +79,7 @@ export default function LessonDetail() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-3xl">
       <Link href="/learn" className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to all lessons
+        <ArrowLeft className="w-4 h-4 mr-2" /> {t("lesson.back")}
       </Link>
 
       {!quizStarted ? (
@@ -89,7 +90,7 @@ export default function LessonDetail() {
                 {lesson.category.replace("-", " ")}
               </span>
               <span className="flex items-center text-sm text-muted-foreground font-medium">
-                <Clock className="w-4 h-4 mr-1.5" /> {lesson.durationMinutes} min read
+                <Clock className="w-4 h-4 mr-1.5" /> {lesson.durationMinutes} {t("lesson.min_read")}
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold font-display leading-tight mb-6">
@@ -100,19 +101,19 @@ export default function LessonDetail() {
             </p>
           </div>
 
-          <div 
+          <div
             className="prose prose-slate dark:prose-invert max-w-none mb-12 prose-headings:font-display prose-headings:font-bold prose-p:leading-relaxed prose-a:text-primary"
             dangerouslySetInnerHTML={{ __html: lesson.content }}
           />
 
           <Card className="bg-primary/5 border-primary/20 text-center py-10 shadow-lg">
             <CardContent>
-              <h3 className="text-2xl font-bold font-display mb-4">Ready to test your knowledge?</h3>
+              <h3 className="text-2xl font-bold font-display mb-4">{t("lesson.quiz_title")}</h3>
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-                Take a quick {lesson.quiz.length}-question quiz to complete this lesson and earn points toward your literacy score.
+                {t("lesson.quiz_desc", { count: lesson.quiz.length })}
               </p>
               <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-lg" onClick={handleStartQuiz}>
-                Start Knowledge Check
+                {t("lesson.quiz_start")}
               </Button>
             </CardContent>
           </Card>
@@ -120,7 +121,7 @@ export default function LessonDetail() {
       ) : !quizFinished ? (
         <div className="max-w-2xl mx-auto animate-in zoom-in-95 duration-300">
           <div className="mb-8 flex justify-between items-center">
-            <h3 className="font-bold text-lg">Question {currentQuestionIndex + 1} of {lesson.quiz.length}</h3>
+            <h3 className="font-bold text-lg">{t("lesson.question_of", { current: currentQuestionIndex + 1, total: lesson.quiz.length })}</h3>
             <div className="flex gap-1.5">
               {lesson.quiz.map((_, i) => (
                 <div key={i} className={`h-2 w-8 rounded-full ${i <= currentQuestionIndex ? 'bg-primary' : 'bg-muted'}`} />
@@ -133,12 +134,12 @@ export default function LessonDetail() {
               <h2 className="text-2xl font-semibold mb-8">
                 {lesson.quiz[currentQuestionIndex].question}
               </h2>
-              
+
               <div className="space-y-3 mb-8">
                 {lesson.quiz[currentQuestionIndex].options.map((opt, i) => {
                   const isSelected = selectedOption === i;
                   const isCorrect = i === lesson.quiz[currentQuestionIndex].correctIndex;
-                  
+
                   let optStyle = "border-border hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-slate-900";
                   if (isAnswered) {
                     if (isCorrect) optStyle = "bg-emerald-50 border-emerald-500 text-emerald-900 dark:bg-emerald-950/30 dark:border-emerald-500 dark:text-emerald-100";
@@ -164,7 +165,7 @@ export default function LessonDetail() {
 
               {isAnswered && (
                 <div className="bg-primary/5 p-4 rounded-xl mb-8 animate-in fade-in">
-                  <span className="font-bold block mb-1">Explanation</span>
+                  <span className="font-bold block mb-1">{t("lesson.explanation")}</span>
                   <p className="text-sm text-muted-foreground">{lesson.quiz[currentQuestionIndex].explanation}</p>
                 </div>
               )}
@@ -172,11 +173,11 @@ export default function LessonDetail() {
               <div className="flex justify-end">
                 {!isAnswered ? (
                   <Button size="lg" onClick={handleSubmitAnswer} disabled={selectedOption === null}>
-                    Submit Answer
+                    {t("lesson.submit_answer")}
                   </Button>
                 ) : (
                   <Button size="lg" onClick={handleNextQuestion}>
-                    {currentQuestionIndex < lesson.quiz.length - 1 ? "Next Question" : "Finish Lesson"}
+                    {currentQuestionIndex < lesson.quiz.length - 1 ? t("lesson.next_question") : t("lesson.finish_lesson")}
                   </Button>
                 )}
               </div>
@@ -188,16 +189,16 @@ export default function LessonDetail() {
           <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 dark:bg-emerald-900/30 dark:text-emerald-400">
             <CheckCircle2 className="w-12 h-12" />
           </div>
-          <h2 className="text-4xl font-bold font-display mb-4">Lesson Complete!</h2>
+          <h2 className="text-4xl font-bold font-display mb-4">{t("lesson.complete_title")}</h2>
           <p className="text-xl text-muted-foreground mb-8">
-            You scored {Math.round((score / lesson.quiz.length) * 100)}% on the knowledge check.
+            {t("lesson.complete_score", { score: Math.round((score / lesson.quiz.length) * 100) })}
           </p>
           <div className="flex gap-4 justify-center">
             <Button size="lg" onClick={() => setLocation("/learn")} variant="outline">
-              Back to Lessons
+              {t("lesson.back_to_lessons")}
             </Button>
             <Button size="lg" onClick={() => setLocation("/dashboard")}>
-              View Dashboard
+              {t("lesson.view_dashboard")}
             </Button>
           </div>
         </div>

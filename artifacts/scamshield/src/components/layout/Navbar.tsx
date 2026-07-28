@@ -1,17 +1,20 @@
 import { Link, useLocation } from "wouter";
 import { ShieldCheck, Search, BookOpen, Users, MessageSquare, LayoutDashboard } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 export function Navbar() {
   const [location] = useLocation();
+  const { t } = useTranslation();
 
   const navItems = [
-    { href: "/verify", label: "Verify", icon: Search },
-    { href: "/learn", label: "Learn", icon: BookOpen },
-    { href: "/community", label: "Community", icon: Users },
-    { href: "/chat", label: "AI Chat", icon: MessageSquare },
-    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/verify", label: t("nav.verify"), icon: Search },
+    { href: "/learn", label: t("nav.learn"), icon: BookOpen },
+    { href: "/community", label: t("nav.community"), icon: Users },
+    { href: "/chat", label: t("nav.aiChat"), icon: MessageSquare },
+    { href: "/dashboard", label: t("nav.dashboard"), icon: LayoutDashboard },
   ];
 
   return (
@@ -24,7 +27,7 @@ export function Navbar() {
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <span className="font-display font-bold text-xl tracking-tight text-foreground group-hover:text-primary transition-colors">
-                ScamShield AI
+                {t("nav.brand")}
               </span>
             </Link>
           </div>
@@ -49,7 +52,8 @@ export function Navbar() {
             })}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>

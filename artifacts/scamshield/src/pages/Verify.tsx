@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
+import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -34,8 +35,9 @@ export default function Verify() {
   const [activeTab, setActiveTab] = useState<AnalysisInputContentType>("text");
   const [result, setResult] = useState<Analysis | null>(null);
   const { toast } = useToast();
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
-  
+
   const createAnalysis = useCreateAnalysis();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -50,7 +52,7 @@ export default function Verify() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     setResult(null);
     createAnalysis.mutate(
-      { 
+      {
         data: {
           contentType: values.contentType,
           inputText: values.inputText,
@@ -61,15 +63,15 @@ export default function Verify() {
         onSuccess: (data) => {
           setResult(data);
           toast({
-            title: "Analysis Complete",
-            description: "Review the insights below to form your own conclusion.",
+            title: t("verify.toast_success_title"),
+            description: t("verify.toast_success_desc"),
           });
           queryClient.invalidateQueries({ queryKey: getGetAnalysisStatsQueryKey() });
         },
         onError: () => {
           toast({
-            title: "Analysis Failed",
-            description: "There was an error processing your request. Please try again.",
+            title: t("verify.toast_error_title"),
+            description: t("verify.toast_error_desc"),
             variant: "destructive",
           });
         }
@@ -89,9 +91,9 @@ export default function Verify() {
   return (
     <div className="container mx-auto px-4 py-12 max-w-5xl">
       <div className="mb-10 text-center space-y-4">
-        <h1 className="text-4xl font-bold font-display tracking-tight text-foreground">Verify Content</h1>
+        <h1 className="text-4xl font-bold font-display tracking-tight text-foreground">{t("verify.title")}</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Submit suspicious messages, links, or posts. Our AI won't make the decision for you, but will guide you through a critical thinking framework.
+          {t("verify.subtitle")}
         </p>
       </div>
 
@@ -100,30 +102,30 @@ export default function Verify() {
         <div className="space-y-6">
           <Card className="border-border/60 shadow-md">
             <CardHeader>
-              <CardTitle>What would you like to analyze?</CardTitle>
-              <CardDescription>Select the format of your suspicious content.</CardDescription>
+              <CardTitle>{t("verify.card_title")}</CardTitle>
+              <CardDescription>{t("verify.card_desc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                 <TabsList className="grid w-full grid-cols-4 mb-6">
-                  <TabsTrigger value="text">Text</TabsTrigger>
-                  <TabsTrigger value="url">Link</TabsTrigger>
-                  <TabsTrigger value="email">Email</TabsTrigger>
-                  <TabsTrigger value="social-media">Social</TabsTrigger>
+                  <TabsTrigger value="text">{t("verify.tab_text")}</TabsTrigger>
+                  <TabsTrigger value="url">{t("verify.tab_link")}</TabsTrigger>
+                  <TabsTrigger value="email">{t("verify.tab_email")}</TabsTrigger>
+                  <TabsTrigger value="social-media">{t("verify.tab_social")}</TabsTrigger>
                 </TabsList>
-                
+
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    
+
                     {activeTab === "url" ? (
                       <FormField
                         control={form.control}
                         name="inputText"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>URL</FormLabel>
+                            <FormLabel>{t("verify.label_url")}</FormLabel>
                             <FormControl>
-                              <Input placeholder="https://example.com/login" {...field} />
+                              <Input placeholder={t("verify.placeholder_url")} {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -136,16 +138,16 @@ export default function Verify() {
                           name="inputText"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel>Content Text</FormLabel>
+                              <FormLabel>{t("verify.label_content")}</FormLabel>
                               <FormControl>
-                                <Textarea 
+                                <Textarea
                                   placeholder={
-                                    activeTab === "email" ? "Paste the full email body here..." : 
-                                    activeTab === "social-media" ? "Paste the social media post or caption..." : 
-                                    "Paste the suspicious text here..."
-                                  } 
+                                    activeTab === "email" ? t("verify.placeholder_email") :
+                                    activeTab === "social-media" ? t("verify.placeholder_social") :
+                                    t("verify.placeholder_text")
+                                  }
                                   className="min-h-[150px] resize-none"
-                                  {...field} 
+                                  {...field}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -158,7 +160,7 @@ export default function Verify() {
                             name="sourceUrl"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Source URL (Optional)</FormLabel>
+                                <FormLabel>{t("verify.label_source_url")}</FormLabel>
                                 <FormControl>
                                   <Input placeholder="https://twitter.com/..." {...field} />
                                 </FormControl>
@@ -170,18 +172,18 @@ export default function Verify() {
                       </>
                     )}
 
-                    <Button 
-                      type="submit" 
-                      className="w-full h-12 text-base rounded-xl" 
+                    <Button
+                      type="submit"
+                      className="w-full h-12 text-base rounded-xl"
                       disabled={createAnalysis.isPending}
                     >
                       {createAnalysis.isPending ? (
                         <>
-                          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Analyzing...
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> {t("verify.btn_analyzing")}
                         </>
                       ) : (
                         <>
-                          <Search className="mr-2 h-5 w-5" /> Start Critical Analysis
+                          <Search className="mr-2 h-5 w-5" /> {t("verify.btn_analyze")}
                         </>
                       )}
                     </Button>
@@ -190,18 +192,18 @@ export default function Verify() {
               </Tabs>
             </CardContent>
           </Card>
-          
-          {/* Helper Card */}
+
+          {/* SIFT Helper */}
           {!result && (
             <div className="bg-primary/5 rounded-xl p-6 border border-primary/10 flex items-start gap-4">
               <Info className="w-6 h-6 text-primary shrink-0 mt-1" />
               <div>
-                <h4 className="font-semibold text-primary mb-1">Remember the SIFT Method</h4>
+                <h4 className="font-semibold text-primary mb-1">{t("verify.sift_title")}</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li><strong>S</strong>top before you react emotionally.</li>
-                  <li><strong>I</strong>nvestigate the source.</li>
-                  <li><strong>F</strong>ind better coverage.</li>
-                  <li><strong>T</strong>race claims to the original context.</li>
+                  <li><strong>S</strong>{t("verify.sift_s").slice(1)}</li>
+                  <li><strong>I</strong>{t("verify.sift_i").slice(1)}</li>
+                  <li><strong>F</strong>{t("verify.sift_f").slice(1)}</li>
+                  <li><strong>T</strong>{t("verify.sift_t").slice(1)}</li>
                 </ul>
               </div>
             </div>
@@ -215,10 +217,8 @@ export default function Verify() {
               <div className="bg-background p-4 rounded-full shadow-sm mb-4">
                 <Search className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">Awaiting Content</h3>
-              <p className="text-muted-foreground max-w-sm">
-                Submit content on the left to receive a structured media literacy breakdown. We'll help you spot the signals.
-              </p>
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t("verify.awaiting_title")}</h3>
+              <p className="text-muted-foreground max-w-sm">{t("verify.awaiting_desc")}</p>
             </div>
           ) : result.result ? (
             <div className="space-y-6 animate-in slide-in-from-right-4 fade-in duration-500">
@@ -226,28 +226,27 @@ export default function Verify() {
                 <div className="bg-slate-100 dark:bg-slate-800/50 p-6 border-b flex justify-between items-center">
                   <div>
                     <h2 className="text-2xl font-bold font-display flex items-center gap-2">
-                      Analysis Complete
+                      {t("verify.result_title")}
                     </h2>
-                    <p className="text-sm text-muted-foreground mt-1 capitalize">Category: {result.result.contentCategory}</p>
+                    <p className="text-sm text-muted-foreground mt-1 capitalize">{t("verify.result_category")}: {result.result.contentCategory}</p>
                   </div>
                   <div className="flex gap-2">
                     <div className="text-center px-4 py-2 bg-background rounded-lg border shadow-sm">
                       <span className="block text-xl font-bold text-orange-500">{result.warningSignCount || 0}</span>
-                      <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Warnings</span>
+                      <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">{t("verify.warnings_label")}</span>
                     </div>
                     <div className="text-center px-4 py-2 bg-background rounded-lg border shadow-sm">
                       <span className="block text-xl font-bold text-emerald-500">{result.trustIndicatorCount || 0}</span>
-                      <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">Trust Sigs</span>
+                      <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">{t("verify.trust_label")}</span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="p-6 space-y-8">
-                  {/* Warning & Trust split */}
                   <div className="grid sm:grid-cols-2 gap-6">
                     <div className="space-y-4">
                       <h3 className="font-semibold flex items-center gap-2 text-orange-700 dark:text-orange-400">
-                        <ShieldAlert className="w-5 h-5" /> Warning Signs
+                        <ShieldAlert className="w-5 h-5" /> {t("verify.section_warning")}
                       </h3>
                       {result.result.warningSigns.length > 0 ? (
                         <ul className="space-y-3">
@@ -259,12 +258,12 @@ export default function Verify() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-sm text-muted-foreground italic">No obvious warning signs detected.</p>
+                        <p className="text-sm text-muted-foreground italic">{t("verify.no_warnings")}</p>
                       )}
                     </div>
                     <div className="space-y-4">
                       <h3 className="font-semibold flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                        <ShieldCheck className="w-5 h-5" /> Trust Indicators
+                        <ShieldCheck className="w-5 h-5" /> {t("verify.section_trust")}
                       </h3>
                       {result.result.trustIndicators.length > 0 ? (
                         <ul className="space-y-3">
@@ -276,30 +275,28 @@ export default function Verify() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-sm text-muted-foreground italic">No strong trust indicators detected.</p>
+                        <p className="text-sm text-muted-foreground italic">{t("verify.no_trust")}</p>
                       )}
                     </div>
                   </div>
 
-                  {/* Reflective Questions */}
                   <div>
                     <h3 className="font-semibold flex items-center gap-2 text-primary mb-4">
-                      <HelpCircle className="w-5 h-5" /> Questions to Ask Yourself
+                      <HelpCircle className="w-5 h-5" /> {t("verify.section_questions")}
                     </h3>
                     <div className="grid gap-3">
                       {result.result.reflectiveQuestions.map((q, i) => (
                         <div key={i} className="flex gap-3 items-start bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border">
-                          <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0">{i+1}</span>
+                          <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
                           <p className="text-sm font-medium pt-0.5">{q}</p>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  {/* Verification Steps */}
                   <div>
                     <h3 className="font-semibold flex items-center gap-2 text-foreground mb-4">
-                      <ListChecks className="w-5 h-5" /> Recommended Verification Steps
+                      <ListChecks className="w-5 h-5" /> {t("verify.section_steps")}
                     </h3>
                     <ul className="space-y-2">
                       {result.result.verificationSteps.map((step, i) => (
@@ -311,30 +308,27 @@ export default function Verify() {
                     </ul>
                   </div>
 
-                  {/* Educational Summary */}
                   <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20">
                     <h3 className="font-semibold flex items-center gap-2 text-primary mb-2">
-                      <GraduationCap className="w-5 h-5" /> Literacy Lesson
+                      <GraduationCap className="w-5 h-5" /> {t("verify.section_lesson")}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
                       {result.result.literacyLesson}
                     </p>
-                    
                     <div className="bg-background rounded-xl p-4 border flex items-start gap-3 mt-4">
                       <Lightbulb className="w-5 h-5 text-amber-500 shrink-0" />
                       <div>
-                        <span className="font-semibold text-sm block mb-1">Quick Tip</span>
+                        <span className="font-semibold text-sm block mb-1">{t("verify.quick_tip")}</span>
                         <span className="text-sm text-muted-foreground">{result.result.educationalTip}</span>
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>
           ) : (
             <div className="h-full flex items-center justify-center">
-               <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           )}
         </div>

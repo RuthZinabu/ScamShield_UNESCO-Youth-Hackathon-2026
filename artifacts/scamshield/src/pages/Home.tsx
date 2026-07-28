@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Shield, Brain, CheckCircle2, Search, BookOpen, Users, AlertTriangle } from "lucide-react";
 import heroAbstract from "@assets/generated_images/hero-abstract.png";
@@ -11,6 +12,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
+  const { t } = useTranslation();
+
   return (
     <div className="w-full">
       {/* Hero Section */}
@@ -20,47 +23,45 @@ export default function Home() {
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary font-medium text-sm mb-6 border border-primary/20">
                 <Shield className="w-4 h-4" />
-                <span>Media & Information Literacy</span>
+                <span>{t("home.badge")}</span>
               </div>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold font-display leading-[1.1] tracking-tight mb-6 text-foreground">
-                Think Before <br className="hidden md:block" />
+                {t("home.hero_line1")} <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
-                  You Trust.
+                  {t("home.hero_line2")}
                 </span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground mb-8 leading-relaxed">
-                ScamShield AI doesn't just tell you what's true or false. We guide you to ask the right questions, spot the warning signs, and navigate the digital world with confidence.
+                {t("home.hero_subtitle")}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/verify">
                   <Button size="lg" className="w-full sm:w-auto gap-2 text-base h-14 px-8 rounded-full shadow-lg shadow-primary/25 hover:shadow-xl transition-all">
-                    Verify Content <ArrowRight className="w-5 h-5" />
+                    {t("home.cta_verify")} <ArrowRight className="w-5 h-5" />
                   </Button>
                 </Link>
                 <Link href="/learn">
                   <Button variant="outline" size="lg" className="w-full sm:w-auto gap-2 text-base h-14 px-8 rounded-full bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm border-border hover:bg-white dark:hover:bg-slate-800 transition-all">
-                    Start Learning
+                    {t("home.cta_learn")}
                   </Button>
                 </Link>
               </div>
             </div>
-            
+
             <div className="relative hidden lg:block">
               <div className="absolute inset-0 bg-gradient-to-tr from-primary/20 to-secondary/20 rounded-[3rem] blur-3xl" />
-              <img 
-                src={heroAbstract} 
-                alt="Abstract Trust Illustration" 
+              <img
+                src={heroAbstract}
+                alt="Abstract Trust Illustration"
                 className="w-full h-auto object-cover rounded-[2rem] shadow-2xl relative z-10 glass-panel"
               />
-              
-              {/* Floating Badge */}
               <div className="absolute -bottom-6 -left-6 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-xl z-20 border border-border flex items-center gap-4 animate-in fade-in slide-in-from-bottom-4 delay-500 duration-700">
                 <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-full text-emerald-600 dark:text-emerald-400">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold">Critical Thinking</p>
-                  <p className="text-xs text-muted-foreground">Enhanced</p>
+                  <p className="text-sm font-semibold">{t("home.floating_label")}</p>
+                  <p className="text-xs text-muted-foreground">{t("home.floating_sub")}</p>
                 </div>
               </div>
             </div>
@@ -74,15 +75,15 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
               <div className="text-4xl md:text-5xl font-bold font-display text-primary mb-2">85%</div>
-              <p className="text-muted-foreground font-medium">of users feel more confident online</p>
+              <p className="text-muted-foreground font-medium">{t("home.stat1_label")}</p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-bold font-display text-secondary mb-2">10k+</div>
-              <p className="text-muted-foreground font-medium">lessons completed this month</p>
+              <p className="text-muted-foreground font-medium">{t("home.stat2_label")}</p>
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-bold font-display text-primary mb-2">50k</div>
-              <p className="text-muted-foreground font-medium">scam reports analyzed</p>
+              <p className="text-muted-foreground font-medium">{t("home.stat3_label")}</p>
             </div>
           </div>
         </div>
@@ -92,33 +93,15 @@ export default function Home() {
       <section className="py-24">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">How ScamShield Empowers You</h2>
-            <p className="text-muted-foreground text-lg">Our goal is to build your digital resilience through guided practice and community awareness.</p>
+            <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">{t("home.how_title")}</h2>
+            <p className="text-muted-foreground text-lg">{t("home.how_subtitle")}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              {
-                icon: Search,
-                title: "Analyze & Reflect",
-                desc: "Submit suspicious links, emails, or text. Our AI highlights trust indicators and warning signs, then prompts you with questions to investigate further.",
-                href: "/verify",
-                linkText: "Try Verification"
-              },
-              {
-                icon: BookOpen,
-                title: "Learn the Patterns",
-                desc: "Take bite-sized interactive lessons on phishing, deepfakes, and social engineering to recognize manipulation tactics before they work.",
-                href: "/learn",
-                linkText: "Browse Lessons"
-              },
-              {
-                icon: Users,
-                title: "Community Intelligence",
-                desc: "Explore trending scams reported by others. See real-world examples of how attackers operate in your region right now.",
-                href: "/community",
-                linkText: "View Reports"
-              }
+              { icon: Search, title: t("home.feature1_title"), desc: t("home.feature1_desc"), href: "/verify", linkText: t("home.feature1_link") },
+              { icon: BookOpen, title: t("home.feature2_title"), desc: t("home.feature2_desc"), href: "/learn", linkText: t("home.feature2_link") },
+              { icon: Users, title: t("home.feature3_title"), desc: t("home.feature3_desc"), href: "/community", linkText: t("home.feature3_link") },
             ].map((feature, i) => (
               <Card key={i} className="bg-card hover:shadow-xl transition-all duration-300 border-border/50 group">
                 <CardContent className="p-8">
@@ -126,11 +109,9 @@ export default function Home() {
                     <feature.icon className="w-7 h-7" />
                   </div>
                   <h3 className="text-xl font-bold font-display mb-3">{feature.title}</h3>
-                  <p className="text-muted-foreground mb-6 leading-relaxed">
-                    {feature.desc}
-                  </p>
+                  <p className="text-muted-foreground mb-6 leading-relaxed">{feature.desc}</p>
                   <Link href={feature.href} className="inline-flex items-center text-primary font-semibold group/link">
-                    {feature.linkText} 
+                    {feature.linkText}
                     <ArrowRight className="w-4 h-4 ml-2 group-hover/link:translate-x-1 transition-transform" />
                   </Link>
                 </CardContent>
@@ -145,12 +126,12 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
             <div className="max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">Trending Threats</h2>
-              <p className="text-muted-foreground">What the community is reporting right now.</p>
+              <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">{t("home.trending_title")}</h2>
+              <p className="text-muted-foreground">{t("home.trending_subtitle")}</p>
             </div>
             <Link href="/community">
               <Button variant="outline" className="gap-2 rounded-full">
-                See all reports <ArrowRight className="w-4 h-4" />
+                {t("home.see_all_reports")} <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
@@ -169,7 +150,7 @@ export default function Home() {
                 </div>
                 <h4 className="font-bold mb-4 line-clamp-2">{scam.title}</h4>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{scam.count} reports</span>
+                  <span className="text-muted-foreground">{scam.count} {t("home.scam_reports")}</span>
                   <span className="px-2 py-1 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs font-medium">
                     {scam.severity}
                   </span>
@@ -184,27 +165,27 @@ export default function Home() {
       <section className="py-24">
         <div className="container mx-auto px-4 max-w-3xl">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold font-display mb-4">Frequently Asked Questions</h2>
-            <p className="text-muted-foreground">Learn more about how our platform works.</p>
+            <h2 className="text-3xl font-bold font-display mb-4">{t("home.faq_title")}</h2>
+            <p className="text-muted-foreground">{t("home.faq_subtitle")}</p>
           </div>
 
           <Accordion type="single" collapsible className="w-full">
             <AccordionItem value="item-1">
-              <AccordionTrigger className="text-left font-semibold">Is this an automated scam detector?</AccordionTrigger>
+              <AccordionTrigger className="text-left font-semibold">{t("home.faq1_q")}</AccordionTrigger>
               <AccordionContent className="text-muted-foreground leading-relaxed">
-                No. ScamShield AI is an educational tool. We do not make definitive "True" or "False" judgments on your behalf. Instead, we highlight warning signs and trust indicators, and guide you through the verification process so you build your own critical thinking skills.
+                {t("home.faq1_a")}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-2">
-              <AccordionTrigger className="text-left font-semibold">What happens to the content I verify?</AccordionTrigger>
+              <AccordionTrigger className="text-left font-semibold">{t("home.faq2_q")}</AccordionTrigger>
               <AccordionContent className="text-muted-foreground leading-relaxed">
-                Content submitted for verification is analyzed securely and temporarily stored for your personal dashboard if you choose to bookmark it. We strip personally identifiable information before analysis to protect your privacy.
+                {t("home.faq2_a")}
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="item-3">
-              <AccordionTrigger className="text-left font-semibold">Who creates the learning materials?</AccordionTrigger>
+              <AccordionTrigger className="text-left font-semibold">{t("home.faq3_q")}</AccordionTrigger>
               <AccordionContent className="text-muted-foreground leading-relaxed">
-                Our lessons and quizzes are developed by media and information literacy experts, following guidelines set by international organizations like UNESCO.
+                {t("home.faq3_a")}
               </AccordionContent>
             </AccordionItem>
           </Accordion>
