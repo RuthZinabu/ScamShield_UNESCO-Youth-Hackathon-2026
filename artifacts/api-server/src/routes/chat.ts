@@ -8,7 +8,7 @@ import {
   SendChatMessageParams,
   SendChatMessageBody,
 } from "@workspace/api-zod";
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 
 const MIL_SYSTEM_PROMPT = `You are an educational assistant specialising in Media and Information Literacy (MIL).
 
@@ -29,10 +29,13 @@ Rules:
 Your goal is to improve digital literacy — not replace the user's judgement.
 Use clear, supportive language suitable for young people.`;
 
-function getGeminiClient(): GoogleGenAI | null {
-  const apiKey = process.env.GEMINI_API_KEY;
+function getOpenRouterClient(): OpenAI | null {
+  const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return null;
-  return new GoogleGenAI({ apiKey });
+  return new OpenAI({
+    apiKey,
+    baseURL: "https://openrouter.ai/api/v1",
+  });
 }
 
 const router: IRouter = Router();
@@ -131,7 +134,7 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
     return;
   }
 
-  const genai = getGeminiClient();
+  const client = getOpenRouterClient();
 
   // Save user message
   await db.insert(chatMessagesTable).values({
@@ -151,10 +154,10 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
   res.setHeader("Cache-Control", "no-cache");
   res.setHeader("Connection", "keep-alive");
 
-  if (!genai) {
+  if (!client) {
     // No API key — send an educational placeholder response
     const placeholder =
-      "I'm your Media and Information Literacy assistant. To enable AI-powered responses, please add your GEMINI_API_KEY in the Replit Secrets panel. In the meantime, I encourage you to ask yourself: What is the source of this information? Can you verify it through an independent, trusted source? What emotions does this content trigger, and why?";
+      "I'm your Media and Information Literacy assistant. To enable AI-powered responses, please add your OPENROUTER_API_KEY in the Replit Secrets panel (or as a Render environment variable). In the meantime, I encourage you to ask yourself: What is the source of this information? Can you verify it through an independent, trusted source? What emotions does this content trigger, and why?";
     res.write(`data: ${JSON.stringify({ content: placeholder })}\n\n`);
     await db.insert(chatMessagesTable).values({
       conversationId: params.data.id,
@@ -166,37 +169,45 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
     return;
   }
 
-  // Gemini uses "model" for the assistant role
-  const contents = history.map((m) => ({
-    role: m.role === "assistant" ? "model" : "user",
-    parts: [{ text: m.content }],
-  }));
+  const chatMessages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+    { role: "system", content: MIL_SYSTEM_PROMPT },
+    ...history.map((m) => ({
+      role: m.role as "user" | "assistant",
+      content: m.content,
+    })),
+  ];
 
   let fullResponse = "";
 
-  const stream = await genai.models.generateContentStream({
-    model: "gemini-2.0-flash",
-    contents,
-    config: {
-      systemInstruction: MIL_SYSTEM_PROMPT,
-      maxOutputTokens: 1024,
-    },
-  });
+  try {
+    const stream = await client.chat.completions.create({
+      model: "meta-llama/llama-3.2-3b-instruct:free",
+      max_tokens: 1024,
+      messages: chatMessages,
+      stream: true,
+    });
 
-  for await (const chunk of stream) {
-    const content = chunk.text;
-    if (content) {
-      fullResponse += content;
-      res.write(`data: ${JSON.stringify({ content })}\n\n`);
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta?.content;
+      if (content) {
+        fullResponse += content;
+        res.write(`data: ${JSON.stringify({ content })}\n\n`);
+      }
     }
+  } catch (err) {
+    req.log.error({ err }, "OpenRouter streaming error");
+    const errMsg = err instanceof Error ? err.message : "Unknown error from AI provider";
+    res.write(`data: ${JSON.stringify({ content: `Sorry, the AI assistant encountered an error: ${errMsg}` })}\n\n`);
   }
 
-  // Save assistant message
-  await db.insert(chatMessagesTable).values({
-    conversationId: params.data.id,
-    role: "assistant",
-    content: fullResponse,
-  });
+  // Save assistant message (even if partial due to error)
+  if (fullResponse) {
+    await db.insert(chatMessagesTable).values({
+      conversationId: params.data.id,
+      role: "assistant",
+      content: fullResponse,
+    });
+  }
 
   // Update conversation updatedAt
   await db
