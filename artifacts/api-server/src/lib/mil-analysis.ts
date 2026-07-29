@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 
 export interface MILAnalysisResult {
   contentCategory: string;
@@ -42,7 +42,7 @@ export async function runMILAnalysis(
   contentType: string,
   inputText: string
 ): Promise<MILAnalysisResult> {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
     // Return a structured placeholder when no API key is set
@@ -51,7 +51,7 @@ export async function runMILAnalysis(
       warningSigns: [
         {
           title: "AI analysis not yet configured",
-          explanation: "Add your GEMINI_API_KEY to the Replit Secrets to enable AI-powered analysis. In the meantime, consider the general indicators below.",
+          explanation: "Add your OPENROUTER_API_KEY to enable AI-powered analysis. In the meantime, consider the general indicators below.",
           severity: "low",
         },
         {
@@ -61,7 +61,7 @@ export async function runMILAnalysis(
         },
       ],
       trustIndicators: [],
-      missingInfo: ["AI-powered analysis requires a GEMINI_API_KEY"],
+      missingInfo: ["AI-powered analysis requires an OPENROUTER_API_KEY"],
       reflectiveQuestions: [
         "Can you independently verify who sent or published this?",
         "Does this content create a sense of urgency or fear? Why might that be?",
@@ -81,24 +81,25 @@ export async function runMILAnalysis(
     };
   }
 
-  const genai = new GoogleGenAI({ apiKey });
-
-  const response = await genai.models.generateContent({
-    model: "gemini-2.0-flash",
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: `Content type: ${contentType}\n\nContent to analyse:\n\n${inputText}` }],
-      },
-    ],
-    config: {
-      systemInstruction: MIL_ANALYSIS_PROMPT,
-      responseMimeType: "application/json",
-      maxOutputTokens: 2048,
-    },
+  const client = new OpenAI({
+    apiKey,
+    baseURL: "https://openrouter.ai/api/v1",
   });
 
-  const raw = response.text;
+  const response = await client.chat.completions.create({
+    model: "meta-llama/llama-3.2-3b-instruct:free",
+    max_tokens: 2048,
+    messages: [
+      { role: "system", content: MIL_ANALYSIS_PROMPT },
+      {
+        role: "user",
+        content: `Content type: ${contentType}\n\nContent to analyse:\n\n${inputText}`,
+      },
+    ],
+    response_format: { type: "json_object" },
+  });
+
+  const raw = response.choices[0]?.message?.content;
   if (!raw) throw new Error("Empty response from AI");
 
   return JSON.parse(raw) as MILAnalysisResult;
