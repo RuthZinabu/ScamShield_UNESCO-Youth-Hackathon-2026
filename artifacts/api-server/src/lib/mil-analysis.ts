@@ -84,10 +84,14 @@ export async function runMILAnalysis(
   const client = new OpenAI({
     apiKey,
     baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+      "HTTP-Referer": "https://trustlense-unesco-youth-hackathon-2026-2.onrender.com",
+      "X-Title": "TrustLens",
+    },
   });
 
   const response = await client.chat.completions.create({
-    model: "meta-llama/llama-3.2-3b-instruct:free",
+    model: "openrouter/free",
     max_tokens: 2048,
     messages: [
       { role: "system", content: MIL_ANALYSIS_PROMPT },

@@ -35,6 +35,10 @@ function getOpenRouterClient(): OpenAI | null {
   return new OpenAI({
     apiKey,
     baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+      "HTTP-Referer": "https://trustlense-unesco-youth-hackathon-2026-2.onrender.com",
+      "X-Title": "TrustLens",
+    },
   });
 }
 
@@ -181,7 +185,7 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
 
   try {
     const stream = await client.chat.completions.create({
-      model: "meta-llama/llama-3.2-3b-instruct:free",
+      model: "openrouter/free",
       max_tokens: 1024,
       messages: chatMessages,
       stream: true,
@@ -194,10 +198,16 @@ router.post("/chat/conversations/:id/messages", async (req, res): Promise<void> 
         res.write(`data: ${JSON.stringify({ content })}\n\n`);
       }
     }
-  } catch (err) {
-    req.log.error({ err }, "OpenRouter streaming error");
-    const errMsg = err instanceof Error ? err.message : "Unknown error from AI provider";
-    res.write(`data: ${JSON.stringify({ content: `Sorry, the AI assistant encountered an error: ${errMsg}` })}\n\n`);
+  } catch (error: unknown) {
+    console.error("OpenRouter error:", error);
+    res.write(
+      `data: ${JSON.stringify({
+        error: error instanceof Error ? error.message : "Unable to generate an AI response.",
+      })}\n\n`
+    );
+    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    res.end();
+    return;
   }
 
   // Save assistant message (even if partial due to error)
