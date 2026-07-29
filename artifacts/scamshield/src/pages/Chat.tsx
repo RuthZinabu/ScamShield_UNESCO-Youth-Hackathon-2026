@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useListConversations, useCreateConversation, useGetConversation, getListConversationsQueryKey } from "@workspace/api-client-react";
+import { API_BASE_URL } from "@/lib/api-config";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,7 +67,7 @@ export default function Chat() {
     setStreamingMessage("");
 
     try {
-      const res = await fetch(`/api/chat/conversations/${convId}/messages`, {
+      const res = await fetch(`${API_BASE_URL}/api/chat/conversations/${convId}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: userMsg })
@@ -91,7 +92,7 @@ export default function Chat() {
               if (text !== '[DONE]') {
                 try {
                   const parsed = JSON.parse(text);
-                  fullText += parsed.text || "";
+                  fullText += parsed.content || "";
                 } catch {
                   fullText += text;
                 }
