@@ -1,0 +1,322 @@
+{
+  "1": {
+    "title": "How to Spot Fake News",
+    "summary": "Learn the key indicators of fake news and how to verify information before sharing.",
+    "content": "## What is Fake News?\n\nFake news refers to fabricated or misleading information presented as legitimate journalism. It spreads rapidly through social media and can influence opinions, elections, and even public health decisions.\n\n## Key Indicators of Fake News\n\n**1. Sensational Headlines**\nHeadlines designed to provoke strong emotional reactions — anger, fear, or excitement — are often misleading. Legitimate news outlets use factual, measured language.\n\n**2. Unknown or Suspicious Sources**\nCheck whether the publication has a professional website, an editorial team, and an established history. Look for an \"About Us\" page.\n\n**3. No Date or Old Content**\nFake news often circulates without dates, or uses old stories presented as current events.\n\n**4. Lack of Supporting Evidence**\nCredible articles cite sources, link to studies, or quote named experts. Vague claims like \"experts say\" without identification are a warning sign.\n\n**5. Poor Grammar and Spelling**\nProfessional outlets have editorial standards. Multiple errors can indicate a less reputable source.\n\n## How to Verify Information\n\n1. **Check the source** — Is it a known, reputable outlet?\n2. **Search for the story** — Are other trusted sources reporting it?\n3. **Use fact-checking sites** — Snopes, AFP Fact Check, Full Fact, PolitiFact\n4. **Check the date** — Is this current?\n5. **Read beyond the headline** — Does the article match what the headline claims?\n\n## Reflection\n\nBefore you share any news story, ask yourself: \"Do I know this is true?\" Sharing unverified information — even accidentally — can cause real harm.",
+    "quiz": [
+      {
+        "question": "A friend shares a shocking news article on WhatsApp. What should you do first?",
+        "options": [
+          "Share it immediately — it might be important",
+          "Check the source and search for it on trusted news sites",
+          "Ignore it completely",
+          "Reply asking where they got it"
+        ],
+        "correctIndex": 1,
+        "explanation": "Verifying the source by searching for the story on established, reputable news outlets is the most important first step before acting on or sharing any claim."
+      },
+      {
+        "question": "Which of these is a reliable fact-checking tool?",
+        "options": [
+          "Facebook trending",
+          "Reddit upvotes",
+          "Snopes.com",
+          "WhatsApp forwards"
+        ],
+        "correctIndex": 2,
+        "explanation": "Snopes.com is a well-established fact-checking website with a transparent editorial process. Social media popularity does not indicate accuracy."
+      },
+      {
+        "question": "An article has a very alarming headline but the body contradicts it. What is this called?",
+        "options": [
+          "Breaking news",
+          "Clickbait",
+          "Satire",
+          "An editorial"
+        ],
+        "correctIndex": 1,
+        "explanation": "Clickbait headlines are designed to provoke an emotional response and drive clicks, often misrepresenting the actual content of the article."
+      }
+    ]
+  },
+  "2": {
+    "title": "Recognising Phishing Emails",
+    "summary": "Understand how phishing works and the red flags that reveal a fraudulent email.",
+    "content": "## What is Phishing?\n\nPhishing is a deceptive technique where attackers send fraudulent messages that appear to come from trusted sources — banks, government agencies, or well-known companies — to steal sensitive information.\n\n## Common Phishing Tactics\n\n**Urgency and Fear**\n\"Your account will be suspended in 24 hours!\" Urgency is designed to make you act before thinking.\n\n**Spoofed Sender Addresses**\nThe display name may say \"PayPal Support\" but the actual email address is something like noreply@paypa1-secure.com.\n\n**Generic Greetings**\nLegitimate services usually address you by name. \"Dear Customer\" or \"Dear User\" is a warning sign.\n\n**Suspicious Links**\nHover over links before clicking. The URL shown may not match the destination. Look for slight misspellings (paypa1.com vs paypal.com).\n\n**Requests for Sensitive Information**\nLegitimate organisations never ask for passwords, PINs, or full credit card numbers via email.\n\n## What to Do If You Receive a Suspicious Email\n\n1. Do NOT click any links or download attachments\n2. Do NOT reply with personal information\n3. Verify by contacting the organisation directly using contact details from their official website\n4. Report the email as phishing in your email client\n5. If you've already clicked — change your passwords immediately and monitor your accounts",
+    "quiz": [
+      {
+        "question": "You receive an email from 'paypa1-billing@secure-update.net' asking you to verify your account. What do you do?",
+        "options": [
+          "Click the link and log in",
+          "Forward to friends as a warning",
+          "Do not click anything; verify by going directly to PayPal's official website",
+          "Reply asking if it is legitimate"
+        ],
+        "correctIndex": 2,
+        "explanation": "The sender address contains a deliberate misspelling and uses an unofficial domain. Always navigate directly to official websites rather than clicking email links."
+      },
+      {
+        "question": "A legitimate bank will typically do which of the following in an email?",
+        "options": [
+          "Ask you to confirm your password",
+          "Send you a link to reset your PIN",
+          "Address you by your full name and never request full credentials",
+          "Request your account number to verify your identity"
+        ],
+        "correctIndex": 2,
+        "explanation": "Legitimate banks never request passwords, PINs, or full account credentials via email. They typically address you by name and direct you to call them or log in directly."
+      },
+      {
+        "question": "What should you do if you accidentally clicked a phishing link and entered your password?",
+        "options": [
+          "Wait and see if anything bad happens",
+          "Change your password immediately and enable 2FA",
+          "Delete the email and forget about it",
+          "Contact the phishing site to remove your data"
+        ],
+        "correctIndex": 1,
+        "explanation": "Time is critical. Change your password immediately, enable two-factor authentication, and monitor your account activity for any unauthorised access."
+      }
+    ]
+  },
+  "3": {
+    "title": "Social Engineering: How Scammers Manipulate",
+    "summary": "Explore the psychological tactics used in social engineering attacks.",
+    "content": "## What is Social Engineering?\n\nSocial engineering exploits human psychology rather than technical vulnerabilities. Attackers build trust or exploit emotions to manipulate people into revealing information or taking harmful actions.\n\n## The Six Principles of Influence Used by Scammers\n\n**1. Authority**\nImpersonating someone in a position of power (police, your boss, government official) to make you comply without questioning.\n\n**2. Urgency / Scarcity**\n\"Act now or lose this opportunity!\" creates panic that bypasses careful thinking.\n\n**3. Social Proof**\n\"Everyone in your neighbourhood has already signed up.\" People tend to follow what others do.\n\n**4. Liking / Rapport**\nBuilding a friendly relationship before making a request. Romance scams often use this extensively.\n\n**5. Reciprocity**\nGiving you something (a small gift, information, favour) to create a sense of obligation.\n\n**6. Commitment**\nGetting small agreements first (\"You do want to protect your family, don't you?\") to lead to larger ones.\n\n## Protecting Yourself\n\n- Be sceptical of unsolicited contact, even if it seems friendly\n- Verify identity independently — call back on an official number you found yourself\n- Share information on a \"need to know\" basis\n- Take your time — legitimate requests can always wait",
+    "quiz": [
+      {
+        "question": "Someone calls claiming to be your company's IT department and asks for your login credentials to fix an urgent issue. You should:",
+        "options": [
+          "Provide the details — IT needs access to help you",
+          "Hang up and call your IT department back using the official number",
+          "Ask them to email instead",
+          "Ask for their employee ID"
+        ],
+        "correctIndex": 1,
+        "explanation": "Legitimate IT departments never need your password. Hang up and verify by calling back on a number you independently look up — not one the caller gives you."
+      },
+      {
+        "question": "Which psychological principle does 'Act now — only 2 spots left!' exploit?",
+        "options": [
+          "Authority",
+          "Reciprocity",
+          "Scarcity and urgency",
+          "Social proof"
+        ],
+        "correctIndex": 2,
+        "explanation": "Artificial scarcity and urgency are classic manipulation tactics designed to prevent you from thinking critically before acting."
+      },
+      {
+        "question": "A new online contact quickly becomes very friendly and later asks for a small loan. This is an example of:",
+        "options": [
+          "Genuine friendship developing online",
+          "Romance or friendship scam using rapport building",
+          "Social proof manipulation",
+          "Authority-based deception"
+        ],
+        "correctIndex": 1,
+        "explanation": "Building rapid intimacy to create a sense of obligation is a hallmark of romance and friendship scams."
+      }
+    ]
+  },
+  "4": {
+    "title": "Understanding Deepfakes",
+    "summary": "Learn what deepfakes are, how they are created, and how to spot them.",
+    "content": "## What are Deepfakes?\n\nDeepfakes are synthetic media — images, videos, or audio — created using artificial intelligence to make it appear that a real person said or did something they never did.\n\n## Why Deepfakes Are Concerning\n\n- They can be used to spread disinformation\n- They can damage reputations\n- They can be used in fraud (e.g. CEO fraud, fake ransom videos)\n- They erode trust in authentic media\n\n## How to Spot Deepfakes\n\n**Visual Clues:**\n- Unnatural blinking or lack of blinking\n- Facial edges that blur or flicker\n- Inconsistent lighting between face and background\n- Teeth or hair that look odd or don't move naturally\n- Skin texture that appears too smooth or waxy\n\n**Audio Clues:**\n- Slightly robotic or monotone voice\n- Lip movements that don't perfectly match audio\n- Unusual pauses or speech rhythms\n\n**Context Clues:**\n- Is this video only appearing on one source?\n- Is the scenario implausible given what you know about the person?\n- Is it designed to cause outrage or go viral?",
+    "quiz": [
+      {
+        "question": "You see a video of a politician saying something shocking. What should you check first?",
+        "options": [
+          "Share it immediately to warn others",
+          "Check if credible news outlets are reporting the same statement",
+          "Accept it as real since it is a video",
+          "Report it to the politician's party"
+        ],
+        "correctIndex": 1,
+        "explanation": "Checking whether established, independent news sources are reporting the same claim is the most important step."
+      },
+      {
+        "question": "Which of these is a visual sign that an image may be AI-generated?",
+        "options": [
+          "Vivid, realistic colours",
+          "Hands with an unusual number of fingers or distorted joints",
+          "High resolution photography",
+          "Recognisable landmarks in the background"
+        ],
+        "correctIndex": 1,
+        "explanation": "AI image generators often struggle with human anatomy, particularly hands."
+      },
+      {
+        "question": "Which tool can help detect whether an image was AI-generated?",
+        "options": [
+          "Google Translate",
+          "Hive Moderation or 'AI or Not'",
+          "TikTok",
+          "Google Maps"
+        ],
+        "correctIndex": 1,
+        "explanation": "Tools like Hive Moderation and 'AI or Not' are specifically designed to analyse images for AI generation."
+      }
+    ]
+  },
+  "5": {
+    "title": "Protecting Your Digital Privacy",
+    "summary": "Understand what data is collected about you and how to protect your privacy online.",
+    "content": "## Why Digital Privacy Matters\n\nEvery time you browse the web, use an app, or make a purchase, data is being collected. This data can be used for advertising, sold to third parties, or exposed in data breaches.\n\n## What Data is Typically Collected\n\n- Browsing history and search queries\n- Location data (even when you're not using the app)\n- Device information (model, OS, IP address)\n- Contact lists, photos, microphone and camera usage\n- Purchase history and financial patterns\n\n## Practical Privacy Steps\n\n**Passwords:**\n- Use a different password for every account\n- Use a password manager (Bitwarden, 1Password)\n- Enable two-factor authentication (2FA) everywhere\n\n**Browsing:**\n- Use a privacy-focused browser (Firefox, Brave)\n- Install uBlock Origin to block trackers\n- Use private/incognito mode for sensitive searches\n\n**Apps:**\n- Review app permissions regularly\n- Delete apps you don't use\n- Prefer apps with clear, transparent privacy policies",
+    "quiz": [
+      {
+        "question": "You download a free flashlight app that requests access to your contacts and microphone. You should:",
+        "options": [
+          "Grant all permissions — the app needs them to function",
+          "Deny the permissions and find an alternative app",
+          "Accept, but delete the app next week",
+          "Accept — free apps need data to stay free"
+        ],
+        "correctIndex": 1,
+        "explanation": "A flashlight app has no legitimate reason to access contacts or a microphone. Over-requesting permissions is a common sign of data harvesting apps."
+      },
+      {
+        "question": "Which is the safest password practice?",
+        "options": [
+          "Use one strong password for all accounts",
+          "Use a different password for each account, managed with a password manager",
+          "Write passwords on paper at your desk",
+          "Use your name and birth year"
+        ],
+        "correctIndex": 1,
+        "explanation": "A unique password for each account prevents one breach from compromising all your accounts."
+      },
+      {
+        "question": "Two-factor authentication (2FA) means:",
+        "options": [
+          "Using two different passwords",
+          "Logging in requires both your password and a second verification",
+          "Having two email accounts",
+          "Sharing your login with a trusted friend"
+        ],
+        "correctIndex": 1,
+        "explanation": "2FA adds a second layer of security so that even if your password is stolen, attackers still cannot access your account."
+      }
+    ]
+  },
+  "6": {
+    "title": "Identifying AI-Generated Content",
+    "summary": "Learn to recognise content created by AI and why it matters for information literacy.",
+    "content": "## The Rise of AI-Generated Content\n\nArtificial intelligence can now write articles, generate images, create videos, and mimic voices. While this technology has many legitimate uses, it also creates new challenges for information literacy.\n\n## Why It Matters\n\n- AI-generated misinformation can spread at scale\n- AI content may appear credible without human accountability\n- AI images can fabricate \"evidence\" for false claims\n- It becomes harder to know what is authentic\n\n## Spotting AI-Generated Text\n\n- Overly smooth, fluent prose without personality or error\n- Vague generalisations without specific details or sources\n- Contradictions within the same piece\n- No clear author, byline, or contact information\n- Repetitive sentence structure\n\n## Spotting AI-Generated Images\n\n- Hands with wrong number of fingers or unusual joints\n- Background details that make no sense up close\n- Text in images that is garbled or unreadable\n- Faces that are symmetrically perfect in uncanny ways\n- Lighting inconsistencies across the image",
+    "quiz": [
+      {
+        "question": "An article about a major health discovery has no named author, no sources cited, and reads very smoothly. What does this suggest?",
+        "options": [
+          "It is from a very professional outlet",
+          "It may be AI-generated and warrants additional verification",
+          "It is definitely fake",
+          "It must be from a government agency"
+        ],
+        "correctIndex": 1,
+        "explanation": "The combination of no authorship, no citations, and suspiciously smooth writing are characteristics of AI-generated content."
+      },
+      {
+        "question": "Which tool can help you assess if text was written by AI?",
+        "options": [
+          "Google Translate",
+          "GPTZero",
+          "TikTok's fact-checker",
+          "Grammarly"
+        ],
+        "correctIndex": 1,
+        "explanation": "GPTZero is a tool specifically designed to assess the likelihood that a piece of text was generated by a large language model."
+      },
+      {
+        "question": "The existence of AI-generated content means we should:",
+        "options": [
+          "Distrust all digital content completely",
+          "Apply thoughtful verification to all content, especially without clear attribution",
+          "Only trust content from government websites",
+          "Stop using the internet"
+        ],
+        "correctIndex": 1,
+        "explanation": "The appropriate response is calibrated scepticism and verification habits — not wholesale distrust."
+      }
+    ]
+  },
+  "7": {
+    "title": "Safe Online Shopping",
+    "summary": "Know the warning signs of fake online stores and how to shop safely.",
+    "content": "## The Risks of Online Shopping\n\nOnline shopping fraud costs consumers billions each year. Fake stores, counterfeit goods, and payment scams are increasingly sophisticated.\n\n## Red Flags of Fake Online Stores\n\n**Too-Good-To-Be-True Prices**\nHeavily discounted luxury items or brand-name products at 80-90% off are almost always counterfeit or non-existent.\n\n**No Secure Connection**\nLook for HTTPS (padlock icon) in the browser bar. Never enter payment details on HTTP sites.\n\n**Unfamiliar Payment Methods**\nLegitimate stores accept credit cards and established payment services. Requests for wire transfer, gift cards, or cryptocurrency are major warning signs.\n\n**No Contact Information**\nA real business has a physical address, phone number, and responsive customer service.\n\n**Poor Design and Spelling Errors**\nFraudulent sites are often built quickly and contain obvious errors.",
+    "quiz": [
+      {
+        "question": "An online store is selling a brand-name laptop for 80% off. You should:",
+        "options": [
+          "Buy immediately before it sells out",
+          "Verify the store's legitimacy, check reviews, and look up the site's registration date",
+          "Share with friends — it is a great deal",
+          "Buy it and return it if it is fake"
+        ],
+        "correctIndex": 1,
+        "explanation": "Prices dramatically below market value are a major warning sign."
+      },
+      {
+        "question": "Which payment method offers the best protection when shopping online?",
+        "options": [
+          "Wire transfer",
+          "Cryptocurrency",
+          "Credit card",
+          "Gift cards"
+        ],
+        "correctIndex": 2,
+        "explanation": "Credit cards offer the best consumer protection, including the ability to dispute fraudulent charges."
+      },
+      {
+        "question": "A seller asks you to complete the purchase by messaging them directly instead of using the platform's checkout. This is:",
+        "options": [
+          "Normal and more convenient",
+          "A scam tactic to bypass buyer protection",
+          "An option for trusted sellers only",
+          "Faster than the official checkout"
+        ],
+        "correctIndex": 1,
+        "explanation": "Moving transactions off-platform removes all buyer protections."
+      }
+    ]
+  },
+  "8": {
+    "title": "Online Scams: Types and Tactics",
+    "summary": "A comprehensive overview of common online scams and the tactics scammers use.",
+    "content": "## The Online Scam Landscape\n\nOnline scams are diverse, constantly evolving, and increasingly convincing. Understanding the most common types is the first step to protecting yourself.\n\n## Common Scam Types\n\n**Job Scams**\nFake job offers — often requiring you to pay for training, equipment, or background checks upfront. Signs: vague job descriptions, unusually high pay, immediate job offers without interviews.\n\n**Investment Scams**\nPromises of guaranteed high returns, often involving cryptocurrency or forex trading. Signs: pressure to recruit others (Ponzi), celebrity endorsements you can't verify, returns that seem too consistent.\n\n**Romance Scams**\nBuilding an online relationship before requesting money for an emergency, travel, or medical bills. Signs: never able to meet in person, very quick to profess love, requests for gift cards or wire transfers.\n\n**Lottery/Prize Scams**\n\"You've won!\" — but must pay fees to claim your prize. Signs: you never entered a lottery, requests for personal information or upfront payment.",
+    "quiz": [
+      {
+        "question": "A job offer arrives saying you will earn $500/day for simple tasks, with no experience required. You should:",
+        "options": [
+          "Apply immediately",
+          "Treat it with significant scepticism and verify the company independently",
+          "Share with friends",
+          "Accept — everyone deserves a good job"
+        ],
+        "correctIndex": 1,
+        "explanation": "Unrealistically high pay for minimal effort is one of the most consistent warning signs of job scams."
+      },
+      {
+        "question": "Someone you have only spoken to online for two weeks professes deep love and asks for money for a 'medical emergency'. This is:",
+        "options": [
+          "A genuine emergency you should help with",
+          "A classic romance scam tactic",
+          "Unusual but probably legitimate",
+          "Something you should verify by sending half first"
+        ],
+        "correctIndex": 1,
+        "explanation": "Rapid emotional escalation followed by a financial request is the defining pattern of romance scams."
+      },
+      {
+        "question": "You receive: 'You have won our lottery! Pay a $200 processing fee to claim your $50,000 prize.' What is this?",
+        "options": [
+          "A legitimate prize notification",
+          "A prize/lottery scam — you must pay to receive money",
+          "An exclusive offer worth considering",
+          "A government tax refund"
+        ],
+        "correctIndex": 1,
+        "explanation": "Requiring payment to claim a prize is always a scam. You cannot win a lottery you did not enter."
+      }
+    ]
+  }
+}
