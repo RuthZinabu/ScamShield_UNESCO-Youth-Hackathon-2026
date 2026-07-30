@@ -1,60 +1,165 @@
 import { useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { useTranslation } from "react-i18next";
-import { useListReports, useCreateReport, useGetTrendingReports, getListReportsQueryKey, getGetTrendingReportsQueryKey } from "@workspace/api-client-react";
+import {
+  useListReports,
+  useCreateReport,
+  useGetTrendingReports,
+  useUpvoteReport,
+  getListReportsQueryKey,
+  getGetTrendingReportsQueryKey,
+} from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Search, Flame, MapPin, MessageSquareWarning, ArrowUp, Plus, Loader2, ShieldAlert, Link } from "lucide-react";
+import {
+  Search,
+  Flame,
+  MapPin,
+  MessageSquareWarning,
+  ArrowUp,
+  Plus,
+  Loader2,
+  ShieldAlert,
+  Link,
+  Building2,
+  Globe,
+  ExternalLink,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { ListReportsCategory } from "@workspace/api-client-react/src/generated/api.schemas";
+import type { ListReportsCategory, Report } from "@workspace/api-client-react";
+import { LANGUAGES } from "@/i18n";
 
 const reportSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
   description: z.string().min(20, "Please provide more details to help others"),
-  category: z.enum(["job", "investment", "shopping", "news", "scholarship", "phishing", "romance", "other"]),
+  category: z.enum([
+    "job",
+    "investment",
+    "shopping",
+    "news",
+    "scholarship",
+    "phishing",
+    "romance",
+    "other",
+  ]),
   country: z.string().optional(),
+  organisationName: z.string().optional(),
+  language: z.string().optional(),
+  evidenceUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
+  additionalInfo: z.string().optional(),
 });
 
 export default function Community() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<ListReportsCategory | undefined>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // Track optimistic upvote state per report id
+  const [upvotedIds, setUpvotedIds] = useState<Set<number>>(new Set());
   const { toast } = useToast();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: reports, isLoading } = useListReports({
     search: search || undefined,
-    category: category !== "all" as any ? category as ListReportsCategory : undefined
+    category:
+      category !== ("all" as any) ? (category as ListReportsCategory) : undefined,
   });
 
   const { data: trending } = useGetTrendingReports();
   const createReport = useCreateReport();
+  const upvoteReport = useUpvoteReport();
 
   const form = useForm<z.infer<typeof reportSchema>>({
     resolver: zodResolver(reportSchema),
-    defaultValues: { title: "", description: "", category: "phishing", country: "" },
+    defaultValues: {
+      title: "",
+      description: "",
+      category: "phishing",
+      country: "",
+      organisationName: "",
+      language: "",
+      evidenceUrl: "",
+      additionalInfo: "",
+    },
   });
 
   const onSubmit = (values: z.infer<typeof reportSchema>) => {
-    createReport.mutate({ data: values }, {
-      onSuccess: () => {
-        toast({ title: t("community.toast_submitted"), description: t("community.toast_submitted_desc") });
-        setIsDialogOpen(false);
-        form.reset();
-        queryClient.invalidateQueries({ queryKey: getListReportsQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetTrendingReportsQueryKey() });
+    // Normalise empty strings → omit field
+    const payload = {
+      ...values,
+      evidenceUrl: values.evidenceUrl || undefined,
+      organisationName: values.organisationName || undefined,
+      language: values.language || undefined,
+      additionalInfo: values.additionalInfo || undefined,
+      country: values.country || undefined,
+    };
+    createReport.mutate(
+      { data: payload },
+      {
+        onSuccess: () => {
+          toast({
+            title: t("community.toast_submitted"),
+            description: t("community.toast_submitted_desc"),
+          });
+          setIsDialogOpen(false);
+          form.reset();
+          queryClient.invalidateQueries({ queryKey: getListReportsQueryKey() });
+          queryClient.invalidateQueries({
+            queryKey: getGetTrendingReportsQueryKey(),
+          });
+        },
       }
-    });
+    );
+  };
+
+  const handleUpvote = (reportId: number) => {
+    if (upvotedIds.has(reportId)) return; // prevent double-click
+    setUpvotedIds((prev) => new Set(prev).add(reportId));
+    upvoteReport.mutate(
+      { id: reportId },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: getListReportsQueryKey() });
+        },
+        onError: () => {
+          // Revert optimistic mark on failure
+          setUpvotedIds((prev) => {
+            const next = new Set(prev);
+            next.delete(reportId);
+            return next;
+          });
+        },
+      }
+    );
   };
 
   return (
@@ -75,49 +180,164 @@ export default function Community() {
               <Plus className="w-5 h-5" /> {t("community.report_btn")}
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[540px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{t("community.dialog_title")}</DialogTitle>
               <DialogDescription>{t("community.dialog_desc")}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4 pt-4"
+              >
+                {/* Title */}
                 <FormField
                   control={form.control}
                   name="title"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("community.field_title")}</FormLabel>
-                      <FormControl><Input placeholder={t("community.field_title_placeholder")} {...field} /></FormControl>
+                      <FormControl>
+                        <Input
+                          placeholder={t("community.field_title_placeholder")}
+                          {...field}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/* Category */}
                 <FormField
                   control={form.control}
                   name="category"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t("community.field_category")}</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
-                          <SelectTrigger><SelectValue placeholder={t("community.field_category_placeholder")} /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t(
+                                "community.field_category_placeholder"
+                              )}
+                            />
+                          </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="phishing">{t("community.cat_phishing")}</SelectItem>
-                          <SelectItem value="job">{t("community.cat_job")}</SelectItem>
-                          <SelectItem value="investment">{t("community.cat_investment")}</SelectItem>
-                          <SelectItem value="shopping">{t("community.cat_shopping")}</SelectItem>
-                          <SelectItem value="news">{t("community.cat_news")}</SelectItem>
-                          <SelectItem value="romance">{t("community.cat_romance")}</SelectItem>
-                          <SelectItem value="scholarship">{t("community.cat_scholarship")}</SelectItem>
-                          <SelectItem value="other">{t("community.cat_other")}</SelectItem>
+                          <SelectItem value="phishing">
+                            {t("community.cat_phishing")}
+                          </SelectItem>
+                          <SelectItem value="job">
+                            {t("community.cat_job")}
+                          </SelectItem>
+                          <SelectItem value="investment">
+                            {t("community.cat_investment")}
+                          </SelectItem>
+                          <SelectItem value="shopping">
+                            {t("community.cat_shopping")}
+                          </SelectItem>
+                          <SelectItem value="news">
+                            {t("community.cat_news")}
+                          </SelectItem>
+                          <SelectItem value="romance">
+                            {t("community.cat_romance")}
+                          </SelectItem>
+                          <SelectItem value="scholarship">
+                            {t("community.cat_scholarship")}
+                          </SelectItem>
+                          <SelectItem value="other">
+                            {t("community.cat_other")}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                {/* Company / Organisation Name */}
+                <FormField
+                  control={form.control}
+                  name="organisationName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("community.field_organisation")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder={t(
+                            "community.field_organisation_placeholder"
+                          )}
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Language */}
+                <FormField
+                  control={form.control}
+                  name="language"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("community.field_language")}</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={t(
+                                "community.field_language_placeholder"
+                              )}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {LANGUAGES.map((lang) => (
+                            <SelectItem key={lang.code} value={lang.code}>
+                              {lang.nativeLabel} — {lang.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Evidence URL */}
+                <FormField
+                  control={form.control}
+                  name="evidenceUrl"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("community.field_evidence_url")}{" "}
+                        <span className="text-muted-foreground text-xs font-normal">
+                          ({t("community.optional")})
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="https://example.com/screenshot.png"
+                          type="url"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Details */}
                 <FormField
                   control={form.control}
                   name="description"
@@ -125,14 +345,52 @@ export default function Community() {
                     <FormItem>
                       <FormLabel>{t("community.field_details")}</FormLabel>
                       <FormControl>
-                        <Textarea placeholder={t("community.field_details_placeholder")} className="resize-none h-24" {...field} />
+                        <Textarea
+                          placeholder={t("community.field_details_placeholder")}
+                          className="resize-none h-24"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={createReport.isPending}>
-                  {createReport.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null} {t("community.submit_report")}
+
+                {/* Additional Information */}
+                <FormField
+                  control={form.control}
+                  name="additionalInfo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("community.field_additional_info")}{" "}
+                        <span className="text-muted-foreground text-xs font-normal">
+                          ({t("community.optional")})
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder={t(
+                            "community.field_additional_info_placeholder"
+                          )}
+                          className="resize-none h-20"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={createReport.isPending}
+                >
+                  {createReport.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : null}{" "}
+                  {t("community.submit_report")}
                 </Button>
               </form>
             </Form>
@@ -153,18 +411,29 @@ export default function Community() {
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-            <Select onValueChange={(v) => setCategory(v as any)} defaultValue="all">
+            <Select
+              onValueChange={(v) => setCategory(v as any)}
+              defaultValue="all"
+            >
               <SelectTrigger className="w-full sm:w-[180px] bg-background border-none shadow-sm">
                 <SelectValue placeholder={t("community.cat_all")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">{t("community.cat_all")}</SelectItem>
-                <SelectItem value="phishing">{t("community.cat_phishing")}</SelectItem>
+                <SelectItem value="phishing">
+                  {t("community.cat_phishing")}
+                </SelectItem>
                 <SelectItem value="job">{t("community.cat_job")}</SelectItem>
-                <SelectItem value="investment">{t("community.cat_investment")}</SelectItem>
-                <SelectItem value="shopping">{t("community.cat_shopping")}</SelectItem>
+                <SelectItem value="investment">
+                  {t("community.cat_investment")}
+                </SelectItem>
+                <SelectItem value="shopping">
+                  {t("community.cat_shopping")}
+                </SelectItem>
                 <SelectItem value="news">{t("community.cat_news")}</SelectItem>
-                <SelectItem value="romance">{t("community.cat_romance")}</SelectItem>
+                <SelectItem value="romance">
+                  {t("community.cat_romance")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -180,37 +449,114 @@ export default function Community() {
                 <p className="text-muted-foreground">{t("community.no_reports")}</p>
               </div>
             ) : (
-              reports?.map(report => (
-                <Card key={report.id} className="hover:shadow-md transition-shadow group">
-                  <CardContent className="p-6">
-                    <div className="flex gap-4">
-                      <div className="flex flex-col items-center gap-1 min-w-[3rem]">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full text-muted-foreground hover:text-primary">
-                          <ArrowUp className="w-4 h-4" />
-                        </Button>
-                        <span className="font-semibold text-sm">{report.upvoteCount}</span>
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary">
-                            {report.category}
+              reports?.map((report: Report) => {
+                const hasUpvoted = upvotedIds.has(report.id);
+                return (
+                  <Card
+                    key={report.id}
+                    className="hover:shadow-md transition-shadow group"
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex gap-4">
+                        {/* Upvote column */}
+                        <div className="flex flex-col items-center gap-1 min-w-[3rem]">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleUpvote(report.id)}
+                            disabled={hasUpvoted}
+                            className={`h-8 w-8 rounded-full transition-colors ${
+                              hasUpvoted
+                                ? "text-primary bg-primary/10 cursor-default"
+                                : "text-muted-foreground hover:text-primary"
+                            }`}
+                            title={hasUpvoted ? "Upvoted" : "Upvote this report"}
+                          >
+                            <ArrowUp className="w-4 h-4" />
+                          </Button>
+                          <span
+                            className={`font-semibold text-sm tabular-nums ${
+                              hasUpvoted ? "text-primary" : ""
+                            }`}
+                          >
+                            {hasUpvoted
+                              ? report.upvoteCount + 1
+                              : report.upvoteCount}
                           </span>
-                          <span className="text-xs text-muted-foreground">
-                            {formatDistanceToNow(new Date(report.createdAt), { addSuffix: true })}
-                          </span>
-                          {report.country && (
-                            <span className="text-xs text-muted-foreground flex items-center gap-1 ml-auto">
-                              <MapPin className="w-3 h-3" /> {report.country}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary shrink-0">
+                              {report.category}
                             </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDistanceToNow(
+                                new Date(report.createdAt),
+                                { addSuffix: true }
+                              )}
+                            </span>
+                            {report.country && (
+                              <span className="text-xs text-muted-foreground flex items-center gap-1 ml-auto">
+                                <MapPin className="w-3 h-3" /> {report.country}
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="font-bold text-lg mb-1 group-hover:text-primary transition-colors">
+                            {report.title}
+                          </h3>
+
+                          {/* Organisation & language meta */}
+                          {(report.organisationName || report.language) && (
+                            <div className="flex flex-wrap gap-3 mb-2">
+                              {report.organisationName && (
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Building2 className="w-3 h-3 shrink-0" />
+                                  {report.organisationName}
+                                </span>
+                              )}
+                              {report.language && (
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Globe className="w-3 h-3 shrink-0" />
+                                  {LANGUAGES.find(
+                                    (l) => l.code === report.language
+                                  )?.nativeLabel ?? report.language}
+                                </span>
+                              )}
+                            </div>
+                          )}
+
+                          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                            {report.description}
+                          </p>
+
+                          {/* Additional info (collapsed) */}
+                          {report.additionalInfo && (
+                            <p className="text-xs text-muted-foreground/80 line-clamp-1 italic mb-2">
+                              {report.additionalInfo}
+                            </p>
+                          )}
+
+                          {/* Evidence link */}
+                          {report.evidenceUrl && (
+                            <a
+                              href={report.evidenceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
+                            >
+                              <ExternalLink className="w-3 h-3" />{" "}
+                              {t("community.view_evidence")}
+                            </a>
                           )}
                         </div>
-                        <h3 className="font-bold text-lg mb-2 group-hover:text-primary transition-colors">{report.title}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2">{report.description}</p>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </CardContent>
+                  </Card>
+                );
+              })
             )}
           </div>
         </div>
@@ -220,27 +566,38 @@ export default function Community() {
           <Card className="bg-slate-50 dark:bg-slate-900 border-border">
             <CardHeader className="pb-4 border-b border-border/50">
               <CardTitle className="text-base flex items-center gap-2">
-                <Flame className="w-5 h-5 text-orange-500" /> {t("community.trending_title")}
+                <Flame className="w-5 h-5 text-orange-500" />{" "}
+                {t("community.trending_title")}
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-4 space-y-4">
-              {trending?.topCategories.map((cat, i) => (
+              {trending?.topCategories.map((cat: { category: string; count: number }, i: number) => (
                 <div key={i} className="flex justify-between items-center">
-                  <span className="text-sm font-medium capitalize">{cat.category}</span>
+                  <span className="text-sm font-medium capitalize">
+                    {cat.category}
+                  </span>
                   <span className="text-xs bg-muted px-2 py-1 rounded-md text-muted-foreground">
                     {cat.count} {t("community.reports_count")}
                   </span>
                 </div>
               ))}
-              {!trending && <div className="text-sm text-muted-foreground">{t("community.loading_trends")}</div>}
+              {!trending && (
+                <div className="text-sm text-muted-foreground">
+                  {t("community.loading_trends")}
+                </div>
+              )}
             </CardContent>
           </Card>
 
           <Card className="bg-primary text-primary-foreground shadow-lg">
             <CardContent className="p-6 text-center">
               <ShieldAlert className="w-10 h-10 mx-auto mb-4 opacity-80" />
-              <h3 className="font-bold mb-2">{t("community.verify_card_title")}</h3>
-              <p className="text-sm opacity-90 mb-4">{t("community.verify_card_desc")}</p>
+              <h3 className="font-bold mb-2">
+                {t("community.verify_card_title")}
+              </h3>
+              <p className="text-sm opacity-90 mb-4">
+                {t("community.verify_card_desc")}
+              </p>
               <Button variant="secondary" className="w-full" asChild>
                 <Link href="/verify">{t("community.analyze_btn")}</Link>
               </Button>

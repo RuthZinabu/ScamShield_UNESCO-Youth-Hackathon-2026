@@ -910,6 +910,70 @@ export function useGetReport<TData = Awaited<ReturnType<typeof getReport>>, TErr
 
 
 
+export const getUpvoteReportUrl = (id: number,) => {
+
+
+
+
+  return `/api/reports/${id}/upvote`
+}
+
+/**
+ * @summary Upvote a report (atomic increment)
+ */
+export const upvoteReport = async (id: number, options?: RequestInit): Promise<{ id: number; upvoteCount: number }> => {
+
+  return customFetch<{ id: number; upvoteCount: number }>(getUpvoteReportUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+export const getUpvoteReportMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof upvoteReport>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof upvoteReport>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['upvoteReport'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof upvoteReport>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  upvoteReport(id,requestOptions)
+        }
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpvoteReportMutationResult = NonNullable<Awaited<ReturnType<typeof upvoteReport>>>
+    export type UpvoteReportMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Upvote a report
+ */
+export const useUpvoteReport = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof upvoteReport>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof upvoteReport>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getUpvoteReportMutationOptions(options));
+    }
+
 export const getListLessonsUrl = (params?: ListLessonsParams,) => {
   const normalizedParams = new URLSearchParams();
 

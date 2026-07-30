@@ -1,10 +1,11 @@
 import { Router, type IRouter } from "express";
-import { eq, desc, ilike, or, sql } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db, reportsTable } from "@workspace/db";
 import {
   ListReportsQueryParams,
   CreateReportBody,
   GetReportParams,
+  UpvoteReportParams,
 } from "@workspace/api-zod";
 
 const router: IRouter = Router();
@@ -54,8 +55,10 @@ router.post("/reports", async (req, res): Promise<void> => {
       description: parsed.data.description,
       category: parsed.data.category,
       country: parsed.data.country ?? null,
+      organisationName: parsed.data.organisationName ?? null,
       language: parsed.data.language ?? null,
       evidenceUrl: parsed.data.evidenceUrl ?? null,
+      additionalInfo: parsed.data.additionalInfo ?? null,
     })
     .returning();
 
@@ -102,6 +105,31 @@ router.get("/reports/:id", async (req, res): Promise<void> => {
   }
 
   res.json(report);
+});
+
+/**
+ * POST /reports/:id/upvote
+ * Atomically increments the upvote counter. No auth — just increment.
+ */
+router.post("/reports/:id/upvote", async (req, res): Promise<void> => {
+  const params = UpvoteReportParams.safeParse(req.params);
+  if (!params.success) {
+    res.status(400).json({ error: params.error.message });
+    return;
+  }
+
+  const [updated] = await db
+    .update(reportsTable)
+    .set({ upvoteCount: sql`${reportsTable.upvoteCount} + 1` })
+    .where(eq(reportsTable.id, params.data.id))
+    .returning({ id: reportsTable.id, upvoteCount: reportsTable.upvoteCount });
+
+  if (!updated) {
+    res.status(404).json({ error: "Report not found" });
+    return;
+  }
+
+  res.json(updated);
 });
 
 export default router;
