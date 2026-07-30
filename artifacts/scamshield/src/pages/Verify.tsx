@@ -35,7 +35,7 @@ export default function Verify() {
   const [activeTab, setActiveTab] = useState<AnalysisInputContentType>("text");
   const [result, setResult] = useState<Analysis | null>(null);
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const createAnalysis = useCreateAnalysis();
@@ -56,7 +56,8 @@ export default function Verify() {
         data: {
           contentType: values.contentType,
           inputText: values.inputText,
-          sourceUrl: values.sourceUrl || undefined
+          sourceUrl: values.sourceUrl || undefined,
+          responseLanguage: i18n.language,
         }
       },
       {

@@ -42,7 +42,7 @@ router.post("/analyses", async (req, res): Promise<void> => {
     return;
   }
 
-  const { contentType, inputText, sourceUrl } = parsed.data;
+  const { contentType, inputText, sourceUrl, responseLanguage } = parsed.data;
 
   // Run AI analysis
   let result = null;
@@ -51,7 +51,7 @@ router.post("/analyses", async (req, res): Promise<void> => {
   let status = "completed";
 
   try {
-    result = await runMILAnalysis(contentType, inputText);
+    result = await runMILAnalysis(contentType, inputText, responseLanguage);
     warningSignCount = result.warningSigns?.length ?? 0;
     trustIndicatorCount = result.trustIndicators?.length ?? 0;
   } catch (err) {

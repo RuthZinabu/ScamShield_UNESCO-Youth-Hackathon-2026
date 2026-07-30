@@ -71,7 +71,8 @@ export const ListAnalysesResponse = zod.array(ListAnalysesResponseItem)
 export const CreateAnalysisBody = zod.object({
   "contentType": zod.enum(['text', 'url', 'social-media', 'email', 'job', 'scholarship', 'news', 'general']),
   "inputText": zod.string().min(1),
-  "sourceUrl": zod.string().optional()
+  "sourceUrl": zod.string().optional(),
+  "responseLanguage": zod.string().optional()
 })
 
 export const CreateAnalysisResponse = zod.object({

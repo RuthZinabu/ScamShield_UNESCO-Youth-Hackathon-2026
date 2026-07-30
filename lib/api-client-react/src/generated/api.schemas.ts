@@ -94,6 +94,8 @@ export interface AnalysisInput {
   /** @minLength 1 */
   inputText: string;
   sourceUrl?: string;
+  /** BCP-47 language code. When set, the AI will respond in that language. */
+  responseLanguage?: string;
 }
 
 export type AnalysisStatsByContentTypeItem = {
