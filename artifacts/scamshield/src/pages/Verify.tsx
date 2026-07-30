@@ -221,7 +221,13 @@ export default function Verify() {
               <h3 className="text-lg font-semibold text-foreground mb-2">{t("verify.awaiting_title")}</h3>
               <p className="text-muted-foreground max-w-sm">{t("verify.awaiting_desc")}</p>
             </div>
-          ) : result.result ? (
+          ) : !result.result ? (
+            <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-destructive/30 rounded-2xl bg-destructive/5">
+              <AlertTriangle className="w-10 h-10 text-destructive mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t("verify.error_title", "Analysis could not be completed")}</h3>
+              <p className="text-muted-foreground max-w-sm text-sm">{t("verify.error_desc", "The AI was unable to process your content. Please try again or rephrase your input.")}</p>
+            </div>
+          ) : (
             <div className="space-y-6 animate-in slide-in-from-right-4 fade-in duration-500">
               <div className="bg-background rounded-2xl border shadow-lg overflow-hidden glass-panel">
                 <div className="bg-slate-100 dark:bg-slate-800/50 p-6 border-b flex justify-between items-center">
@@ -326,10 +332,6 @@ export default function Verify() {
                   </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="h-full flex items-center justify-center">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           )}
         </div>

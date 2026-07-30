@@ -12,37 +12,7 @@ export interface MILAnalysisResult {
   educationalTip: string;
 }
 
-/** Maps i18next language codes to human-readable names for the AI prompt. */
-const LANGUAGE_NAMES: Record<string, string> = {
-  en: "English",
-  am: "Amharic (አማርኛ)",
-  om: "Oromiffa (Afaan Oromoo)",
-  so: "Somali (Soomaali)",
-  ti: "Tigrinya (ትግርኛ)",
-};
-
-function buildSystemPrompt(languageName: string): string {
-  const isEnglish = languageName === "English";
-  const languageInstruction = isEnglish
-    ? ""
-    : `
-LANGUAGE REQUIREMENT (CRITICAL):
-You MUST write your ENTIRE JSON response in ${languageName}.
-This applies to EVERY text field in the JSON:
-- contentCategory
-- Every warningSigns title and explanation
-- Every trustIndicators title and explanation
-- Every missingInfo item
-- Every reflectiveQuestions item
-- Every verificationSteps item
-- literacyLesson
-- Every recommendedActions item
-- educationalTip
-
-Do NOT write any of the above in English.
-You MAY keep URLs, domain names, brand names, and technical terms (e.g. "Snopes", "AFP Fact Check") in their original form.
-`;
-
+function buildSystemPrompt(): string {
   return `You are a Media and Information Literacy educator. Analyse the provided content and return a structured JSON response.
 
 IMPORTANT RULES:
@@ -51,7 +21,8 @@ IMPORTANT RULES:
 - Frame everything as "indicators that deserve attention" or "things to verify"
 - Use educational, neutral, supportive language
 - Your goal is to improve digital literacy, not replace the user's judgement
-${languageInstruction}
+- ALWAYS respond in English only, regardless of the language of the input content
+
 Return ONLY valid JSON in this exact structure:
 {
   "contentCategory": "one of: job | news | investment | shopping | government | scholarship | general",
@@ -73,11 +44,9 @@ Return ONLY valid JSON in this exact structure:
 export async function runMILAnalysis(
   contentType: string,
   inputText: string,
-  responseLanguage = "en"
+  responseLanguage = "en"  // kept for API compatibility; analysis always returns English JSON
 ): Promise<MILAnalysisResult> {
   const apiKey = process.env.OPENROUTER_API_KEY;
-
-  const languageName = LANGUAGE_NAMES[responseLanguage] ?? "English";
 
   if (!apiKey) {
     // Return a structured placeholder when no API key is set
@@ -129,7 +98,7 @@ export async function runMILAnalysis(
     model: "openrouter/free",
     max_tokens: 2048,
     messages: [
-      { role: "system", content: buildSystemPrompt(languageName) },
+      { role: "system", content: buildSystemPrompt() },
       {
         role: "user",
         content: `Content type: ${contentType}\n\nContent to analyse:\n\n${inputText}`,
