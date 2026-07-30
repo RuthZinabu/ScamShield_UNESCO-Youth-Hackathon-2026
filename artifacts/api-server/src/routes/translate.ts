@@ -8,9 +8,15 @@ const router: IRouter = Router();
 /**
  * POST /lessons/:id/translate
  * Body: { language: string }
+ *
  * Returns the full lesson detail with content and quiz translated into the
- * requested language. Falls back to original English if AI is unavailable or
- * language is unsupported.
+ * requested language.
+ *
+ * Translation lookup order:
+ *   1. Persistent JSON file on disk (instant — no AI call)
+ *   2. AI translation via OpenRouter (result saved to disk for future requests)
+ *
+ * Falls back to original English if AI is unavailable or language is unsupported.
  */
 router.post("/lessons/:id/translate", async (req, res): Promise<void> => {
   const id = Number(req.params.id);
@@ -53,7 +59,8 @@ router.post("/lessons/:id/translate", async (req, res): Promise<void> => {
   };
 
   try {
-    const translated = await translateLesson(translationInput, language);
+    // Pass lessonId so the library can check/write the persistent JSON cache
+    const translated = await translateLesson(id, translationInput, language);
 
     // Merge translated strings back onto original quiz items (preserving id,
     // correctIndex, orderIndex which must not be translated).

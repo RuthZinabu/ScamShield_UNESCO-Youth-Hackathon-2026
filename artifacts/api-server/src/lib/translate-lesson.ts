@@ -1,4 +1,6 @@
 import OpenAI from "openai";
+import fs from "fs/promises";
+import path from "path";
 
 export interface LessonTranslationInput {
   title: string;
@@ -29,21 +31,97 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ti: "Tigrinya (ትግርኛ)",
 };
 
+// Persistent translation cache directory.
+// The server process always runs from artifacts/api-server/, so
+// `data/translations` resolves to artifacts/api-server/data/translations.
+const CACHE_DIR = path.resolve(process.cwd(), "data/translations");
+
+async function getCachePath(lessonId: number, lang: string): Promise<string> {
+  const dir = path.join(CACHE_DIR, String(lessonId));
+  await fs.mkdir(dir, { recursive: true });
+  return path.join(dir, `${lang}.json`);
+}
+
+async function readCache(lessonId: number, lang: string): Promise<LessonTranslationOutput | null> {
+  try {
+    const filePath = path.join(CACHE_DIR, String(lessonId), `${lang}.json`);
+    const raw = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(raw) as LessonTranslationOutput;
+  } catch {
+    return null;
+  }
+}
+
+async function writeCache(
+  lessonId: number,
+  lang: string,
+  data: LessonTranslationOutput
+): Promise<void> {
+  try {
+    const filePath = await getCachePath(lessonId, lang);
+    await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf-8");
+  } catch {
+    // Non-fatal — translation still returned, just not persisted
+  }
+}
+
+/**
+ * Translates a lesson into the target language.
+ *
+ * Lookup order:
+ *   1. Persistent JSON file on disk  (free, instant)
+ *   2. AI translation via OpenRouter  (costs a call; result is then saved to disk)
+ *
+ * @param lessonId  The numeric lesson ID used to key the cache file.
+ * @param input     English lesson content to translate.
+ * @param targetLang  BCP-47-like language code (am | om | so | ti).
+ */
+export async function translateLesson(
+  lessonId: number,
+  input: LessonTranslationInput,
+  targetLang: string
+): Promise<LessonTranslationOutput>;
+
+/**
+ * @deprecated  Use the 3-argument overload that accepts `lessonId`.
+ * Kept for any callers that haven't migrated yet. Falls through to AI only.
+ */
 export async function translateLesson(
   input: LessonTranslationInput,
   targetLang: string
+): Promise<LessonTranslationOutput>;
+
+export async function translateLesson(
+  lessonIdOrInput: number | LessonTranslationInput,
+  inputOrLang: LessonTranslationInput | string,
+  maybeLang?: string
 ): Promise<LessonTranslationOutput> {
-  const languageName = LANGUAGE_NAMES[targetLang];
-  if (!languageName) {
-    // Unsupported language — return original
-    return input;
+  // Resolve overloads
+  let lessonId: number | null = null;
+  let input: LessonTranslationInput;
+  let targetLang: string;
+
+  if (typeof lessonIdOrInput === "number") {
+    lessonId = lessonIdOrInput;
+    input = inputOrLang as LessonTranslationInput;
+    targetLang = maybeLang!;
+  } else {
+    input = lessonIdOrInput;
+    targetLang = inputOrLang as string;
   }
 
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    // No AI key — return original content
-    return input;
+  const languageName = LANGUAGE_NAMES[targetLang];
+  if (!languageName) return input;
+
+  // 1. Check persistent JSON cache
+  if (lessonId !== null) {
+    const cached = await readCache(lessonId, targetLang);
+    if (cached) return cached;
   }
+
+  // 2. Fall back to AI translation
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) return input;
 
   const client = new OpenAI({
     apiKey,
@@ -81,7 +159,6 @@ CRITICAL RULES:
 
   try {
     const parsed = JSON.parse(raw) as LessonTranslationOutput;
-    // Validate the shape hasn't been broken
     if (
       typeof parsed.title !== "string" ||
       typeof parsed.summary !== "string" ||
@@ -90,9 +167,14 @@ CRITICAL RULES:
     ) {
       return input;
     }
+
+    // 3. Persist to disk so next request is instant
+    if (lessonId !== null) {
+      await writeCache(lessonId, targetLang, parsed);
+    }
+
     return parsed;
   } catch {
-    // Parse failed — return original English content
     return input;
   }
 }
