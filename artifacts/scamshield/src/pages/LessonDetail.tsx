@@ -1,24 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetLesson, useCompleteLesson, getListLessonsQueryKey, getGetDashboardStatsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, AlertCircle, Loader2, Languages } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { API_BASE_URL } from "@/lib/api-config";
+import type { LessonDetail, QuizQuestion } from "@workspace/api-client-react/src/generated/api.schemas";
+
+// Shape of the translated payload returned by POST /api/lessons/:id/translate
+interface TranslatedLesson {
+  id: number;
+  title: string;
+  summary: string;
+  content: string;
+  category: string;
+  durationMinutes: number;
+  difficulty: string;
+  quiz: QuizQuestion[];
+}
 
 export default function LessonDetail() {
   const [, params] = useRoute("/learn/:id");
   const [, setLocation] = useLocation();
   const id = Number(params?.id);
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
 
   const { data: lesson, isLoading, error } = useGetLesson(id, { query: { enabled: !!id } });
   const completeLesson = useCompleteLesson();
 
+  // Translation state
+  const [translatedLesson, setTranslatedLesson] = useState<TranslatedLesson | null>(null);
+  const [isTranslating, setIsTranslating] = useState(false);
+  // Track which (lessonId, language) pair is currently translated to avoid redundant calls
+  const translatedFor = useRef<{ id: number; lang: string } | null>(null);
+
+  // Quiz state
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -26,8 +49,72 @@ export default function LessonDetail() {
   const [score, setScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
 
+  // Trigger translation whenever the lesson or the active language changes
+  useEffect(() => {
+    const lang = i18n.language;
+
+    if (!lesson || !id) return;
+
+    if (lang === "en") {
+      // Reset to original English content
+      setTranslatedLesson(null);
+      translatedFor.current = null;
+      return;
+    }
+
+    // Already translated for this lesson + language pair
+    if (
+      translatedFor.current?.id === id &&
+      translatedFor.current?.lang === lang
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    setIsTranslating(true);
+
+    fetch(`${API_BASE_URL}/api/lessons/${id}/translate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ language: lang }),
+    })
+      .then((r) => r.json())
+      .then((data: TranslatedLesson) => {
+        if (cancelled) return;
+        setTranslatedLesson(data);
+        translatedFor.current = { id, lang };
+      })
+      .catch(() => {
+        // Translation failed — silently fall back to English
+        if (!cancelled) setTranslatedLesson(null);
+      })
+      .finally(() => {
+        if (!cancelled) setIsTranslating(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [lesson, id, i18n.language]);
+
+  // Reset quiz and translation state when navigating to a different lesson
+  useEffect(() => {
+    setQuizStarted(false);
+    setCurrentQuestionIndex(0);
+    setSelectedOption(null);
+    setIsAnswered(false);
+    setScore(0);
+    setQuizFinished(false);
+    setTranslatedLesson(null);
+    translatedFor.current = null;
+  }, [id]);
+
   if (isLoading) {
-    return <div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   if (error || !lesson) {
@@ -39,6 +126,11 @@ export default function LessonDetail() {
       </div>
     );
   }
+
+  // The lesson data to render — translated if available, otherwise original English
+  const display: LessonDetail & { quiz: QuizQuestion[] } = translatedLesson
+    ? { ...lesson, ...translatedLesson }
+    : lesson;
 
   const handleStartQuiz = () => setQuizStarted(true);
 
@@ -54,7 +146,7 @@ export default function LessonDetail() {
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < lesson.quiz.length - 1) {
+    if (currentQuestionIndex < display.quiz.length - 1) {
       setCurrentQuestionIndex(i => i + 1);
       setSelectedOption(null);
       setIsAnswered(false);
@@ -65,7 +157,11 @@ export default function LessonDetail() {
 
   const finishQuiz = () => {
     setQuizFinished(true);
-    const finalScore = Math.round(((score + (selectedOption === lesson.quiz[currentQuestionIndex].correctIndex ? 1 : 0)) / lesson.quiz.length) * 100);
+    const finalScore = Math.round(
+      ((score + (selectedOption === lesson.quiz[currentQuestionIndex].correctIndex ? 1 : 0)) /
+        lesson.quiz.length) *
+        100
+    );
 
     completeLesson.mutate({ id, data: { quizScore: finalScore } }, {
       onSuccess: () => {
@@ -82,6 +178,14 @@ export default function LessonDetail() {
         <ArrowLeft className="w-4 h-4 mr-2" /> {t("lesson.back")}
       </Link>
 
+      {/* Translation progress indicator */}
+      {isTranslating && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3">
+          <Languages className="w-4 h-4 text-primary animate-pulse shrink-0" />
+          <span>{t("lesson.translating", "Translating lesson…")}</span>
+        </div>
+      )}
+
       {!quizStarted ? (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="mb-8">
@@ -94,17 +198,19 @@ export default function LessonDetail() {
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold font-display leading-tight mb-6">
-              {lesson.title}
+              {display.title}
             </h1>
             <p className="text-xl text-muted-foreground leading-relaxed">
-              {lesson.summary}
+              {display.summary}
             </p>
           </div>
 
-          <div
-            className="prose prose-slate dark:prose-invert max-w-none mb-12 prose-headings:font-display prose-headings:font-bold prose-p:leading-relaxed prose-a:text-primary"
-            dangerouslySetInnerHTML={{ __html: lesson.content }}
-          />
+          {/* Lesson content — rendered as Markdown */}
+          <div className="prose prose-slate dark:prose-invert max-w-none mb-12 prose-headings:font-display prose-headings:font-bold prose-p:leading-relaxed prose-a:text-primary">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {display.content}
+            </ReactMarkdown>
+          </div>
 
           <Card className="bg-primary/5 border-primary/20 text-center py-10 shadow-lg">
             <CardContent>
@@ -112,7 +218,7 @@ export default function LessonDetail() {
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                 {t("lesson.quiz_desc", { count: lesson.quiz.length })}
               </p>
-              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-lg" onClick={handleStartQuiz}>
+              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-lg" onClick={handleStartQuiz} disabled={isTranslating}>
                 {t("lesson.quiz_start")}
               </Button>
             </CardContent>
@@ -121,9 +227,9 @@ export default function LessonDetail() {
       ) : !quizFinished ? (
         <div className="max-w-2xl mx-auto animate-in zoom-in-95 duration-300">
           <div className="mb-8 flex justify-between items-center">
-            <h3 className="font-bold text-lg">{t("lesson.question_of", { current: currentQuestionIndex + 1, total: lesson.quiz.length })}</h3>
+            <h3 className="font-bold text-lg">{t("lesson.question_of", { current: currentQuestionIndex + 1, total: display.quiz.length })}</h3>
             <div className="flex gap-1.5">
-              {lesson.quiz.map((_, i) => (
+              {display.quiz.map((_, i) => (
                 <div key={i} className={`h-2 w-8 rounded-full ${i <= currentQuestionIndex ? 'bg-primary' : 'bg-muted'}`} />
               ))}
             </div>
@@ -132,12 +238,13 @@ export default function LessonDetail() {
           <Card className="shadow-lg border-border/60">
             <CardContent className="p-8">
               <h2 className="text-2xl font-semibold mb-8">
-                {lesson.quiz[currentQuestionIndex].question}
+                {display.quiz[currentQuestionIndex].question}
               </h2>
 
               <div className="space-y-3 mb-8">
-                {lesson.quiz[currentQuestionIndex].options.map((opt, i) => {
+                {display.quiz[currentQuestionIndex].options.map((opt, i) => {
                   const isSelected = selectedOption === i;
+                  // correctIndex always comes from original lesson data (untranslated)
                   const isCorrect = i === lesson.quiz[currentQuestionIndex].correctIndex;
 
                   let optStyle = "border-border hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-slate-900";
@@ -166,7 +273,7 @@ export default function LessonDetail() {
               {isAnswered && (
                 <div className="bg-primary/5 p-4 rounded-xl mb-8 animate-in fade-in">
                   <span className="font-bold block mb-1">{t("lesson.explanation")}</span>
-                  <p className="text-sm text-muted-foreground">{lesson.quiz[currentQuestionIndex].explanation}</p>
+                  <p className="text-sm text-muted-foreground">{display.quiz[currentQuestionIndex].explanation}</p>
                 </div>
               )}
 
@@ -177,7 +284,7 @@ export default function LessonDetail() {
                   </Button>
                 ) : (
                   <Button size="lg" onClick={handleNextQuestion}>
-                    {currentQuestionIndex < lesson.quiz.length - 1 ? t("lesson.next_question") : t("lesson.finish_lesson")}
+                    {currentQuestionIndex < display.quiz.length - 1 ? t("lesson.next_question") : t("lesson.finish_lesson")}
                   </Button>
                 )}
               </div>
