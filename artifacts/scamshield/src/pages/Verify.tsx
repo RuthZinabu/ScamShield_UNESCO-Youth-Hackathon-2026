@@ -31,11 +31,26 @@ const formSchema = z.object({
   sourceUrl: z.string().url({ message: "Please enter a valid URL." }).optional().or(z.literal("")),
 });
 
+const CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
+  job: "community.cat_job",
+  investment: "community.cat_investment",
+  shopping: "community.cat_shopping",
+  news: "community.cat_news",
+  scholarship: "community.cat_scholarship",
+  general: "community.cat_general",
+  government: "community.cat_government",
+};
+
 export default function Verify() {
   const [activeTab, setActiveTab] = useState<AnalysisInputContentType>("text");
   const [result, setResult] = useState<Analysis | null>(null);
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
+
+  function getLocalizedCategoryLabel(category: string) {
+    const key = CATEGORY_TRANSLATION_KEYS[category.toLowerCase()];
+    return key ? t(key) : category;
+  }
   const queryClient = useQueryClient();
 
   const createAnalysis = useCreateAnalysis();
@@ -235,7 +250,7 @@ export default function Verify() {
                     <h2 className="text-2xl font-bold font-display flex items-center gap-2">
                       {t("verify.result_title")}
                     </h2>
-                    <p className="text-sm text-muted-foreground mt-1 capitalize">{t("verify.result_category")}: {result.result.contentCategory}</p>
+                    <p className="text-sm text-muted-foreground mt-1 capitalize">{t("verify.result_category")}: {getLocalizedCategoryLabel(result.result.contentCategory)}</p>
                   </div>
                   <div className="flex gap-2">
                     <div className="text-center px-4 py-2 bg-background rounded-lg border shadow-sm">

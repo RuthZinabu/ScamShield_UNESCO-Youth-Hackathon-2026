@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "ScamShield AI",
+    "brand": "ScamShield",
     "verify": "Verify",
     "learn": "Learn",
     "community": "Community",
@@ -11,7 +11,7 @@
     "badge": "Media & Information Literacy",
     "hero_line1": "Think Before",
     "hero_line2": "You Trust.",
-    "hero_subtitle": "ScamShield AI doesn't just tell you what's true or false. We guide you to ask the right questions, spot the warning signs, and navigate the digital world with confidence.",
+    "hero_subtitle": "ScamShield doesn't just tell you what's true or false. We guide you to ask the right questions, spot the warning signs, and navigate the digital world with confidence.",
     "cta_verify": "Verify Content",
     "cta_learn": "Start Learning",
     "floating_label": "Critical Thinking",
@@ -37,7 +37,7 @@
     "faq_title": "Frequently Asked Questions",
     "faq_subtitle": "Learn more about how our platform works.",
     "faq1_q": "Is this an automated scam detector?",
-    "faq1_a": "No. ScamShield AI is an educational tool. We do not make definitive judgments on your behalf. Instead, we highlight warning signs and trust indicators, and guide you through the verification process so you build your own critical thinking skills.",
+    "faq1_a": "No. ScamShield is an educational tool. We do not make definitive judgments on your behalf. Instead, we highlight warning signs and trust indicators, and guide you through the verification process so you build your own critical thinking skills.",
     "faq2_q": "What happens to the content I verify?",
     "faq2_a": "Content submitted for verification is analyzed securely and temporarily stored for your personal dashboard. We strip personally identifiable information before analysis to protect your privacy.",
     "faq3_q": "Who creates the learning materials?",
@@ -136,8 +136,10 @@
     "cat_investment": "Investment/Crypto",
     "cat_shopping": "Fake Store",
     "cat_news": "Disinformation",
-    "cat_romance": "Romance Scam",
+    "cat_government": "Government Scam",
     "cat_scholarship": "Scholarship",
+    "cat_general": "General",
+    "cat_romance": "Romance Scam",
     "cat_other": "Other",
     "cat_all": "All Categories",
     "field_organisation": "Company / Organisation Name",
@@ -203,7 +205,7 @@
     "link_about": "About Us",
     "link_privacy": "Privacy Policy",
     "link_terms": "Terms of Service",
-    "copyright": "© {{year}} ScamShield AI. A conceptual digital public service.",
+    "copyright": "© {{year}} ScamShield. A conceptual digital public service.",
     "not_detector": "Not a real scam detector"
   }
 }

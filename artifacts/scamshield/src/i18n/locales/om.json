@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "ScamShield AI",
+    "brand": "ScamShield",
     "verify": "Mirkaneessi",
     "learn": "Baradhu",
     "community": "Hawaasa",
@@ -11,7 +11,7 @@
     "badge": "Mirkaneessa Miidiyaa & Odeeffannoo",
     "hero_line1": "Otoo Hin Amanin",
     "hero_line2": "Yaadi.",
-    "hero_subtitle": "ScamShield AI waan dhugaa yookaan soba ta'e qofa sitti hin himu. Gaaffii sirrii akka gaafattu, mallattoo akeekkachiisaa akka addaan baafattu, fi amanannaan addunyaa dijitaalaa keessa akka sochootu si gargaarra.",
+    "hero_subtitle": "ScamShield waan dhugaa yookaan soba ta'e qofa sitti hin himu. Gaaffii sirrii akka gaafattu, mallattoo akeekkachiisaa akka addaan baafattu, fi amanannaan addunyaa dijitaalaa keessa akka sochootu si gargaarra.",
     "cta_verify": "Qabiyyee Mirkaneessi",
     "cta_learn": "Barachuu Jalqabi",
     "floating_label": "Yaada Xiinxalaa",
@@ -37,7 +37,7 @@
     "faq_title": "Gaaffiiwwan Yeroo Baay'ee Gaafataman",
     "faq_subtitle": "Waa'ee hojii sirna keenyaa dabalata baradhu.",
     "faq1_q": "Kun meeshaa ofiin ofiin gowwoomsaa adda baasudhaa?",
-    "faq1_a": "Lakki. ScamShield AI meeshaa barnootaati. Nutti bakka kee bu'uun murtoo dhumaa hin kenninu. Kana dura, mallattoolee akeekkachiisaa fi amanamummaa addeessuun, adeemsa mirkaneessuu keessa si qajeelchina, kanaan dandeettii yaada xiinxalaa kee ijaarratta.",
+    "faq1_a": "Lakki. ScamShield meeshaa barnootaati. Nutti bakka kee bu'uun murtoo dhumaa hin kenninu. Kana dura, mallattoolee akeekkachiisaa fi amanamummaa addeessuun, adeemsa mirkaneessuu keessa si qajeelchina, kanaan dandeettii yaada xiinxalaa kee ijaarratta.",
     "faq2_q": "Qabiyyee ani mirkaneessuuf galchu irratti maaltu ta'a?",
     "faq2_a": "Qabiyyee mirkaneessuuf galfame haala amansiisaa ta'een xiinxalamee daashboordii dhuunfaa keetiif yeroof kuufama. Iccitii kee eeguuf odeeffannoo eenyummaa kee ibsu xiinxala dura irraa kaasna.",
     "faq3_q": "Meeshaalee barnootaa eenyutu qopheessa?",
@@ -159,7 +159,9 @@
     "no_reports": "Gabaasni ulaagaa kee wajjin deemu hin argamne.",
     "loading_trends": "Dandiiwwan fe'amaa jiru...",
     "toast_submitted": "Gabaasni Galmeeffameera",
-    "toast_submitted_desc": "Hawaasni nageenyaan akka turu gargaaruu keetiif galatoomi."
+    "toast_submitted_desc": "Hawaasni nageenyaan akka turu gargaaruu keetiif galatoomi.",
+    "cat_government": "Gowwoomsaa Mootummaa",
+    "cat_general": "Waliigalaa"
   },
   "chat": {
     "new_chat": "Haasawa Haaraa",
@@ -203,7 +205,7 @@
     "link_about": "Waa'ee Keenya",
     "link_privacy": "Iccitii Eeguu",
     "link_terms": "Haala Tajaajilaa",
-    "copyright": "© {{year}} ScamShield AI. Tajaajila uummataa dijitaalaa yaad-rimee irratti hundaa'e.",
+    "copyright": "© {{year}} ScamShield. Tajaajila uummataa dijitaalaa yaad-rimee irratti hundaa'e.",
     "not_detector": "Meeshaa gowwoomsaa adda baasu dhugaa miti"
   }
 }
