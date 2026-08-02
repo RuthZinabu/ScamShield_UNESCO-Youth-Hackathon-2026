@@ -1,0 +1,322 @@
+{
+    "1": {
+        "title": "Akka Odeeffannoo Sobaa Beektu",
+        "summary": "Odeeffannoo sobaa fi akkamitti mirkaneeffachuu akka dandeessu baradhu.",
+        "content": "## Odeeffannoo Sobaa Maali?\n\nOdeeffannoo sobaa jechuun odeeffannoo sobaa ykn dogoggoraa kan dhugaa ta'ee fi qoratamee dhiyaateedha. Odeeffannoon kun karaa miidiyaa hawaasaa saffisaan babal'ata, yaada, filannoo, fi murtee fayyaa uummataa irratti dhiibbaa qabaachuu danda'a.\n\n## Mallattoo Ijoo Odeeffannoo Sobaa\n\n**1. Maqaa Dhiibbaa Qabu**\nMaqaan dhiibbaa cimaa uumuuf qophaa'e — gadda, sodaa, ykn gammachuu — yeroo baay'ee dogoggoraa ta'a. Meeshaaleen odeeffannoo dhugaa afaan qajeelaa fi sirrii fayyadamu.\n\n**2. Madda Beekamaa ykn Shakkisiisaa**\nMadda odeeffannoo sanaa website ogummaa qabu, garee qindeessaa, fi seenaa dhugaa qabaachuu isaa mirkaneessi. Fuula \"Nuti Maali\" ilaali.\n\n**3. Guyyaa Hin Qabne ykn Odeeffannoo Duraan**\nOdeeffannoo sobaa yeroo baay'ee guyyaa hin qabne, ykn seenaa duraanii akka haala ammaatti dhiyaatu fayyadamu.\n\n**4. Ragaa Deggersaa Hin Qabne**\nMaqaa dhugaa qaban, qorannoo walqabatee, ykn ogeeyyii maqaa qaban dubbisuu. Yaada dogoggoraa akka \"ogeeyyiin ni jedhan\" jedhuun ragaa hin qabne mallattoo shakkisiisaa dha.\n\n**5. Qubannoo fi Barreessaa Hamaa**\nMeeshaaleen ogummaa qaban seera qindeessaa qabu. Dogoggorri hedduun madda amanamaa ta'e irraa dhufuu mala.\n\n## Odeeffannoo Mirkaneessuuf Akka Ta'u\n\n1. **Madda ilaali** — Madda beekamaa fi amanamaa ta'ee dha?\n2. **Odeeffannoo barbaadi** — Madda amanamaa biroo odeeffannoo kana irratti barreessuu?\n3. **Maaloo website mirkaneessuuf fayyadami** — Snopes, AFP Fact Check, Full Fact, PolitiFact\n4. **Guyyaa ilaali** — Kun haala ammaatti dha?\n5. **Maqaa ol ka'aa** — Maqaan barreessaa fi odeeffannoo walqabatee maali?\n\n## Yaada\n\nOdeeffannoo kamiyyuu qooduu dura, of gaafadhu: \"Kun dhugaa dhaa?\" Odeeffannoo mirkanaa'aa hin ta'in qooduun — akkasumas dogoggoraa — miidhaa dhugaa uumu danda'a.",
+        "quiz": [
+            {
+                "question": "Hiriyyaan kee odeeffannoo sobaa ta'e WhatsApp irratti qoodaa. Maal gochuu qabda?",
+                "options": [
+                    "Yeroo dheeraaf qooduu — kun barbaachisaa ta'uu mala",
+                    "Madda ilaali fi madda amanamaa irratti barbaadi",
+                    "Hunda caalaa dhiisuu",
+                    "Deebii kenni akkamitti argate?"
+                ],
+                "correctIndex": 1,
+                "explanation": "Madda mirkaneessuu fi odeeffannoo sana madda amanamaa irratti barbaaduun gocha jalqabaa barbaachisaa ta'ee dha."
+            },
+            {
+                "question": "Kanneen keessaa maaliin madda mirkaneessuu amanamaa ta'e?",
+                "options": [
+                    "Facebook trending",
+                    "Reddit upvotes",
+                    "Snopes.com",
+                    "WhatsApp forwards"
+                ],
+                "correctIndex": 2,
+                "explanation": "Snopes.com website mirkaneessuu amanamaa ta'eedha, seera qindeessaa ifaa qabu. Miidiyaa hawaasaa irratti beekamtii argachuun dhugaa ta'uu hin agarsiisu."
+            },
+            {
+                "question": "Maqaan odeeffannoo sobaa ta'e maqaa dhiibbaa cimaa qabu garuu dhimmicha ni mormita. Kun maaliin waamama?",
+                "options": [
+                    "Odeeffannoo haaraa",
+                    "Clickbait",
+                    "Satiira",
+                    "Maqaa qindeessaa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Maqaa clickbait dhiibbaa cimaa uumuuf qophaa'eedha, yeroo baay'ee dhimmicha dhugaa ta'e hin agarsiisu."
+            }
+        ]
+    },
+    "2": {
+        "title": "E-Maailota Phishing Beekuu",
+        "summary": "Akka phishing hojjetu fi mallattoo shakkisiisaa e-maailota dhara agarsiisan hubadhu.",
+        "content": "## Phishing Maali?\n\nPhishing jechuun mala dhara ta'eedha, kan weerartoonni ergaa dhara ta'e erguudhaan madda amanamaa irraa dhufuu fakkaatu — baankii, waajjira mootummaa, ykn dhaabbilee beekamoo — odeeffannoo dhoksaa sassaabuu.\n\n## Tactics Phishing Waliigalaa\n\n**Saffisaan fi Sodaa**\n\"Kontaakii kee sa'a 24 keessatti dhaabuu!\" Saffisaan gochuu akka si dhoowwuuf qophaa'e.\n\n**Maqaa Ergaa Dhara**\nMaqaan mul'atu \"PayPal Support\" ta'uu mala garuu e-maaili dhugaa ta'e kan akka noreply@paypa1-secure.com ta'uu mala.\n\n**Greetiing Gabaabaa**\nTajaajiloonni dhugaa yeroo baay'ee maqaa keetiin si waamu. \"K customer\" ykn \"K user\" mallattoo shakkisiisaa dha.\n\n**Links Shakkisiisaa**\nLinks irratti cuqaasuu dura ilaali. URL mul'atu bakki deemu waliin wal hin simatu. Dogoggora xiqqaa ilaali (paypa1.com vs paypal.com).\n\n**Odeeffannoo Dhoksaa Gaafachuu**\nDhaabbileen dhugaa e-maaili irratti password, PIN, ykn lakkoofsa kaardii maallaqaa guutuu gaafachuu hin qaban.\n\n## E-Maaili Shakkisiisaa Argachuu Dandeessu Maal Gocha?\n\n1. Links kamiyyuu cuqaasuu hin qabdu ykn attachments buufachuu hin qabdu\n2. Odeeffannoo dhuunfaa waliin deebii hin kennu\n3. Dhaabbata waliin qunnamtii gochuun mirkaneessi, odeeffannoo qunnamtii website isaanii irraa argadhu\n4. E-maaili phishing ta'ee akka gabaasaatti dhiyeessi\n5. Yoo cuqaastee — password keetiin jijjiiri fi kontaakii kee hordofaa",
+        "quiz": [
+            {
+                "question": "E-maaili 'paypa1-billing@secure-update.net' irraa argatte, akka kontaakee mirkaneessuuf si gaafata. Maal gochuu qabda?",
+                "options": [
+                    "Link cuqaasiitii seeni",
+                    "Hiriyootaaf akka yaadaatti ergi",
+                    "Link kamiyyuu cuqaasuu hin qabdu; PayPal website dhugaa irratti mirkaneessi",
+                    "Deebii kenni akkamitti dhugaa ta'uu?"
+                ],
+                "correctIndex": 2,
+                "explanation": "Madda ergaa dogoggora qopheessuu fi domain dhugaa hin ta'uu agarsiisa. E-maaili links cuqaasuu irra, website dhugaa irratti deemuuf qajeelfama."
+            },
+            {
+                "question": "Baankii dhugaa e-maaili keessatti maal gochuu danda'a?",
+                "options": [
+                    "Password keetiin mirkaneessuuf si gaafata",
+                    "Link siif erguu PIN keetiin jijjiiruuf",
+                    "Maqaa guutuu keetiin si waamu, fi credentials guutuu hin gaafatu",
+                    "Lakkoofsa kontaakee si gaafata mirkaneessuuf"
+                ],
+                "correctIndex": 2,
+                "explanation": "Baankiin dhugaa password, PIN, ykn credentials guutuu e-maaili irratti hin gaafatu. Yeroo baay'ee maqaa keetiin si waamu, siif bilbilu ykn seenuu si qajeelchu."
+            },
+            {
+                "question": "Yoo link phishing cuqaastee fi password keetiin galchite, maal gochuu qabda?",
+                "options": [
+                    "Eega waan hamaa ta'e eeggadhu",
+                    "Password keetiin jijjiiri fi 2FA dandeessisi",
+                    "E-maaili haquu fi irra deebi'uu",
+                    "Website phishing waliin qunnamtii gochuu"
+                ],
+                "correctIndex": 1,
+                "explanation": "Yeroo murteessaa dha. Password keetiin jijjiiri, 2FA dandeessisi, fi kontaakee kee hordofaa."
+            }
+        ]
+    },
+    "3": {
+        "title": "Injifannoo Hawaasaa: Akka Sakkata'aa",
+        "summary": "Tactics psikoolojii kanneen hawaasaa irratti hojjatamu qoradhu.",
+        "content": "## Injifannoo Hawaasaa Maali?\n\nInjifannoo hawaasaa psikoolojii namaa fayyadamuun dogoggora ta'ee dha. Weerartoonni amanamummaa uumuun ykn yaada namaa fayyadamuun odeeffannoo ifa ta'e sassaabuu ykn gocha hamaa raawwachuu danda'u.\n\n## Seera Jaha Injifannoo Kan Sakkata'aa\n\n**1. Abbaa Seeraa**\nNamoota aangoo qaban (police, abbaa hojii, waajjira mootummaa) fakkaachuun si dhoowwuuf qophaa'e.\n\n**2. Saffisaan / Qabiyyee**\n\"Amma hojjadhu ykn carraa kana dhabu!\" sodaa uumuun yaada sirrii hin qabne.\n\n**3. Ragaa Hawaasaa**\n\"Namoonni naannoo keetiin hunda galmaa'anii jiru.\" Namoonni yeroo baay'ee waan namoonni biroo hojjatan hordofu.\n\n**4. Jaallachuu / Walitti dhufeenya**\nWaliin walitti dhufeenya jaalalaa uumuun gaaffii dhiyeessuu. Sakkata'aa jaalalaa yeroo baay'ee kun fayyadamu.\n\n**5. Deebii**\nWaan siif kennu (gift xiqqaa, odeeffannoo, gargaarsa) siif kennuuf yaada itti gaafatamummaa uumu.\n\n**6. Kadhannaa**\nWaliin waliigaltee xiqqaa argachuun (\"Maatii keetiif eeggachuu barbaaddaa?\") waliigaltee guddaa geessuu.\n\n## Of Eeggachuu\n\n- Qunnamtii hin barbaachifne irratti shakkisiisaa ta'i, yommuu jaalalaa fakkaatu\n- Eenyummaa mirkaneessi — bilbila irratti deebi'ii bilbila dhugaa irratti\n- Odeeffannoo \"beekuuf\" qofa qooduu\n- Yeroo fudhachuu — gaaffiin dhugaa yeroo hunda eeggachuu danda'a",
+        "quiz": [
+            {
+                "question": "Namni tokko waamicha gochuun IT department keetiin ta'uu fi credentials keetiin si gaafata. Maal gochuu qabda?",
+                "options": [
+                    "Odeeffannoo kenni — IT si gargaaruuf seera qaba",
+                    "Hanga bilbila IT department keetiin deebi'uu",
+                    "E-mail erguu",
+                    "ID hojjetaa isaanii gaafadhu"
+                ],
+                "correctIndex": 1,
+                "explanation": "IT department dhugaa password keetiin hin barbaachisu. Hanga bilbila deebi'uu fi bilbila dhugaa irratti mirkaneessi."
+            },
+            {
+                "question": "'Amma hojjadhu — bakka lama qofa hafe!' jechuun seera psikoolojii maaliin fayyadama?",
+                "options": [
+                    "Abbaa Seeraa",
+                    "Deebii",
+                    "Qabiyyee fi saffisaa",
+                    "Ragaa hawaasaa"
+                ],
+                "correctIndex": 2,
+                "explanation": "Qabiyyee fi saffisaa dhugaa ta'uu hin dandeenyee fi yaada sirrii hin qabne uumu."
+            },
+            {
+                "question": "Namni haaraa online si waliin walitti dhufeenya jaalalaa uumuun gargaarsa xiqqaa gaafata. Kun maaliin waamama?",
+                "options": [
+                    "Jaalala dhugaa online uumu",
+                    "Sakkata'aa jaalalaa fi walitti dhufeenya uumu",
+                    "Manipulation hawaasaa",
+                    "Dogoggora abbaa seeraa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Walitti dhufeenya saffisaa uumuun yaada itti gaafatamummaa uumu."
+            }
+        ]
+    },
+    "4": {
+        "title": "Deepfakes Beekuu",
+        "summary": "Deepfakes maali, akkamitti uumamu, fi akkamitti beekamuu baradhu.",
+        "content": "## Deepfakes Maali?\n\nDeepfakes jechuun media synthetic — suuraalee, viidiyoo, ykn sagalee — kan artifishaal intellijensii fayyadamuun namni dhugaa ta'e waan hin goone fakkaatu uumu.\n\n## Maaliif Deepfakes Shakkisiisaa Ta'uu\n\n- Odeeffannoo sobaa babal'isuuf ni fayyadamu\n- Maqaa dhugaa miidhuu danda'a\n- Fraud keessatti ni fayyadamu (fakkeenyaaf, fraud CEO, viidiyoo ransome dhara)\n- Amanamummaa media dhugaa ni dhorku\n\n## Deepfakes Akka Beekamu\n\n**Mallattoo Ijoo:**\n- Ija dhugaa hin qabne ykn ija hin mul'anne\n- Qubannoo fuula kan dhugaa hin mul'anne\n- Ija fi bakki wal hin simatu\n- Ilkaan ykn hair kan dhugaa hin mul'anne\n- Qubannoo furdina kan dhugaa hin mul'anne\n\n**Mallattoo Sagalee:**\n- Sagalee robotii ykn monotone\n- Qubannoo afaan kan sagalee waliin wal hin simatu\n- Dhiibbaa ykn haala dubbii kan dhugaa hin mul'anne\n\n**Mallattoo Haala:**\n- Viidiyoon kun madda tokko qofaa irratti mul'ata?\n- Haala kun namni irratti beekamuuf hin danda'amu?\n- Kun dhugaa ta'uu ykn viral ta'uu qophaa'e?",
+        "quiz": [
+            {
+                "question": "Viidiyoo siyaasaa tokko dhugaa ta'e mul'ata. Maal jalqabaa ilaalu qabda?",
+                "options": [
+                    "Yeroo dheeraaf qooduu",
+                    "Madda amanamaa irratti odeeffannoo wal fakkaatu ilaali",
+                    "Dhugaa ta'uu akka viidiyoo ta'ee fudhachuu",
+                    "Siyaasaa isaanii dhaabbataatti gabaasa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Madda amanamaa fi dhugaa ta'ee odeeffannoo wal fakkaatu ilaaluun gocha jalqabaa barbaachisaa ta'ee dha."
+            },
+            {
+                "question": "Kanneen keessaa maaliin suuraan AI uumamuu agarsiisa?",
+                "options": [
+                    "Bifa, halluu dhugaa",
+                    "Harka lakkoofsa dogoggoraa ykn joonjii dogoggoraa",
+                    "Suuraalee ol'aanaa",
+                    "Bakki beekamaa"
+                ],
+                "correctIndex": 1,
+                "explanation": "AI suuraalee uumuu irratti rakkoo qaba, keessumaa harka."
+            },
+            {
+                "question": "Kanneen keessaa maaliin suuraan AI uumamuu agarsiisa?",
+                "options": [
+                    "Google Translate",
+                    "Hive Moderation ykn 'AI or Not'",
+                    "TikTok",
+                    "Google Maps"
+                ],
+                "correctIndex": 1,
+                "explanation": "Meeshaaleen akka Hive Moderation fi 'AI or Not' suuraalee AI uumamuu qorachuuf qophaa'e."
+            }
+        ]
+    },
+    "5": {
+        "title": "Eeguu Dhugaa Keeti",
+        "summary": "Odeeffannoo si irratti sassaabamu fi akkamitti dhugaa keeti eeguu akka dandeessu hubadhu.",
+        "content": "## Maaliif Dhugaa Eeguu Barbaachisaa Ta'uu\n\nYeroo hunda web irratti daawwachuu, app fayyadamu, ykn bituu, odeeffannoo sassaabamu. Odeeffannoo kun beeksisuu, dhaabbilee sadaffaaaf gurguruu, ykn dhimmoota odeeffannoo sassaabamu keessatti mul'achuu danda'a.\n\n## Odeeffannoo Maaliin Sassaabamu\n\n- Seenaa daawwattootaa fi barbaachisummaa\n- Odeeffannoo iddoo (yeroo app hin fayyadamne)\n- Odeeffannoo meeshaa (model, OS, IP address)\n- Tarree qunnamtii, suuraalee, fayyadamaa fi kaameraa\n- Seenaa bituu fi haala maallaqaa\n\n## Tarkaanfii Eeguu Dhugaa\n\n**Password:**\n- Account hundaaf password adda ta'e fayyadami\n- Meeshaa password (Bitwarden, 1Password) fayyadami\n- 2FA (two-factor authentication) iddoo hunda dandeessisi\n\n**Daawwattoota:**\n- Browser dhugaa (Firefox, Brave) fayyadami\n- uBlock Origin buufadhu\n- Haala dhugaa/kan dhugaa ta'eef daawwattoota sirrii fayyadami\n\n**App:**\n- Hayyama app yeroo hunda ilaali\n- App hin fayyadamne haqi\n- App hayyama ifaa fi ifaa qabu filadhu",
+        "quiz": [
+            {
+                "question": "App ifaa bilisummaa buufatte, qunnamtii fi fayyadamaa si gaafata. Maal gochuu qabda?",
+                "options": [
+                    "Hayyama hunda kenni — app'n kun hojjachuuf isaan barbaachisa",
+                    "Hayyama hin kennu, app biraa barbaadi",
+                    "Fudhachuuf, garuu torbaan dhufu app'n haqi",
+                    "Fudhachuuf — app'n bilisummaa odeeffannoo barbaachisa"
+                ],
+                "correctIndex": 1,
+                "explanation": "App ifaa bilisummaa qunnamtii ykn fayyadamaa si gaafachuu hin qabu. Hayyama hedduu gaafachuun app odeeffannoo sassaabuu agarsiisa."
+            },
+            {
+                "question": "Tarkaanfii password sirrii maali?",
+                "options": [
+                    "Account hundaaf password jabaa tokko fayyadami",
+                    "Account hundaaf password adda ta'e, meeshaa password fayyadami",
+                    "Password barreessuu fi desk keeti irratti",
+                    "Maqaa fi waggaa dhalootaa fayyadami"
+                ],
+                "correctIndex": 1,
+                "explanation": "Password adda ta'e account hundaaf balaa tokko irraa of eeguuf."
+            },
+            {
+                "question": "Two-factor authentication (2FA) jechuun:",
+                "options": [
+                    "Password lama fayyadamu",
+                    "Seenuu fi password fi mirkaneessaa lammaffaa barbaachisa",
+                    "Email lama qabaachuu",
+                    "Qunnamtii amanamaa waliin qooduu"
+                ],
+                "correctIndex": 1,
+                "explanation": "2FA mirkaneessaa lammaffaa dabalata, akkasumas password keetiin dhoksaawwan hin argamne."
+            }
+        ]
+    },
+    "6": {
+        "title": "Odeeffannoo AI Uumamuu Beekuu",
+        "summary": "Odeeffannoo AI uumamuu akkamitti beekuu fi maaliif dhugaa odeeffannoo irratti murteessaa ta'uu baradhu.",
+        "content": "## Odeeffannoo AI Uumamuu\n\nArtifishaal intellijensii yeroo ammaa maqaa barreessuu, suuraalee uumuu, viidiyoo uumu, fi sagalee takka fakkaatuu danda'a. Teknoolojii kun faayidaa dhugaa hedduu qaba, garuu odeeffannoo irratti rakkoo haaraa uuma.\n\n## Maaliif Dhugaa Ta'uu\n\n- Odeeffannoo sobaa AI uumamuu babal'achuu danda'a\n- Odeeffannoo AI dhugaa ta'uu fakkaatuu, garuu namaaf itti gaafatamummaa hin qabu\n- Suuraalee AI \"ragaa\" sobaa uumu\n- Maaliif dhugaa ta'uu beekuu rakkisaa ta'a\n\n## Odeeffannoo AI Uumamuu Akka Beekamu\n\n- Barreessaa sirrii, dhugaa hin qabne, fi dogoggora hin qabne\n- Yaada dogoggoraa fi ragaa hin qabne\n- Dhimmoota wal mormu\n- Barreessaa ifaa, maqaa, ykn odeeffannoo qunnamtii hin qabne\n- Qubannoo walitti fufaa\n\n## Suuraalee AI Uumamuu Akka Beekamu\n\n- Harka lakkoofsa dogoggoraa ykn joonjii dogoggoraa\n- Bakki dhugaa hin mul'anne\n- Barreessaa suuraalee dogoggoraa ykn hin dubbifamne\n- Wajjin walitti dhufeenya sirrii ta'uu\n- Ija fi halluu walitti dhufeenya hin qabne",
+        "quiz": [
+            {
+                "question": "Odeeffannoo dhugaa ta'e kan dhugaa ta'ee hin qabne, ragaa hin qabne, fi barreessaa sirrii ta'e. Kun maaliin agarsiisa?",
+                "options": [
+                    "Meeshaa ogummaa dhugaa irraa",
+                    "AI uumamuu fi mirkaneeffachuu barbaachisa",
+                    "Dhugaa ta'uu",
+                    "Waajjira mootummaa irraa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Maqaa hin qabne, ragaa hin qabne, fi barreessaa sirrii ta'e odeeffannoo AI uumamuu agarsiisa."
+            },
+            {
+                "question": "Kanneen keessaa maaliin odeeffannoo AI barreessuu mirkaneessuuf gargaara?",
+                "options": [
+                    "Google Translate",
+                    "GPTZero",
+                    "TikTok'n mirkaneessaa",
+                    "Grammarly"
+                ],
+                "correctIndex": 1,
+                "explanation": "GPTZero meeshaa odeeffannoo barreessuu AI uumamuu mirkaneessuuf qophaa'eedha."
+            },
+            {
+                "question": "Odeeffannoo AI uumamuu agarsiisa maaliif gochuu qabna?",
+                "options": [
+                    "Odeeffannoo dijitaalaa hunda shakkisiisuu",
+                    "Odeeffannoo hunda mirkaneessuu, keessumaa ragaa hin qabne",
+                    "Odeeffannoo mootummaa irraa qofa amanuu",
+                    "Interneetii fayyadamuu dhaabu"
+                ],
+                "correctIndex": 1,
+                "explanation": "Deebii sirrii ta'uu fi mirkaneessuu gochuu barbaachisaa dha — shakkisiisaa hundaaf."
+            }
+        ]
+    },
+    "7": {
+        "title": "Bittoota Online Eeguu",
+        "summary": "Mallattoo shakkisiisaa fi akkamitti bittoota online eeguu akka dandeessu beekuu.",
+        "content": "## Balaa Bittoota Online\n\nFraud bittoota online maallaqa miliyoona hedduu gurgurta. Store dhara, wantoota dogoggoraa, fi fraud maallaqaa saffisaan babal'achaa jiru.\n\n## Mallattoo Store Online Dharaa\n\n**Gatii Dhugaa Ta'uu Hin Dandeenye**\nWantoota gatii ol'aanaa ta'ee fi gatii 80-90% gadi ta'ee gurguramu yeroo baay'ee dhara ykn hin jirre.\n\n**Walitti dhufeenya hin qabne**\nHTTPS (icon padlock) ilaali. Yeroo hunda gatii maallaqaa HTTP irratti hin galchuu.\n\n**Maaloo Gatii Beekamaa**\nStore dhugaa kaardii maallaqaa fi tajaajiloota beekamaa fudhatu. Gaafachuu gatii wire, gift cards, ykn cryptocurrency mallattoo shakkisiisaa dha.\n\n**Odeeffannoo Qunnamtii Hin Qabne**\nDhaabbanni dhugaa teessoo, lakkoofsa bilbilaa, fi tajaajila maamilaa deebii kennu qaba.\n\n**Design Hamaa fi Dogoggora Barreessaa**\nWebsite dhara yeroo baay'ee saffisaan ijaarama fi dogoggora ifaa qaba.",
+        "quiz": [
+            {
+                "question": "Store online tokko laptop maqaa gurgurtaa 80% gadi ta'ee gurgurta. Maal gochuu qabda?",
+                "options": [
+                    "Yeroo dheeraaf bituu",
+                    "Store mirkaneessi, yaada ilaali, fi guyyaa website ilaali",
+                    "Hiriyootaaf qooduu — kun gatii gaarii dha",
+                    "Bitadhu fi yoo dhara ta'e deebi'aa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Gatii gatii ol'aanaa ta'ee gatii gurgurta mallattoo shakkisiisaa dha."
+            },
+            {
+                "question": "Maaloo gatii maallaqaa online bituuf eegumsa gaarii ta'e?",
+                "options": [
+                    "Wire transfer",
+                    "Cryptocurrency",
+                    "Kaardii maallaqaa",
+                    "Gift cards"
+                ],
+                "correctIndex": 2,
+                "explanation": "Kaardii maallaqaa eegumsa maamilaa gaarii ta'e, akkasumas gatii dogoggoraa mormuu dandeessisa."
+            },
+            {
+                "question": "Gurgurtaan si gaafata bittoota gurgurtaaf siif erguu. Kun maali?",
+                "options": [
+                    "Normal fi salphaa",
+                    "Tactic fraud ta'ee si dhoowwuuf",
+                    "Gurgurtoota amanamaa qofa",
+                    "Gatii gurgurtaaf salphaa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Transactions off-platform gochuun balaa maamilaa hunda dhorku."
+            }
+        ]
+    },
+    "8": {
+        "title": "Sakkata'aa Online: Kanneen fi Tactics",
+        "summary": "Sakkata'aa online fi tactics kanneen sakkata'aa irratti hojjatamu bal'inaan ilaalu.",
+        "content": "## Sakkata'aa Online\n\nSakkata'aa online hedduu, yeroo hunda jijjiiramaa, fi saffisaan dhugaa ta'uu agarsiisa. Kanneen keessaa beekuu fi of eeggachuu barbaachisaa ta'uu.\n\n## Kanneen Sakkata'aa Waliigalaa\n\n**Sakkata'aa Hojii**\nSakkata'aa hojii dhara — yeroo baay'ee leenjii, meeshaa, ykn qorannoo dura kaffaluu si gaafata. Mallattoo: ibsa hojii dogoggoraa, gatii ol'aanaa, fi hojii hatattamaa gaafachuu.\n\n**Sakkata'aa Maallaqaa**\nWaadaa gatii ol'aanaa ta'ee, yeroo baay'ee cryptocurrency ykn forex trading waliin. Mallattoo: namoota biroo waamicha gochuu (Ponzi), beekamtii dhugaa hin qabne, fi gatii walitti fufaa ta'uu.\n\n**Sakkata'aa Jaalalaa**\nWalitti dhufeenya online uumuun maallaqa gargaarsa, imala, ykn billii fayyaa gaafachuu. Mallattoo: yeroo hunda walitti dhufeenya hin qabne, jaalalaa dhugaa ta'uu, fi gift cards ykn wire transfers gaafachuu.\n\n**Sakkata'aa Loterii/Badhaasa**\n\"Ati moote!\" — garuu badhaasa argachuuf kaffaltii gochuu qabda. Mallattoo: loterii keessatti hin galmoofne, odeeffannoo dhuunfaa ykn kaffaltii dura gaafachuu.",
+        "quiz": [
+            {
+                "question": "Odeeffannoo hojii tokko argatte, $500/guutuu hojjachuuf, muuxannoo hin barbaachifne. Maal gochuu qabda?",
+                "options": [
+                    "Yeroo dheeraaf qooduu",
+                    "Shakkisiisaa ta'ee dhaabbata mirkaneessi",
+                    "Hiriyootaaf qooduu",
+                    "Fudhachuuf — namni hundi hojii gaarii argachuu qaba"
+                ],
+                "correctIndex": 1,
+                "explanation": "Gatii ol'aanaa ta'ee fi hojjachuu salphaa ta'uu mallattoo shakkisiisaa dha."
+            },
+            {
+                "question": "Namni online torbaan lama qofa si waliin dubbate, jaalalaa dhugaa ta'ee fi maallaqa 'balaa fayyaa' gaafata. Kun maali?",
+                "options": [
+                    "Balaa dhugaa ta'ee si gargaaru",
+                    "Tactic jaalalaa dhugaa ta'ee",
+                    "Hedduu garuu dhugaa ta'uu",
+                    "Dhiyeessuu fi harka jalqabaa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Yaada saffisaa fi maallaqa gaafachuu mallattoo jaalalaa dha."
+            },
+            {
+                "question": "'Ati loterii keenya moote! $200 kaffaltii gochuu qabda $50,000 badhaasa argachuuf.' Kun maali?",
+                "options": [
+                    "Odeeffannoo dhugaa ta'ee",
+                    "Sakkata'aa badhaasa/loterii — maallaqa argachuuf kaffaltii gochuu qabda",
+                    "Kallattiin yaada gaarii",
+                    "Gabaasa maallaqaa mootummaa"
+                ],
+                "correctIndex": 1,
+                "explanation": "Badhaasa argachuuf kaffaltii gochuu qabachuun yeroo hunda sakkata'aa dha. Loterii keessatti hin galmoofne."
+            }
+        ]
+    }
+}

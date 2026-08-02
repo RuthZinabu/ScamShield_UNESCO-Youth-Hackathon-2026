@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRoute, Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import ReactMarkdown from "react-markdown";
@@ -7,22 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useGetLesson, useCompleteLesson, getListLessonsQueryKey, getGetDashboardStatsQueryKey } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Clock, CheckCircle2, AlertCircle, Loader2, Languages } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { API_BASE_URL } from "@/lib/api-config";
-import type { LessonDetail, QuizQuestion } from "@workspace/api-client-react/src/generated/api.schemas";
-
-// Shape of the translated payload returned by POST /api/lessons/:id/translate
-interface TranslatedLesson {
-  id: number;
-  title: string;
-  summary: string;
-  content: string;
-  category: string;
-  durationMinutes: number;
-  difficulty: string;
-  quiz: QuizQuestion[];
-}
+import { getLocalizedLesson } from "@/locales/lessons";
 
 export default function LessonDetail() {
   const [, params] = useRoute("/learn/:id");
@@ -35,12 +22,6 @@ export default function LessonDetail() {
   const { data: lesson, isLoading, error } = useGetLesson(id, { query: { enabled: !!id } });
   const completeLesson = useCompleteLesson();
 
-  // Translation state
-  const [translatedLesson, setTranslatedLesson] = useState<TranslatedLesson | null>(null);
-  const [isTranslating, setIsTranslating] = useState(false);
-  // Track which (lessonId, language) pair is currently translated to avoid redundant calls
-  const translatedFor = useRef<{ id: number; lang: string } | null>(null);
-
   // Quiz state
   const [quizStarted, setQuizStarted] = useState(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -49,55 +30,13 @@ export default function LessonDetail() {
   const [score, setScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
 
-  // Trigger translation whenever the lesson or the active language changes
-  useEffect(() => {
-    const lang = i18n.language;
+  // Look up localised content from static JSON files — instant, no API call needed
+  const localized = useMemo(() => {
+    if (!id) return null;
+    return getLocalizedLesson(id, i18n.language);
+  }, [id, i18n.language]);
 
-    if (!lesson || !id) return;
-
-    if (lang === "en") {
-      // Reset to original English content
-      setTranslatedLesson(null);
-      translatedFor.current = null;
-      return;
-    }
-
-    // Already translated for this lesson + language pair
-    if (
-      translatedFor.current?.id === id &&
-      translatedFor.current?.lang === lang
-    ) {
-      return;
-    }
-
-    let cancelled = false;
-    setIsTranslating(true);
-
-    fetch(`${API_BASE_URL}/api/lessons/${id}/translate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ language: lang }),
-    })
-      .then((r) => r.json())
-      .then((data: TranslatedLesson) => {
-        if (cancelled) return;
-        setTranslatedLesson(data);
-        translatedFor.current = { id, lang };
-      })
-      .catch(() => {
-        // Translation failed — silently fall back to English
-        if (!cancelled) setTranslatedLesson(null);
-      })
-      .finally(() => {
-        if (!cancelled) setIsTranslating(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [lesson, id, i18n.language]);
-
-  // Reset quiz and translation state when navigating to a different lesson
+  // Reset quiz state when navigating to a different lesson
   useEffect(() => {
     setQuizStarted(false);
     setCurrentQuestionIndex(0);
@@ -105,8 +44,6 @@ export default function LessonDetail() {
     setIsAnswered(false);
     setScore(0);
     setQuizFinished(false);
-    setTranslatedLesson(null);
-    translatedFor.current = null;
   }, [id]);
 
   if (isLoading) {
@@ -127,10 +64,20 @@ export default function LessonDetail() {
     );
   }
 
-  // The lesson data to render — translated if available, otherwise original English
-  const display: LessonDetail & { quiz: QuizQuestion[] } = translatedLesson
-    ? { ...lesson, ...translatedLesson }
-    : lesson;
+  // Overlay localised text on top of the API lesson data.
+  // correctIndex always comes from the original lesson (untranslated) for correct answer logic.
+  const display = {
+    ...lesson,
+    title: localized?.title ?? lesson.title,
+    summary: localized?.summary ?? lesson.summary,
+    content: localized?.content ?? lesson.content,
+    quiz: localized?.quiz
+      ? localized.quiz.map((q, i) => ({
+          ...q,
+          correctIndex: lesson.quiz[i]?.correctIndex ?? q.correctIndex,
+        }))
+      : lesson.quiz,
+  };
 
   const handleStartQuiz = () => setQuizStarted(true);
 
@@ -178,14 +125,6 @@ export default function LessonDetail() {
         <ArrowLeft className="w-4 h-4 mr-2" /> {t("lesson.back")}
       </Link>
 
-      {/* Translation progress indicator */}
-      {isTranslating && (
-        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3">
-          <Languages className="w-4 h-4 text-primary animate-pulse shrink-0" />
-          <span>{t("lesson.translating", "Translating lesson…")}</span>
-        </div>
-      )}
-
       {!quizStarted ? (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <div className="mb-8">
@@ -218,7 +157,7 @@ export default function LessonDetail() {
               <p className="text-muted-foreground mb-8 max-w-md mx-auto">
                 {t("lesson.quiz_desc", { count: lesson.quiz.length })}
               </p>
-              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-lg" onClick={handleStartQuiz} disabled={isTranslating}>
+              <Button size="lg" className="rounded-full px-10 h-14 text-lg shadow-lg" onClick={handleStartQuiz}>
                 {t("lesson.quiz_start")}
               </Button>
             </CardContent>
@@ -244,7 +183,7 @@ export default function LessonDetail() {
               <div className="space-y-3 mb-8">
                 {display.quiz[currentQuestionIndex].options.map((opt, i) => {
                   const isSelected = selectedOption === i;
-                  // correctIndex always comes from original lesson data (untranslated)
+                  // correctIndex always from original English lesson to preserve answer accuracy
                   const isCorrect = i === lesson.quiz[currentQuestionIndex].correctIndex;
 
                   let optStyle = "border-border hover:border-primary/50 hover:bg-slate-50 dark:hover:bg-slate-900";

@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { useListLessons, useGetLessonCategories } from "@workspace/api-client-react";
 import { Search, BookOpen, Clock, CheckCircle2, ChevronRight, Filter } from "lucide-react";
 import type { ListLessonsCategory } from "@workspace/api-client-react/src/generated/api.schemas";
+import { getAllLocalizedLessons } from "@/locales/lessons";
 
 export default function Learn() {
   const [selectedCategory, setSelectedCategory] = useState<ListLessonsCategory | "all">("all");
