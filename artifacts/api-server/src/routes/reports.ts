@@ -72,23 +72,31 @@ router.post("/reports", async (req, res): Promise<void> => {
 });
 
 router.get("/reports/trending", async (_req, res): Promise<void> => {
-  const all = await db.select().from(reportsTable);
+  const [allByUpvotes, recentReports] = await Promise.all([
+    db.select().from(reportsTable).orderBy(desc(reportsTable.upvoteCount)),
+    db.select().from(reportsTable).orderBy(desc(reportsTable.createdAt)).limit(5),
+  ]);
 
+  // Count per category; pick the highest-upvoted report title as the representative title
   const countMap: Record<string, number> = {};
-  for (const r of all) {
+  const topTitleByCategory: Record<string, string> = {};
+
+  for (const r of allByUpvotes) {
     countMap[r.category] = (countMap[r.category] ?? 0) + 1;
+    // allByUpvotes is sorted desc by upvoteCount, so first hit per category is the top one
+    if (!topTitleByCategory[r.category]) {
+      topTitleByCategory[r.category] = r.title;
+    }
   }
 
   const topCategories = Object.entries(countMap)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([category, count]) => ({ category, count }));
-
-  const recentReports = await db
-    .select()
-    .from(reportsTable)
-    .orderBy(desc(reportsTable.createdAt))
-    .limit(5);
+    .slice(0, 4)
+    .map(([category, count]) => ({
+      category,
+      count,
+      title: topTitleByCategory[category] ?? category,
+    }));
 
   res.json({ topCategories, recentReports });
 });

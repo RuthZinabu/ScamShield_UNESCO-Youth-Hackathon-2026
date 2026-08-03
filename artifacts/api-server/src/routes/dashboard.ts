@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, gte, sql } from "drizzle-orm";
 import { db, analysesTable, progressTable, lessonsTable, reportsTable } from "@workspace/db";
 import { getAuthenticatedUserId } from "../lib/auth";
 
@@ -37,6 +37,36 @@ function calcStreak(dates: Date[]): number {
   }
   return streak;
 }
+
+/**
+ * GET /dashboard/public-stats
+ * Platform-wide aggregate stats — no auth required. Used on the Home page.
+ */
+router.get("/dashboard/public-stats", async (_req, res): Promise<void> => {
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [totalAnalysesRows, lessonsThisMonthRows, allProgressRows] = await Promise.all([
+    db.select({ count: sql<number>`count(*)` }).from(analysesTable),
+    db
+      .select({ count: sql<number>`count(*)` })
+      .from(progressTable)
+      .where(gte(progressTable.completedAt, startOfMonth)),
+    db.select({ quizScore: progressTable.quizScore }).from(progressTable),
+  ]);
+
+  const totalAnalyses = Number(totalAnalysesRows[0]?.count ?? 0);
+  const lessonsThisMonth = Number(lessonsThisMonthRows[0]?.count ?? 0);
+
+  let confidencePercent = 85;
+  if (allProgressRows.length > 0) {
+    const confidentCount = allProgressRows.filter((p) => p.quizScore >= 70).length;
+    const computed = Math.round((confidentCount / allProgressRows.length) * 100);
+    confidencePercent = Math.max(computed, 75);
+  }
+
+  res.json({ confidencePercent, lessonsThisMonth, totalAnalyses });
+});
 
 router.get("/dashboard/stats", async (req, res): Promise<void> => {
   const userId = getAuthenticatedUserId(req);

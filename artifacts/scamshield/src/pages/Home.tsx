@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowRight, Shield, Brain, CheckCircle2, Search, BookOpen, Users, AlertTriangle, Quote, Loader2 } from "lucide-react";
 import heroAbstract from "@assets/generated_images/hero-abstract.png";
+import { useGetTrendingReports } from "@workspace/api-client-react";
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +17,35 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { getAuthToken, getIsAuthenticated } from "@/lib/auth";
 import { API_BASE_URL } from "@/lib/api-config";
+
+interface PublicStats {
+  confidencePercent: number;
+  lessonsThisMonth: number;
+  totalAnalyses: number;
+}
+
+async function fetchPublicStats(): Promise<PublicStats> {
+  const response = await fetch(`${API_BASE_URL}/api/dashboard/public-stats`);
+  if (!response.ok) throw new Error("Failed to load stats");
+  return response.json() as Promise<PublicStats>;
+}
+
+function formatStat(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M+`;
+  if (n >= 1_000) return `${Math.floor(n / 1_000)}k+`;
+  return n.toString();
+}
+
+const SEVERITY_MAP: Record<string, "high" | "medium" | "low"> = {
+  phishing: "high",
+  investment: "high",
+  romance: "high",
+  job: "medium",
+  shopping: "medium",
+  news: "medium",
+  scholarship: "low",
+  other: "low",
+};
 
 interface TestimonialItem {
   id: number;
@@ -68,6 +98,18 @@ export default function Home() {
     queryKey: testimonialsQueryKey,
     queryFn: fetchTestimonials,
   });
+
+  const { data: publicStats, isError: statsError } = useQuery({
+    queryKey: ["public-stats"],
+    queryFn: fetchPublicStats,
+    staleTime: 5 * 60 * 1000, // 5 min
+    retry: 1,
+  });
+
+  // Fallback values shown when the DB isn't connected yet
+  const displayStats = publicStats ?? (statsError ? { confidencePercent: 85, lessonsThisMonth: 0, totalAnalyses: 0 } : null);
+
+  const { data: trendingData } = useGetTrendingReports();
 
   const submitMutation = useMutation({
     mutationFn: createTestimonial,
@@ -170,15 +212,21 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl md:text-5xl font-bold font-display text-primary mb-2">85%</div>
+              <div className="text-4xl md:text-5xl font-bold font-display text-primary mb-2">
+                {displayStats ? `${displayStats.confidencePercent}%` : "…"}
+              </div>
               <p className="text-muted-foreground font-medium">{t("home.stat1_label")}</p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-bold font-display text-secondary mb-2">10k+</div>
+              <div className="text-4xl md:text-5xl font-bold font-display text-secondary mb-2">
+                {displayStats ? formatStat(displayStats.lessonsThisMonth) : "…"}
+              </div>
               <p className="text-muted-foreground font-medium">{t("home.stat2_label")}</p>
             </div>
             <div>
-              <div className="text-4xl md:text-5xl font-bold font-display text-primary mb-2">50k</div>
+              <div className="text-4xl md:text-5xl font-bold font-display text-primary mb-2">
+                {displayStats ? formatStat(displayStats.totalAnalyses) : "…"}
+              </div>
               <p className="text-muted-foreground font-medium">{t("home.stat3_label")}</p>
             </div>
           </div>
@@ -233,26 +281,50 @@ export default function Home() {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { type: "Phishing", title: "Urgent Bank Alerts", count: 342, severity: "high" },
-              { type: "Investment", title: "Crypto 'Guaranteed' Returns", count: 215, severity: "high" },
-              { type: "Job", title: "Remote Data Entry Hiring", count: 189, severity: "medium" },
-              { type: "Romance", title: "Overseas Emergency Funds", count: 156, severity: "high" },
-            ].map((scam, i) => (
-              <div key={i} className="bg-background rounded-2xl p-6 border border-border/50 shadow-sm hover:border-primary/30 transition-colors">
-                <div className="flex items-center gap-2 mb-4">
-                  <AlertTriangle className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{scam.type}</span>
-                </div>
-                <h4 className="font-bold mb-4 line-clamp-2">{scam.title}</h4>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{scam.count} {t("home.scam_reports")}</span>
-                  <span className="px-2 py-1 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 text-xs font-medium">
-                    {scam.severity}
-                  </span>
-                </div>
-              </div>
-            ))}
+            {trendingData?.topCategories && trendingData.topCategories.length > 0
+              ? trendingData.topCategories.map((item, i) => {
+                  const severity = SEVERITY_MAP[item.category] ?? "medium";
+                  const severityColors =
+                    severity === "high"
+                      ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                      : severity === "medium"
+                        ? "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                        : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+                  return (
+                    <div key={i} className="bg-background rounded-2xl p-6 border border-border/50 shadow-sm hover:border-primary/30 transition-colors">
+                      <div className="flex items-center gap-2 mb-4">
+                        <AlertTriangle className="w-4 h-4 text-orange-500" />
+                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                          {item.category}
+                        </span>
+                      </div>
+                      <h4 className="font-bold mb-4 line-clamp-2">{item.title}</h4>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {item.count} {t("home.scam_reports")}
+                        </span>
+                        <span className={`px-2 py-1 rounded-md text-xs font-medium ${severityColors}`}>
+                          {severity}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              : /* Skeleton placeholders while loading or empty */
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="bg-background rounded-2xl p-6 border border-border/50 shadow-sm animate-pulse">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="w-4 h-4 rounded bg-muted" />
+                      <div className="h-3 w-20 rounded bg-muted" />
+                    </div>
+                    <div className="h-5 w-full rounded bg-muted mb-2" />
+                    <div className="h-4 w-3/4 rounded bg-muted mb-4" />
+                    <div className="flex justify-between">
+                      <div className="h-3 w-16 rounded bg-muted" />
+                      <div className="h-5 w-12 rounded bg-muted" />
+                    </div>
+                  </div>
+                ))}
           </div>
         </div>
       </section>
