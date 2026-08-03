@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "ScamShield AI"
+title = "ScamShield"
 version = "1.0.0"
 id = "artifacts/scamshield"
 router = "path"
