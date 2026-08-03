@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, Shield, Brain, CheckCircle2, Search, BookOpen, Users, AlertTriangle, Quote } from "lucide-react";
+import { ArrowRight, Shield, Brain, CheckCircle2, Search, BookOpen, Users, AlertTriangle, Quote, Loader2 } from "lucide-react";
 import heroAbstract from "@assets/generated_images/hero-abstract.png";
 import {
   Accordion,
@@ -13,35 +14,76 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
-import { getIsAuthenticated } from "@/lib/auth";
+import { getAuthToken, getIsAuthenticated } from "@/lib/auth";
+import { API_BASE_URL } from "@/lib/api-config";
 
-const initialTestimonials = [
-  {
-    name: "Selam Bekele",
-    role: "University Student",
-    quote: "ScamShield helped me recognize a fake scholarship message before I clicked anything.",
-  },
-  {
-    name: "Mihret Tesfaye",
-    role: "Small Business Owner",
-    quote: "The lessons made it easy to explain warning signs to my customers and family.",
-  },
-  {
-    name: "Abebe Girma",
-    role: "Community Volunteer",
-    quote: "I now pause and verify before trusting urgent messages that look official.",
-  },
-];
+interface TestimonialItem {
+  id: number;
+  name: string;
+  role: string;
+  quote: string;
+  createdAt: string;
+}
+
+const testimonialsQueryKey = ["testimonials"];
+
+async function fetchTestimonials(): Promise<TestimonialItem[]> {
+  const response = await fetch(`${API_BASE_URL}/api/testimonials`);
+  if (!response.ok) {
+    throw new Error("Failed to load testimonials");
+  }
+  return response.json();
+}
+
+async function createTestimonial(payload: { name: string; role: string; quote: string }): Promise<TestimonialItem> {
+  const response = await fetch(`${API_BASE_URL}/api/testimonials`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(getAuthToken() ? { Authorization: `Bearer ${getAuthToken()}` } : {}),
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => ({}));
+    throw new Error((errorBody as { message?: string; error?: string }).message || (errorBody as { message?: string; error?: string }).error || "Unable to submit testimonial");
+  }
+
+  return response.json();
+}
 
 export default function Home() {
   const { t } = useTranslation();
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
   const isAuthenticated = getIsAuthenticated();
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [quote, setQuote] = useState("");
-  const [testimonials, setTestimonials] = useState(initialTestimonials);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { data: testimonials = [], isLoading, isError, refetch } = useQuery({
+    queryKey: testimonialsQueryKey,
+    queryFn: fetchTestimonials,
+  });
+
+  const submitMutation = useMutation({
+    mutationFn: createTestimonial,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: testimonialsQueryKey });
+      void refetch();
+      setName("");
+      setRole("");
+      setQuote("");
+      setFormError(null);
+      setShowForm(false);
+    },
+    onError: (error: Error) => {
+      setFormError(error.message);
+    },
+  });
 
   const handleAddTestimonial = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -51,21 +93,21 @@ export default function Home() {
       return;
     }
 
-    if (!name.trim() || !quote.trim()) return;
+    const trimmedName = name.trim();
+    const trimmedRole = role.trim();
+    const trimmedQuote = quote.trim();
 
-    setTestimonials((current) => [
-      {
-        name: name.trim(),
-        role: role.trim() || t("home.testimonials_role_placeholder"),
-        quote: quote.trim(),
-      },
-      ...current,
-    ].slice(0, 6));
+    if (!trimmedName || trimmedQuote.length < 10) {
+      setFormError(t("home.testimonials_quote") + " must be at least 10 characters long.");
+      return;
+    }
 
-    setName("");
-    setRole("");
-    setQuote("");
-    setShowForm(false);
+    setFormError(null);
+    submitMutation.mutate({
+      name: trimmedName,
+      role: trimmedRole || t("home.testimonials_role_placeholder"),
+      quote: trimmedQuote,
+    });
   };
 
   return (
@@ -272,8 +314,14 @@ export default function Home() {
                       className="min-h-[110px]"
                     />
                   </div>
+                  {formError ? (
+                    <div className="md:col-span-2 text-sm text-red-600">{formError}</div>
+                  ) : null}
                   <div className="md:col-span-2 flex flex-wrap gap-3">
-                    <Button type="submit" className="rounded-full">{t("home.testimonials_submit")}</Button>
+                    <Button type="submit" className="rounded-full" disabled={submitMutation.isPending}>
+                      {submitMutation.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                      {t("home.testimonials_submit")}
+                    </Button>
                     <Button type="button" variant="outline" className="rounded-full" onClick={() => setShowForm(false)}>
                       {t("home.testimonials_cancel")}
                     </Button>
@@ -283,22 +331,37 @@ export default function Home() {
             </Card>
           )}
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {testimonials.map((testimonial, index) => (
-              <Card key={`${testimonial.name}-${index}`} className="border-border/60 shadow-sm bg-card/70 backdrop-blur-sm">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-5">
-                    <Quote className="w-6 h-6" />
-                  </div>
-                  <p className="text-muted-foreground leading-relaxed mb-6">“{testimonial.quote}”</p>
-                  <div>
-                    <p className="font-semibold text-foreground">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12 text-muted-foreground">
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Loading testimonials...
+            </div>
+          ) : isError ? (
+            <div className="rounded-xl border border-destructive/20 bg-destructive/10 p-6 text-center text-sm text-destructive">
+              We couldn’t load testimonials right now. Please try again shortly.
+            </div>
+          ) : testimonials.length === 0 ? (
+            <div className="rounded-xl border border-border/60 bg-card/70 p-6 text-center text-sm text-muted-foreground">
+              No testimonials available yet. Be the first to share your experience.
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-6">
+              {testimonials.map((testimonial) => (
+                <Card key={testimonial.id} className="border-border/60 shadow-sm bg-card/70 backdrop-blur-sm">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-5">
+                      <Quote className="w-6 h-6" />
+                    </div>
+                    <p className="text-muted-foreground leading-relaxed mb-6">“{testimonial.quote}”</p>
+                    <div>
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
