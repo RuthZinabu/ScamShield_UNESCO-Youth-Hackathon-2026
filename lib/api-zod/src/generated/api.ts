@@ -394,7 +394,7 @@ export const completeLessonBodyQuizScoreMax = 100;
 
 
 export const CompleteLessonBody = zod.object({
-  "quizScore": zod.number().min(completeLessonBodyQuizScoreMin).max(completeLessonBodyQuizScoreMax)
+  "quizScore": zod.number().min(completeLessonBodyQuizScoreMin).max(completeLessonBodyQuizScoreMax).optional()
 })
 
 export const CompleteLessonResponse = zod.object({

@@ -146,13 +146,18 @@ router.post("/lessons/:id/complete", async (req, res): Promise<void> => {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
+console.log("LESSON COMPLETE:", {
+  userId,
+  lessonId: params.data.id,
+  body: body.data,
+});
 
   const [progress] = await db
     .insert(progressTable)
     .values({
       userId,
       lessonId: params.data.id,
-      quizScore: body.data.quizScore,
+      quizScore: body.data.quizScore ?? 0,
     })
     .returning();
 
