@@ -43,21 +43,23 @@ function calcStreak(dates: Date[]): number {
  * Platform-wide aggregate stats — no auth required. Used on the Home page.
  */
 router.get("/dashboard/public-stats", async (_req, res): Promise<void> => {
-  const [totalAnalysesRows, totalLessonsRows] = await Promise.all([
-    // All content analyses ever submitted — platform-wide
-    db.select({ count: sql<number>`count(*)` }).from(analysesTable),
-    // All lesson completions ever — across every user (no userId / date filter)
-    db.select({ count: sql<number>`count(*)`, quizScore: progressTable.quizScore }).from(progressTable),
+  const [analysesCountRows, lessonsMaxIdRows, confidenceRows] = await Promise.all([
+    // Exact row count from analyses — "scam reports analyzed"
+    db.select({ count: sql<string>`COUNT(*)` }).from(analysesTable),
+    // MAX(id) from progress — reflects the highest serial key ever assigned, i.e. cumulative completions
+    db.select({ maxId: sql<string>`COALESCE(MAX(id), 0)` }).from(progressTable),
+    // Pull quiz scores for the confidence calculation only
+    db.select({ quizScore: progressTable.quizScore }).from(progressTable),
   ]);
 
-  const totalAnalyses = Number(totalAnalysesRows[0]?.count ?? 0);
-  const totalLessonsCompleted = totalLessonsRows.length; // one row per completion record
+  const totalAnalyses = parseInt(analysesCountRows[0]?.count ?? "0", 10);
+  const totalLessonsCompleted = parseInt(lessonsMaxIdRows[0]?.maxId ?? "0", 10);
 
   // Confidence: % of all quiz completions that scored ≥ 70 (floor 75 so it reads well)
   let confidencePercent = 85;
-  if (totalLessonsRows.length > 0) {
-    const confidentCount = totalLessonsRows.filter((p) => p.quizScore >= 70).length;
-    const computed = Math.round((confidentCount / totalLessonsRows.length) * 100);
+  if (confidenceRows.length > 0) {
+    const confidentCount = confidenceRows.filter((p) => p.quizScore >= 70).length;
+    const computed = Math.round((confidentCount / confidenceRows.length) * 100);
     confidencePercent = Math.max(computed, 75);
   }
 
@@ -91,7 +93,7 @@ router.get("/dashboard/stats", async (req, res): Promise<void> => {
   const allDates = [
     ...analyses.map((a) => a.createdAt),
     ...progress.map((p) => p.completedAt),
-  ];
+  ].filter((d): d is Date => d instanceof Date);
   const currentStreak = calcStreak(allDates);
   const literacyScore = calcLiteracyScore(analysesCompleted, lessonsFinished, avgQuizScore);
 

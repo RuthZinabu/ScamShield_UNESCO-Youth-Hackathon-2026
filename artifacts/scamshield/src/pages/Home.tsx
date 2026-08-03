@@ -30,7 +30,8 @@ async function fetchPublicStats(): Promise<PublicStats> {
   return response.json() as Promise<PublicStats>;
 }
 
-function formatStat(n: number): string {
+function formatStat(n: number | undefined | null): string {
+  if (n === undefined || n === null || Number.isNaN(n)) return "…";
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M+`;
   if (n >= 1_000) return `${Math.floor(n / 1_000)}k+`;
   return n.toString();
