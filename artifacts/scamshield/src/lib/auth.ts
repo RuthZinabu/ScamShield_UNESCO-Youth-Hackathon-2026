@@ -50,3 +50,9 @@ export function clearAuthSession(): void {
   window.localStorage.removeItem(AUTH_USER_STORAGE_KEY);
   setAuthenticated(false);
 }
+
+export function getAuthSession(): { token: string | null } | null {
+  if (typeof window === "undefined") return null;
+  const token = getAuthToken();
+  return token ? { token } : null;
+}
