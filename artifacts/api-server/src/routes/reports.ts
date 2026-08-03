@@ -24,7 +24,6 @@ router.get("/reports", async (req, res): Promise<void> => {
   let rows = await db
     .select()
     .from(reportsTable)
-    .where(userId ? eq(reportsTable.userId, userId) : undefined)
     .orderBy(desc(reportsTable.createdAt))
     .limit(limit)
     .offset(offset);

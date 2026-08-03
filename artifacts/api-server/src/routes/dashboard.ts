@@ -180,7 +180,7 @@ router.get("/dashboard/activity", async (req, res): Promise<void> => {
       type: "lesson",
       title: "Completed lesson",
       description: lessonMap[progressItem.lessonId] ?? `Lesson #${progressItem.lessonId}`,
-      createdAt: progressItem.completedAt.toISOString(),
+      createdAt: progressItem.completedAt?.toISOString() ?? new Date().toISOString(),
     });
   }
 
