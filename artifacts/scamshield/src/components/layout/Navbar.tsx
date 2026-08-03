@@ -1,13 +1,15 @@
 import { Link, useLocation } from "wouter";
-import { ShieldCheck, Search, BookOpen, Users, MessageSquare, LayoutDashboard } from "lucide-react";
+import { ShieldCheck, Search, BookOpen, Users, MessageSquare, LayoutDashboard, LogOut } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
+import { clearAuthSession, getIsAuthenticated } from "@/lib/auth";
 
 export function Navbar() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const { t } = useTranslation();
+  const isAuthenticated = getIsAuthenticated();
 
   const navItems = [
     { href: "/verify", label: t("nav.verify"), icon: Search },
@@ -53,6 +55,19 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={() => {
+                  clearAuthSession();
+                  setLocation("/");
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-border/60 px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                <LogOut className="h-4 w-4" />
+                Logout
+              </button>
+            )}
             <LanguageSwitcher />
             <ThemeToggle />
           </div>
