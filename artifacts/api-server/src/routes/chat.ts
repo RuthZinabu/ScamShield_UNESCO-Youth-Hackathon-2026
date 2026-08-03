@@ -1,5 +1,6 @@
 import { Router, type IRouter } from "express";
 import { eq, asc, desc, count } from "drizzle-orm";
+import { getAuthenticatedUserId } from "../lib/auth";
 import { db, conversationsTable, chatMessagesTable } from "@workspace/db";
 import {
   CreateConversationBody,
@@ -45,9 +46,16 @@ function getOpenRouterClient(): OpenAI | null {
 const router: IRouter = Router();
 
 router.get("/chat/conversations", async (_req, res): Promise<void> => {
+    const userId = getAuthenticatedUserId(_req);
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
   const convs = await db
     .select()
     .from(conversationsTable)
+    .where(eq(conversationsTable.userId, userId))
     .orderBy(desc(conversationsTable.updatedAt));
 
   const withCounts = await Promise.all(
@@ -64,7 +72,15 @@ router.get("/chat/conversations", async (_req, res): Promise<void> => {
 });
 
 router.post("/chat/conversations", async (req, res): Promise<void> => {
+  const userId = getAuthenticatedUserId(req);
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
   const parsed = CreateConversationBody.safeParse(req.body);
+
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
@@ -72,10 +88,17 @@ router.post("/chat/conversations", async (req, res): Promise<void> => {
 
   const [conv] = await db
     .insert(conversationsTable)
-    .values({ title: parsed.data.title })
+    .values({
+      userId,
+      title: parsed.data.title,
+    })
     .returning();
 
-  const result = { ...conv, messageCount: 0 };
+  const result = {
+    ...conv,
+    messageCount: 0,
+  };
+
   res.status(201).json(result);
 });
 
