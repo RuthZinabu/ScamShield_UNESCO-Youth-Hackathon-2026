@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useListConversations, useCreateConversation, useGetConversation, getListConversationsQueryKey } from "@workspace/api-client-react";
+import { useListConversations, useCreateConversation, useGetConversation, getListConversationsQueryKey, getGetConversationQueryKey } from "@workspace/api-client-react";
 import { API_BASE_URL } from "@/lib/api-config";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -8,10 +8,14 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Bot, User, Send, Plus, MessageSquare, Loader2, Info } from "lucide-react";
+import { useLocation, useRoute } from "wouter";
 import type { ChatMessage } from "@workspace/api-client-react/src/generated/api.schemas";
 
 export default function Chat() {
-  const [activeId, setActiveId] = useState<number | null>(null);
+  const [, params] = useRoute("/chat/:conversationId");
+  const [, setLocation] = useLocation();
+  const parsedConversationId = params?.conversationId ? Number(params.conversationId) : null;
+  const activeId = Number.isInteger(parsedConversationId) ? parsedConversationId : null;
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamingMessage, setStreamingMessage] = useState("");
@@ -20,7 +24,12 @@ export default function Chat() {
 
   const queryClient = useQueryClient();
   const { data: conversations, isLoading: listLoading } = useListConversations();
-  const { data: conversationData, isLoading: chatLoading } = useGetConversation(activeId!, { query: { enabled: !!activeId } });
+  const { data: conversationData } = useGetConversation(activeId ?? 0, {
+    query: {
+      enabled: !!activeId,
+      queryKey: activeId ? getGetConversationQueryKey(activeId) : []
+    }
+  });
   const createConversation = useCreateConversation();
 
   const messages = conversationData?.messages || [];
@@ -42,7 +51,7 @@ export default function Chat() {
       try {
         const newConv = await createConversation.mutateAsync({ data: { title: userMsg.slice(0, 30) + "..." } });
         convId = newConv.id;
-        setActiveId(convId);
+        setLocation(`/chat/${convId}`);
         queryClient.invalidateQueries({ queryKey: getListConversationsQueryKey() });
       } catch (e) {
         console.error("Failed to create conversation", e);
@@ -126,7 +135,15 @@ export default function Chat() {
         <div className="hidden md:flex flex-col bg-slate-50 dark:bg-slate-900/50 rounded-2xl border p-4 h-full">
           <Button
             className="w-full justify-start gap-2 mb-6 shadow-sm"
-            onClick={() => setActiveId(null)}
+            onClick={async () => {
+              try {
+                const newConv = await createConversation.mutateAsync({ data: { title: t("chat.new_chat") } });
+                queryClient.invalidateQueries({ queryKey: getListConversationsQueryKey() });
+                setLocation(`/chat/${newConv.id}`);
+              } catch (e) {
+                console.error("Failed to create conversation", e);
+              }
+            }}
           >
             <Plus className="w-4 h-4" /> {t("chat.new_chat")}
           </Button>
@@ -141,7 +158,7 @@ export default function Chat() {
             ) : conversations?.map(conv => (
               <button
                 key={conv.id}
-                onClick={() => setActiveId(conv.id)}
+                onClick={() => setLocation(`/chat/${conv.id}`)}
                 className={`w-full text-left px-3 py-2.5 rounded-lg text-sm truncate mb-1 transition-colors flex items-center gap-2 ${
                   activeId === conv.id ? "bg-primary text-primary-foreground font-medium" : "hover:bg-muted text-muted-foreground"
                 }`}

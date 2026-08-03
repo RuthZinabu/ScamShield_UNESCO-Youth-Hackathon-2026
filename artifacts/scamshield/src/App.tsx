@@ -34,6 +34,7 @@ function Router() {
         <Route path="/learn" component={Learn} />
         <Route path="/learn/:id" component={LessonDetail} />
         <Route path="/community" component={Community} />
+        <Route path="/chat/:conversationId" component={Chat} />
         <Route path="/chat" component={Chat} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/login" component={Login} />
