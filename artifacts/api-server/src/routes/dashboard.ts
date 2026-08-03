@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
-import { desc } from "drizzle-orm";
-import { db, analysesTable, progressTable, lessonsTable } from "@workspace/db";
+import { desc, eq } from "drizzle-orm";
+import { db, analysesTable, progressTable, lessonsTable, reportsTable } from "@workspace/db";
+import { getAuthenticatedUserId } from "../lib/auth";
 
 const router: IRouter = Router();
 
@@ -37,12 +38,23 @@ function calcStreak(dates: Date[]): number {
   return streak;
 }
 
-router.get("/dashboard/stats", async (_req, res): Promise<void> => {
-  const analyses = await db.select().from(analysesTable);
-  const progress = await db.select().from(progressTable);
+router.get("/dashboard/stats", async (req, res): Promise<void> => {
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
+  const [analyses, progress, reports] = await Promise.all([
+    db.select().from(analysesTable).where(eq(analysesTable.userId, userId)),
+    db.select().from(progressTable).where(eq(progressTable.userId, userId)),
+    db.select().from(reportsTable).where(eq(reportsTable.userId, userId)),
+  ]);
 
   const analysesCompleted = analyses.length;
   const lessonsFinished = progress.length;
+  const reportsSubmitted = reports.length;
+  const totalCommunityUpvotes = reports.reduce((sum, report) => sum + report.upvoteCount, 0);
 
   let avgQuizScore: number | null = null;
   if (progress.length > 0) {
@@ -57,8 +69,14 @@ router.get("/dashboard/stats", async (_req, res): Promise<void> => {
   const currentStreak = calcStreak(allDates);
   const literacyScore = calcLiteracyScore(analysesCompleted, lessonsFinished, avgQuizScore);
 
-  // Static achievements for demo
-  const achievements = [];
+  const achievements = [] as Array<{
+    id: number;
+    title: string;
+    description: string;
+    iconName: string;
+    earnedAt: string | null;
+  }>;
+
   if (analysesCompleted >= 1) {
     achievements.push({
       id: 1,
@@ -77,9 +95,18 @@ router.get("/dashboard/stats", async (_req, res): Promise<void> => {
       earnedAt: progress[0]?.completedAt?.toISOString() ?? null,
     });
   }
-  if (literacyScore >= 50) {
+  if (reportsSubmitted >= 1) {
     achievements.push({
       id: 3,
+      title: "Community Reporter",
+      description: "Submitted your first report",
+      iconName: "Shield",
+      earnedAt: reports[0]?.createdAt?.toISOString() ?? null,
+    });
+  }
+  if (literacyScore >= 50) {
+    achievements.push({
+      id: 4,
       title: "Digital Defender",
       description: "Reached a literacy score of 50",
       iconName: "Shield",
@@ -93,48 +120,77 @@ router.get("/dashboard/stats", async (_req, res): Promise<void> => {
     averageQuizScore: avgQuizScore,
     currentStreak,
     literacyScore,
+    reportsSubmitted,
+    totalCommunityUpvotes,
+    achievementsEarned: achievements.length,
     achievements,
+    badges: achievements,
   });
 });
 
-router.get("/dashboard/activity", async (_req, res): Promise<void> => {
-  const recentAnalyses = await db
-    .select()
-    .from(analysesTable)
-    .orderBy(desc(analysesTable.createdAt))
-    .limit(5);
+router.get("/dashboard/activity", async (req, res): Promise<void> => {
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
 
-  const recentProgress = await db
-    .select({ id: progressTable.id, lessonId: progressTable.lessonId, completedAt: progressTable.completedAt })
-    .from(progressTable)
-    .orderBy(desc(progressTable.completedAt))
-    .limit(5);
+  const [recentAnalyses, recentProgress, recentReports] = await Promise.all([
+    db
+      .select()
+      .from(analysesTable)
+      .where(eq(analysesTable.userId, userId))
+      .orderBy(desc(analysesTable.createdAt))
+      .limit(5),
+    db
+      .select({ id: progressTable.id, lessonId: progressTable.lessonId, completedAt: progressTable.completedAt })
+      .from(progressTable)
+      .where(eq(progressTable.userId, userId))
+      .orderBy(desc(progressTable.completedAt))
+      .limit(5),
+    db
+      .select({ id: reportsTable.id, title: reportsTable.title, description: reportsTable.description, createdAt: reportsTable.createdAt })
+      .from(reportsTable)
+      .where(eq(reportsTable.userId, userId))
+      .orderBy(desc(reportsTable.createdAt))
+      .limit(5),
+  ]);
 
   const lessonMap: Record<number, string> = {};
   if (recentProgress.length > 0) {
     const lessons = await db.select().from(lessonsTable);
-    for (const l of lessons) lessonMap[l.id] = l.title;
+    for (const lesson of lessons) lessonMap[lesson.id] = lesson.title;
   }
 
   const items: Array<{ id: number; type: string; title: string; description: string; createdAt: string }> = [];
 
-  for (const a of recentAnalyses) {
+  for (const analysis of recentAnalyses) {
     items.push({
-      id: a.id,
+      id: analysis.id,
       type: "analysis",
-      title: `Analysed ${a.contentType} content`,
-      description: a.inputText.slice(0, 80) + (a.inputText.length > 80 ? "…" : ""),
-      createdAt: a.createdAt.toISOString(),
+      title: `Analysed ${analysis.contentType} content`,
+      description: analysis.inputText.slice(0, 80) + (analysis.inputText.length > 80 ? "…" : ""),
+      createdAt: analysis.createdAt.toISOString(),
     });
   }
 
-  for (const p of recentProgress) {
+  for (const progressItem of recentProgress) {
     items.push({
-      id: p.id + 10000,
+      id: progressItem.id + 10000,
       type: "lesson",
-      title: `Completed lesson`,
-      description: lessonMap[p.lessonId] ?? `Lesson #${p.lessonId}`,
-      createdAt: p.completedAt.toISOString(),
+      title: "Completed lesson",
+      description: lessonMap[progressItem.lessonId] ?? `Lesson #${progressItem.lessonId}`,
+      createdAt: progressItem.completedAt.toISOString(),
+    });
+  }
+
+  for (const report of recentReports) {
+    items.push({
+      id: report.id + 20000,
+      type: "report",
+      title: report.title,
+      description: report.description.slice(0, 80) + (report.description.length > 80 ? "…" : ""),
+      createdAt: report.createdAt.toISOString(),
     });
   }
 

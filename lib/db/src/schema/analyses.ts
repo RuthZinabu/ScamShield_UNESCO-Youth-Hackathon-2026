@@ -1,9 +1,11 @@
 import { pgTable, serial, text, boolean, integer, jsonb, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
+import { usersTable } from "./users";
 
 export const analysesTable = pgTable("analyses", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
   contentType: text("content_type").notNull(), // text | url | social-media | email | job | scholarship | news | general
   inputText: text("input_text").notNull(),
   sourceUrl: text("source_url"),

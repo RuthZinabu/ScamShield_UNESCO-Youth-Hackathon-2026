@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { eq, desc, sql } from "drizzle-orm";
 import { db, reportsTable } from "@workspace/db";
+import { getAuthenticatedUserId } from "../lib/auth";
 import {
   ListReportsQueryParams,
   CreateReportBody,
@@ -12,6 +13,7 @@ const router: IRouter = Router();
 
 router.get("/reports", async (req, res): Promise<void> => {
   const query = ListReportsQueryParams.safeParse(req.query);
+  const userId = getAuthenticatedUserId(req);
   if (!query.success) {
     res.status(400).json({ error: query.error.message });
     return;
@@ -22,6 +24,7 @@ router.get("/reports", async (req, res): Promise<void> => {
   let rows = await db
     .select()
     .from(reportsTable)
+    .where(userId ? eq(reportsTable.userId, userId) : undefined)
     .orderBy(desc(reportsTable.createdAt))
     .limit(limit)
     .offset(offset);
@@ -43,6 +46,11 @@ router.get("/reports", async (req, res): Promise<void> => {
 
 router.post("/reports", async (req, res): Promise<void> => {
   const parsed = CreateReportBody.safeParse(req.body);
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
@@ -51,6 +59,7 @@ router.post("/reports", async (req, res): Promise<void> => {
   const [report] = await db
     .insert(reportsTable)
     .values({
+      userId,
       title: parsed.data.title,
       description: parsed.data.description,
       category: parsed.data.category,

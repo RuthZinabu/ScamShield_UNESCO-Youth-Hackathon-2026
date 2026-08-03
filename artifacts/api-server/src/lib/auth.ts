@@ -1,3 +1,4 @@
+import type { Request } from "express";
 import jwt from "jsonwebtoken";
 import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
@@ -24,6 +25,24 @@ export function verifyJwt(token: string): { sub: string } | null {
   } catch {
     return null;
   }
+}
+
+export function getAuthenticatedUserId(req: Request): number | null {
+  const authorization = req.headers.authorization;
+  const token = Array.isArray(authorization) ? authorization[0] : authorization;
+  const bearerToken = token?.startsWith("Bearer ") ? token.slice(7) : null;
+
+  if (!bearerToken) {
+    return null;
+  }
+
+  const payload = verifyJwt(bearerToken);
+  if (!payload?.sub) {
+    return null;
+  }
+
+  const userId = Number(payload.sub);
+  return Number.isInteger(userId) && userId > 0 ? userId : null;
 }
 
 export async function upsertGoogleUser(input: {

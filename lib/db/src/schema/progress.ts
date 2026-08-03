@@ -2,9 +2,11 @@ import { pgTable, serial, integer, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 import { lessonsTable } from "./lessons";
+import { usersTable } from "./users";
 
 export const progressTable = pgTable("progress", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
   lessonId: integer("lesson_id").notNull().references(() => lessonsTable.id, { onDelete: "cascade" }),
   quizScore: integer("quiz_score").notNull().default(0),
   completedAt: timestamp("completed_at", { withTimezone: true }).notNull().defaultNow(),

@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { db, analysesTable } from "@workspace/db";
+import { getAuthenticatedUserId } from "../lib/auth";
 import {
   ListAnalysesQueryParams,
   CreateAnalysisBody,
@@ -21,13 +22,16 @@ router.get("/analyses", async (req, res): Promise<void> => {
   }
 
   const { bookmarked, limit = 20, offset = 0 } = query.data;
-
-  let q = db.select().from(analysesTable).orderBy(desc(analysesTable.createdAt));
+  const userId = getAuthenticatedUserId(req);
 
   const rows = await db
     .select()
     .from(analysesTable)
-    .where(bookmarked !== undefined ? eq(analysesTable.isBookmarked, bookmarked) : undefined)
+    .where(
+      userId
+        ? and(eq(analysesTable.userId, userId), bookmarked !== undefined ? eq(analysesTable.isBookmarked, bookmarked) : undefined)
+        : bookmarked !== undefined ? eq(analysesTable.isBookmarked, bookmarked) : undefined,
+    )
     .orderBy(desc(analysesTable.createdAt))
     .limit(limit)
     .offset(offset);
@@ -43,6 +47,11 @@ router.post("/analyses", async (req, res): Promise<void> => {
   }
 
   const { contentType, inputText, sourceUrl, responseLanguage } = parsed.data;
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
 
   // Run AI analysis
   let result = null;
@@ -62,6 +71,7 @@ router.post("/analyses", async (req, res): Promise<void> => {
   const [analysis] = await db
     .insert(analysesTable)
     .values({
+      userId,
       contentType,
       inputText,
       sourceUrl: sourceUrl ?? null,

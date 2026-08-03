@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import { eq, asc } from "drizzle-orm";
 import { db, lessonsTable, quizQuestionsTable, progressTable } from "@workspace/db";
+import { getAuthenticatedUserId } from "../lib/auth";
 import {
   ListLessonsQueryParams,
   GetLessonParams,
@@ -32,8 +33,15 @@ const CATEGORY_ICONS: Record<string, string> = {
   "safe-shopping": "ShoppingCart",
 };
 
-async function getCompletedLessonIds(): Promise<Set<number>> {
-  const done = await db.select({ lessonId: progressTable.lessonId }).from(progressTable);
+async function getCompletedLessonIds(userId: number | null): Promise<Set<number>> {
+  if (!userId) {
+    return new Set();
+  }
+
+  const done = await db
+    .select({ lessonId: progressTable.lessonId })
+    .from(progressTable)
+    .where(eq(progressTable.userId, userId));
   return new Set(done.map((d) => d.lessonId));
 }
 
@@ -45,7 +53,8 @@ router.get("/lessons", async (req, res): Promise<void> => {
   }
 
   const { category } = query.data;
-  const completedIds = await getCompletedLessonIds();
+  const userId = getAuthenticatedUserId(req);
+  const completedIds = await getCompletedLessonIds(userId);
 
   let rows = await db.select().from(lessonsTable).orderBy(asc(lessonsTable.id));
   if (category) {
@@ -66,9 +75,9 @@ router.get("/lessons", async (req, res): Promise<void> => {
   res.json(result);
 });
 
-router.get("/lessons/categories", async (_req, res): Promise<void> => {
+router.get("/lessons/categories", async (req, res): Promise<void> => {
   const lessons = await db.select().from(lessonsTable);
-  const completedIds = await getCompletedLessonIds();
+  const completedIds = await getCompletedLessonIds(getAuthenticatedUserId(req));
 
   const map: Record<string, { lessonCount: number; completedCount: number }> = {};
   for (const l of lessons) {
@@ -110,7 +119,7 @@ router.get("/lessons/:id", async (req, res): Promise<void> => {
     .where(eq(quizQuestionsTable.lessonId, lesson.id))
     .orderBy(asc(quizQuestionsTable.orderIndex));
 
-  const completedIds = await getCompletedLessonIds();
+  const completedIds = await getCompletedLessonIds(getAuthenticatedUserId(req));
 
   res.json({
     ...lesson,
@@ -132,9 +141,16 @@ router.post("/lessons/:id/complete", async (req, res): Promise<void> => {
     return;
   }
 
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
   const [progress] = await db
     .insert(progressTable)
     .values({
+      userId,
       lessonId: params.data.id,
       quizScore: body.data.quizScore,
     })
