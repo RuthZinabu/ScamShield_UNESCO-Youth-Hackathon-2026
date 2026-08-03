@@ -1,6 +1,6 @@
-# [Project name]
+# ScamShield AI
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A Media and Information Literacy (MIL) platform that helps users think critically about digital content — analyse suspicious text/URLs/emails with AI, chat with an AI educator, take literacy lessons, and browse community scam reports.
 
 ## Run & Operate
 
