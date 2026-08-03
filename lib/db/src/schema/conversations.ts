@@ -38,3 +38,8 @@ export const insertConversationSchema = createInsertSchema(
 
 export type Conversation = typeof conversationsTable.$inferSelect;
 export type InsertConversation = z.infer<typeof insertConversationSchema>;
+export const conversations = pgTable("conversations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
