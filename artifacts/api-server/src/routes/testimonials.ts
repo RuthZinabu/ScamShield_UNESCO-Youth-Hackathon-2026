@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { sql } from "drizzle-orm";
 import { db } from "@workspace/db";
 import { getAuthenticatedUserId } from "../lib/auth";
-import { z } from "zod/v4";
+import { z } from "zod";
 
 const createTestimonialSchema = z.object({
   name: z.string().trim().min(1).max(80),
@@ -59,7 +59,8 @@ router.get("/testimonials", async (req, res): Promise<void> => {
     LIMIT ${limit}
   `);
 
-  const rows = (result as { rows?: TestimonialRow[] }).rows ?? [];
+const rows =
+  ((result as unknown) as { rows: TestimonialRow[] }).rows ?? [];
   res.json(rows);
 });
 
@@ -85,7 +86,8 @@ router.post("/testimonials", async (req, res): Promise<void> => {
     RETURNING id, name, role, quote, created_at AS "createdAt"
   `);
 
-  const [testimonial] = ((result as { rows?: TestimonialRow[] }).rows ?? []) as TestimonialRow[];
+ const [testimonial] =
+  (((result as unknown) as { rows: TestimonialRow[] }).rows ?? []);
   if (!testimonial) {
     res.status(500).json({ message: "Failed to save testimonial" });
     return;
