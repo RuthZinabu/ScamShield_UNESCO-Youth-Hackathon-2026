@@ -43,29 +43,25 @@ function calcStreak(dates: Date[]): number {
  * Platform-wide aggregate stats — no auth required. Used on the Home page.
  */
 router.get("/dashboard/public-stats", async (_req, res): Promise<void> => {
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-  const [totalAnalysesRows, lessonsThisMonthRows, allProgressRows] = await Promise.all([
+  const [totalAnalysesRows, totalLessonsRows] = await Promise.all([
+    // All content analyses ever submitted — platform-wide
     db.select({ count: sql<number>`count(*)` }).from(analysesTable),
-    db
-      .select({ count: sql<number>`count(*)` })
-      .from(progressTable)
-      .where(gte(progressTable.completedAt, startOfMonth)),
-    db.select({ quizScore: progressTable.quizScore }).from(progressTable),
+    // All lesson completions ever — across every user (no userId / date filter)
+    db.select({ count: sql<number>`count(*)`, quizScore: progressTable.quizScore }).from(progressTable),
   ]);
 
   const totalAnalyses = Number(totalAnalysesRows[0]?.count ?? 0);
-  const lessonsThisMonth = Number(lessonsThisMonthRows[0]?.count ?? 0);
+  const totalLessonsCompleted = totalLessonsRows.length; // one row per completion record
 
+  // Confidence: % of all quiz completions that scored ≥ 70 (floor 75 so it reads well)
   let confidencePercent = 85;
-  if (allProgressRows.length > 0) {
-    const confidentCount = allProgressRows.filter((p) => p.quizScore >= 70).length;
-    const computed = Math.round((confidentCount / allProgressRows.length) * 100);
+  if (totalLessonsRows.length > 0) {
+    const confidentCount = totalLessonsRows.filter((p) => p.quizScore >= 70).length;
+    const computed = Math.round((confidentCount / totalLessonsRows.length) * 100);
     confidencePercent = Math.max(computed, 75);
   }
 
-  res.json({ confidencePercent, lessonsThisMonth, totalAnalyses });
+  res.json({ confidencePercent, totalLessonsCompleted, totalAnalyses });
 });
 
 router.get("/dashboard/stats", async (req, res): Promise<void> => {

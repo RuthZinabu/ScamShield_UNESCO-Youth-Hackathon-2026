@@ -20,7 +20,7 @@ import { API_BASE_URL } from "@/lib/api-config";
 
 interface PublicStats {
   confidencePercent: number;
-  lessonsThisMonth: number;
+  totalLessonsCompleted: number;
   totalAnalyses: number;
 }
 
@@ -107,7 +107,7 @@ export default function Home() {
   });
 
   // Fallback values shown when the DB isn't connected yet
-  const displayStats = publicStats ?? (statsError ? { confidencePercent: 85, lessonsThisMonth: 0, totalAnalyses: 0 } : null);
+  const displayStats = publicStats ?? (statsError ? { confidencePercent: 85, totalLessonsCompleted: 0, totalAnalyses: 0 } : null);
 
   const { data: trendingData } = useGetTrendingReports();
 
@@ -219,7 +219,7 @@ export default function Home() {
             </div>
             <div>
               <div className="text-4xl md:text-5xl font-bold font-display text-secondary mb-2">
-                {displayStats ? formatStat(displayStats.lessonsThisMonth) : "…"}
+                {displayStats ? formatStat(displayStats.totalLessonsCompleted) : "…"}
               </div>
               <p className="text-muted-foreground font-medium">{t("home.stat2_label")}</p>
             </div>
