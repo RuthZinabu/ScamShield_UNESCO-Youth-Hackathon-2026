@@ -49,13 +49,14 @@ import {
   Plus,
   Loader2,
   ShieldAlert,
-  Link,
   Globe,
   ExternalLink,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ListReportsCategory, Report } from "@workspace/api-client-react";
 import { LANGUAGES } from "@/i18n";
+import { Link, useLocation } from "wouter";
+import { getIsAuthenticated } from "@/lib/auth";
 
 const reportSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -79,11 +80,14 @@ export default function Community() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<ListReportsCategory | undefined>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   // Track optimistic upvote state per report id
   const [upvotedIds, setUpvotedIds] = useState<Set<number>>(new Set());
   const { toast } = useToast();
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
+  const isAuthenticated = getIsAuthenticated();
 
   const { data: reports, isLoading } = useListReports({
     search: search || undefined,
@@ -108,6 +112,11 @@ export default function Community() {
   });
 
   const onSubmit = (values: z.infer<typeof reportSchema>) => {
+    if (!isAuthenticated) {
+      setShowAuthPrompt(true);
+      return;
+    }
+
     // Normalise empty strings → omit field
     const payload = {
       ...values,
@@ -167,39 +176,40 @@ export default function Community() {
           </p>
         </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button size="lg" className="rounded-full shadow-lg gap-2 shrink-0">
-              <Plus className="w-5 h-5" /> {t("community.report_btn")}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[540px] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{t("community.dialog_title")}</DialogTitle>
-              <DialogDescription>{t("community.dialog_desc")}</DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4 pt-4"
-              >
-                {/* Title */}
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("community.field_title")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t("community.field_title_placeholder")}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+        {isAuthenticated ? (
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="rounded-full shadow-lg gap-2 shrink-0">
+                <Plus className="w-5 h-5" /> {t("community.report_btn")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[540px] max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>{t("community.dialog_title")}</DialogTitle>
+                <DialogDescription>{t("community.dialog_desc")}</DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-4 pt-4"
+                >
+                  {/* Title */}
+                  <FormField
+                    control={form.control}
+                    name="title"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("community.field_title")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder={t("community.field_title_placeholder")}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                 {/* Category */}
                 <FormField
@@ -310,24 +320,24 @@ export default function Community() {
                   )}
                 />
 
-                {/* Details */}
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("community.field_details")}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={t("community.field_details_placeholder")}
-                          className="resize-none h-24"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  {/* Description */}
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("community.field_description")}</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder={t("community.field_description_placeholder")}
+                            className="min-h-[120px]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                 <Button
                   type="submit"
@@ -343,9 +353,32 @@ export default function Community() {
             </Form>
           </DialogContent>
         </Dialog>
-      </div>
+      ) : (
+        <div className="flex flex-col items-end gap-3">
+          <Button
+            size="lg"
+            className="rounded-full shadow-lg gap-2 shrink-0"
+            onClick={() => setShowAuthPrompt(true)}
+          >
+            <Plus className="w-5 h-5" /> {t("community.report_btn")}
+          </Button>
+          {showAuthPrompt && (
+            <div className="max-w-sm rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-medium">Please log in first to report a threat.</p>
+              <Button
+                variant="outline"
+                className="mt-3 border-amber-300 bg-white text-amber-900 hover:bg-amber-100"
+                onClick={() => setLocation("/login?redirect=/community")}
+              >
+                Log In
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
 
-      <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
+    <div className="grid lg:grid-cols-[1fr_320px] gap-8 items-start">
         {/* Main Feed */}
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row gap-4 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-xl border border-border">

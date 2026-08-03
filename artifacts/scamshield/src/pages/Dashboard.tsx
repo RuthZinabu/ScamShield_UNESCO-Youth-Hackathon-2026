@@ -1,15 +1,36 @@
 import { useTranslation } from "react-i18next";
 import { useGetDashboardStats, useGetDashboardActivity } from "@workspace/api-client-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { formatDistanceToNow } from "date-fns";
 import {
   Trophy, Flame, Target, BookOpen, Search, Medal, ShieldCheck, Zap, Activity, Loader2
 } from "lucide-react";
+import { useLocation } from "wouter";
+import { getIsAuthenticated } from "@/lib/auth";
 
 export default function Dashboard() {
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
+  const isAuthenticated = getIsAuthenticated();
   const { data: stats, isLoading: statsLoading } = useGetDashboardStats();
   const { data: activity, isLoading: activityLoading } = useGetDashboardActivity();
+
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto px-4 py-20 max-w-3xl">
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-8 text-center shadow-sm dark:border-amber-900/50 dark:bg-amber-950/20">
+          <h1 className="text-3xl font-bold font-display text-foreground mb-3">
+            Please log in first to access your dashboard.
+          </h1>
+          <p className="text-muted-foreground mb-6">
+            Sign in to view your progress, lessons, and achievements.
+          </p>
+          <Button onClick={() => setLocation("/login?redirect=/dashboard")}>Log In</Button>
+        </div>
+      </div>
+    );
+  }
 
   if (statsLoading || activityLoading) {
     return (

@@ -1,7 +1,10 @@
-import { Link } from "wouter";
+import { useState } from "react";
+import { Link, useLocation } from "wouter";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Brain, CheckCircle2, Search, BookOpen, Users, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ArrowRight, Shield, Brain, CheckCircle2, Search, BookOpen, Users, AlertTriangle, Quote } from "lucide-react";
 import heroAbstract from "@assets/generated_images/hero-abstract.png";
 import {
   Accordion,
@@ -10,9 +13,60 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
+import { getIsAuthenticated } from "@/lib/auth";
+
+const initialTestimonials = [
+  {
+    name: "Selam Bekele",
+    role: "University Student",
+    quote: "ScamShield helped me recognize a fake scholarship message before I clicked anything.",
+  },
+  {
+    name: "Mihret Tesfaye",
+    role: "Small Business Owner",
+    quote: "The lessons made it easy to explain warning signs to my customers and family.",
+  },
+  {
+    name: "Abebe Girma",
+    role: "Community Volunteer",
+    quote: "I now pause and verify before trusting urgent messages that look official.",
+  },
+];
 
 export default function Home() {
   const { t } = useTranslation();
+  const [, setLocation] = useLocation();
+  const isAuthenticated = getIsAuthenticated();
+  const [showForm, setShowForm] = useState(false);
+  const [name, setName] = useState("");
+  const [role, setRole] = useState("");
+  const [quote, setQuote] = useState("");
+  const [testimonials, setTestimonials] = useState(initialTestimonials);
+
+  const handleAddTestimonial = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!isAuthenticated) {
+      setLocation("/login?redirect=/");
+      return;
+    }
+
+    if (!name.trim() || !quote.trim()) return;
+
+    setTestimonials((current) => [
+      {
+        name: name.trim(),
+        role: role.trim() || t("home.testimonials_role_placeholder"),
+        quote: quote.trim(),
+      },
+      ...current,
+    ].slice(0, 6));
+
+    setName("");
+    setRole("");
+    setQuote("");
+    setShowForm(false);
+  };
 
   return (
     <div className="w-full">
@@ -156,6 +210,93 @@ export default function Home() {
                   </span>
                 </div>
               </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div className="max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold font-display mb-4">{t("home.testimonials_title")}</h2>
+              <p className="text-muted-foreground text-lg">{t("home.testimonials_subtitle")}</p>
+            </div>
+            <Button variant="outline" className="gap-2 rounded-full" onClick={() => {
+              if (!isAuthenticated) {
+                setLocation("/login?redirect=/");
+                return;
+              }
+              setShowForm((current) => !current);
+            }}>
+              {t("home.testimonials_add")}
+            </Button>
+          </div>
+
+          {showForm && (
+            <Card className="mb-8 border-border/60 shadow-sm">
+              <CardContent className="p-6">
+                <form onSubmit={handleAddTestimonial} className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground" htmlFor="testimonial-name">
+                      {t("home.testimonials_name")}
+                    </label>
+                    <Input
+                      id="testimonial-name"
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      placeholder={t("home.testimonials_name_placeholder")}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-foreground" htmlFor="testimonial-role">
+                      {t("home.testimonials_role")}
+                    </label>
+                    <Input
+                      id="testimonial-role"
+                      value={role}
+                      onChange={(event) => setRole(event.target.value)}
+                      placeholder={t("home.testimonials_role_placeholder")}
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <label className="text-sm font-medium text-foreground" htmlFor="testimonial-quote">
+                      {t("home.testimonials_quote")}
+                    </label>
+                    <Textarea
+                      id="testimonial-quote"
+                      value={quote}
+                      onChange={(event) => setQuote(event.target.value)}
+                      placeholder={t("home.testimonials_quote_placeholder")}
+                      className="min-h-[110px]"
+                    />
+                  </div>
+                  <div className="md:col-span-2 flex flex-wrap gap-3">
+                    <Button type="submit" className="rounded-full">{t("home.testimonials_submit")}</Button>
+                    <Button type="button" variant="outline" className="rounded-full" onClick={() => setShowForm(false)}>
+                      {t("home.testimonials_cancel")}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <Card key={`${testimonial.name}-${index}`} className="border-border/60 shadow-sm bg-card/70 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 text-primary mb-5">
+                    <Quote className="w-6 h-6" />
+                  </div>
+                  <p className="text-muted-foreground leading-relaxed mb-6">“{testimonial.quote}”</p>
+                  <div>
+                    <p className="font-semibold text-foreground">{testimonial.name}</p>
+                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>

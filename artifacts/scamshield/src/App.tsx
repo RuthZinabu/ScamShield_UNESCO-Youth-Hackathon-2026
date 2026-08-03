@@ -11,6 +11,7 @@ import LessonDetail from '@/pages/LessonDetail';
 import Community from '@/pages/Community';
 import Chat from '@/pages/Chat';
 import Dashboard from '@/pages/Dashboard';
+import Login from '@/pages/Login';
 import NotFound from '@/pages/NotFound';
 
 import { ThemeProvider } from '@/components/theme-provider';
@@ -35,6 +36,7 @@ function Router() {
         <Route path="/community" component={Community} />
         <Route path="/chat" component={Chat} />
         <Route path="/dashboard" component={Dashboard} />
+        <Route path="/login" component={Login} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
