@@ -231,10 +231,8 @@ export const ListReportsResponseItem = zod.object({
   "description": zod.string(),
   "category": zod.enum(['job', 'investment', 'shopping', 'news', 'scholarship', 'phishing', 'romance', 'other']),
   "country": zod.string().nullable(),
-  "organisationName": zod.string().nullish(),
   "language": zod.string().nullish(),
   "evidenceUrl": zod.string().nullish(),
-  "additionalInfo": zod.string().nullish(),
   "upvoteCount": zod.number(),
   "createdAt": zod.coerce.date()
 })
@@ -253,10 +251,8 @@ export const CreateReportBody = zod.object({
   "description": zod.string().min(1),
   "category": zod.enum(['job', 'investment', 'shopping', 'news', 'scholarship', 'phishing', 'romance', 'other']),
   "country": zod.string().optional(),
-  "organisationName": zod.string().optional(),
   "language": zod.string().optional(),
-  "evidenceUrl": zod.string().optional(),
-  "additionalInfo": zod.string().optional()
+  "evidenceUrl": zod.string().optional()
 })
 
 export const CreateReportResponse = zod.object({
@@ -265,10 +261,8 @@ export const CreateReportResponse = zod.object({
   "description": zod.string(),
   "category": zod.enum(['job', 'investment', 'shopping', 'news', 'scholarship', 'phishing', 'romance', 'other']),
   "country": zod.string().nullable(),
-  "organisationName": zod.string().nullish(),
   "language": zod.string().nullish(),
   "evidenceUrl": zod.string().nullish(),
-  "additionalInfo": zod.string().nullish(),
   "upvoteCount": zod.number(),
   "createdAt": zod.coerce.date()
 })
@@ -309,10 +303,8 @@ export const GetReportResponse = zod.object({
   "description": zod.string(),
   "category": zod.enum(['job', 'investment', 'shopping', 'news', 'scholarship', 'phishing', 'romance', 'other']),
   "country": zod.string().nullable(),
-  "organisationName": zod.string().nullish(),
   "language": zod.string().nullish(),
   "evidenceUrl": zod.string().nullish(),
-  "additionalInfo": zod.string().nullish(),
   "upvoteCount": zod.number(),
   "createdAt": zod.coerce.date()
 })

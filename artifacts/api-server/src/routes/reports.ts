@@ -55,10 +55,8 @@ router.post("/reports", async (req, res): Promise<void> => {
       description: parsed.data.description,
       category: parsed.data.category,
       country: parsed.data.country ?? null,
-      organisationName: parsed.data.organisationName ?? null,
       language: parsed.data.language ?? null,
       evidenceUrl: parsed.data.evidenceUrl ?? null,
-      additionalInfo: parsed.data.additionalInfo ?? null,
     })
     .returning();
 

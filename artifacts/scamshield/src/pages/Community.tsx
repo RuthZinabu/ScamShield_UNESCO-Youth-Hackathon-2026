@@ -50,7 +50,6 @@ import {
   Loader2,
   ShieldAlert,
   Link,
-  Building2,
   Globe,
   ExternalLink,
 } from "lucide-react";
@@ -72,10 +71,8 @@ const reportSchema = z.object({
     "other",
   ]),
   country: z.string().optional(),
-  organisationName: z.string().optional(),
   language: z.string().optional(),
   evidenceUrl: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
-  additionalInfo: z.string().optional(),
 });
 
 export default function Community() {
@@ -105,10 +102,8 @@ export default function Community() {
       description: "",
       category: "phishing",
       country: "",
-      organisationName: "",
       language: "",
       evidenceUrl: "",
-      additionalInfo: "",
     },
   });
 
@@ -117,9 +112,7 @@ export default function Community() {
     const payload = {
       ...values,
       evidenceUrl: values.evidenceUrl || undefined,
-      organisationName: values.organisationName || undefined,
       language: values.language || undefined,
-      additionalInfo: values.additionalInfo || undefined,
       country: values.country || undefined,
     };
     createReport.mutate(
@@ -260,26 +253,6 @@ export default function Community() {
                   )}
                 />
 
-                {/* Company / Organisation Name */}
-                <FormField
-                  control={form.control}
-                  name="organisationName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("community.field_organisation")}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t(
-                            "community.field_organisation_placeholder"
-                          )}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
                 {/* Language */}
                 <FormField
                   control={form.control}
@@ -348,32 +321,6 @@ export default function Community() {
                         <Textarea
                           placeholder={t("community.field_details_placeholder")}
                           className="resize-none h-24"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Additional Information */}
-                <FormField
-                  control={form.control}
-                  name="additionalInfo"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        {t("community.field_additional_info")}{" "}
-                        <span className="text-muted-foreground text-xs font-normal">
-                          ({t("community.optional")})
-                        </span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={t(
-                            "community.field_additional_info_placeholder"
-                          )}
-                          className="resize-none h-20"
                           {...field}
                         />
                       </FormControl>
@@ -508,36 +455,21 @@ export default function Community() {
                             {report.title}
                           </h3>
 
-                          {/* Organisation & language meta */}
-                          {(report.organisationName || report.language) && (
+                          {/* Language meta */}
+                          {report.language && (
                             <div className="flex flex-wrap gap-3 mb-2">
-                              {report.organisationName && (
-                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Building2 className="w-3 h-3 shrink-0" />
-                                  {report.organisationName}
-                                </span>
-                              )}
-                              {report.language && (
-                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <Globe className="w-3 h-3 shrink-0" />
-                                  {LANGUAGES.find(
-                                    (l) => l.code === report.language
-                                  )?.nativeLabel ?? report.language}
-                                </span>
-                              )}
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Globe className="w-3 h-3 shrink-0" />
+                                {LANGUAGES.find(
+                                  (l) => l.code === report.language
+                                )?.nativeLabel ?? report.language}
+                              </span>
                             </div>
                           )}
 
                           <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
                             {report.description}
                           </p>
-
-                          {/* Additional info (collapsed) */}
-                          {report.additionalInfo && (
-                            <p className="text-xs text-muted-foreground/80 line-clamp-1 italic mb-2">
-                              {report.additionalInfo}
-                            </p>
-                          )}
 
                           {/* Evidence link */}
                           {report.evidenceUrl && (

@@ -135,13 +135,9 @@ export interface Report {
   /** @nullable */
   country: string | null;
   /** @nullable */
-  organisationName?: string | null;
-  /** @nullable */
   language?: string | null;
   /** @nullable */
   evidenceUrl?: string | null;
-  /** @nullable */
-  additionalInfo?: string | null;
   upvoteCount: number;
   createdAt: string;
 }
@@ -167,10 +163,8 @@ export interface ReportInput {
   description: string;
   category: ReportInputCategory;
   country?: string;
-  organisationName?: string;
   language?: string;
   evidenceUrl?: string;
-  additionalInfo?: string;
 }
 
 export type TrendingReportsTopCategoriesItem = {

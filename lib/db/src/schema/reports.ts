@@ -7,10 +7,8 @@ export const reportsTable = pgTable("reports", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(), // job | investment | shopping | news | scholarship | phishing | romance | other
-  organisationName: text("organisation_name"),
   language: text("language"),
   evidenceUrl: text("evidence_url"),
-  additionalInfo: text("additional_info"),
   country: text("country"),
   upvoteCount: integer("upvote_count").notNull().default(0),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
