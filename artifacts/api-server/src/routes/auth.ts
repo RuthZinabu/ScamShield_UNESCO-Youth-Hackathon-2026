@@ -32,7 +32,7 @@ router.post("/auth/google/exchange", async (req, res) => {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: redirectUri || "http://localhost:3000/login",
+        redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
         grant_type: "authorization_code",
       }),
     });

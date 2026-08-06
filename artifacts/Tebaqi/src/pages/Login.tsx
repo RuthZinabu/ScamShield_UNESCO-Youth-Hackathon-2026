@@ -31,7 +31,7 @@ export default function Login() {
 
     const params = new URLSearchParams({
       client_id: clientId,
-      redirect_uri: redirectUri,
+      redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
       response_type: "code",
       scope: "openid email profile",
       access_type: "offline",
