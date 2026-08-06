@@ -1,6 +1,6 @@
-const AUTH_STORAGE_KEY = "scamshield-is-authenticated";
-const AUTH_TOKEN_STORAGE_KEY = "scamshield-auth-token";
-const AUTH_USER_STORAGE_KEY = "scamshield-auth-user";
+const AUTH_STORAGE_KEY = "Tebaqi-is-authenticated";
+const AUTH_TOKEN_STORAGE_KEY = "Tebaqi-auth-token";
+const AUTH_USER_STORAGE_KEY = "Tebaqi-auth-user";
 
 export type AuthUser = {
   id: number;

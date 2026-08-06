@@ -17,7 +17,7 @@ export const LANGUAGES = [
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
 
-const LANG_KEY = 'scamshield_lang';
+const LANG_KEY = 'Tebaqi_lang';
 
 i18n.use(initReactI18next).init({
   resources: {

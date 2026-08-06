@@ -1,4 +1,4 @@
-# ScamShield AI
+# Tebaqi AI
 
 A Media and Information Literacy (MIL) platform that helps users think critically about digital content — analyse suspicious text/URLs/emails with AI, chat with an AI educator, take literacy lessons, and browse community scam reports.
 

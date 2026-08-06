@@ -1,8 +1,8 @@
 kind = "web"
 previewPath = "/"
-title = "ScamShield"
+title = "Tebaqi"
 version = "1.0.0"
-id = "artifacts/scamshield"
+id = "artifacts/Tebaqi"
 router = "path"
 
 [[services]]
@@ -11,12 +11,12 @@ paths = [ "/" ]
 localPort = 24814
 
 [services.development]
-run = "pnpm --filter @workspace/scamshield run dev"
+run = "pnpm --filter @workspace/Tebaqi run dev"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/scamshield", "run", "build" ]
+build = [ "pnpm", "--filter", "@workspace/Tebaqi", "run", "build" ]
 serve = "static"
-publicDir = "artifacts/scamshield/dist/public"
+publicDir = "artifacts/Tebaqi/dist/public"
 
 [[services.production.rewrites]]
 from = "/*"
