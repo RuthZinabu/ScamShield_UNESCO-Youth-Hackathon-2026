@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "ScamShield",
+    "brand": "Tebaqi",
     "verify": "Mirkaneessi",
     "learn": "Baradhu",
     "community": "Hawaasa",
@@ -11,7 +11,7 @@
     "badge": "Mirkaneessa Miidiyaa & Odeeffannoo",
     "hero_line1": "Otoo Hin Amanin",
     "hero_line2": "Yaadi.",
-    "hero_subtitle": "ScamShield waan dhugaa yookaan soba ta'e qofa sitti hin himu. Gaaffii sirrii akka gaafattu, mallattoo akeekkachiisaa akka addaan baafattu, fi amanannaan addunyaa dijitaalaa keessa akka sochootu si gargaarra.",
+    "hero_subtitle": "Tebaqi waan dhugaa yookaan soba ta'e qofa sitti hin himu. Gaaffii sirrii akka gaafattu, mallattoo akeekkachiisaa akka addaan baafattu, fi amanannaan addunyaa dijitaalaa keessa akka sochootu si gargaarra.",
     "cta_verify": "Qabiyyee Mirkaneessi",
     "cta_learn": "Barachuu Jalqabi",
     "floating_label": "Yaada Xiinxalaa",
@@ -19,7 +19,7 @@
     "stat1_label": "fayadamtoonni interneetii irratti ofitti amanamummaa itti dhaga'ama",
     "stat2_label": "tarkaanfiiwwan barumsaa ji'a kana xumuraman",
     "stat3_label": "gabaasota gowwoomsaa xiinxalaman",
-    "how_title": "ScamShield Akkamitti Humna Siif Kenna",
+    "how_title": "Tebaqi Akkamitti Humna Siif Kenna",
     "how_subtitle": "Galmi keenya shaakala qajeelfama qabuu fi dammaqinsa hawaasaatiin dandeettii dandamannaa dijitaalaa keessan ijaaruudha.",
     "feature1_title": "Xiinxali & Irratti Yaadi",
     "feature1_desc": "Liinkiiwwan, imeeliiwwan, yookaan barreeffamoota shakkisiisoo galchi. AI keenya mallattoolee amanamummaa fi akeekkachiisaa addeessa, sana booda qorannoo dabalataatiif gaaffiiwwan siif dhiyeessa.",
@@ -37,7 +37,7 @@
     "faq_title": "Gaaffiiwwan Yeroo Baay'ee Gaafataman",
     "faq_subtitle": "Waa'ee hojii sirna keenyaa dabalata baradhu.",
     "faq1_q": "Kun meeshaa ofiin ofiin gowwoomsaa adda baasudhaa?",
-    "faq1_a": "Lakki. ScamShield meeshaa barnootaati. Nutti bakka kee bu'uun murtoo dhumaa hin kenninu. Kana dura, mallattoolee akeekkachiisaa fi amanamummaa addeessuun, adeemsa mirkaneessuu keessa si qajeelchina, kanaan dandeettii yaada xiinxalaa kee ijaarratta.",
+    "faq1_a": "Lakki. Tebaqi meeshaa barnootaati. Nutti bakka kee bu'uun murtoo dhumaa hin kenninu. Kana dura, mallattoolee akeekkachiisaa fi amanamummaa addeessuun, adeemsa mirkaneessuu keessa si qajeelchina, kanaan dandeettii yaada xiinxalaa kee ijaarratta.",
     "faq2_q": "Qabiyyee ani mirkaneessuuf galchu irratti maaltu ta'a?",
     "faq2_a": "Qabiyyee mirkaneessuuf galfame haala amansiisaa ta'een xiinxalamee daashboordii dhuunfaa keetiif yeroof kuufama. Iccitii kee eeguuf odeeffannoo eenyummaa kee ibsu xiinxala dura irraa kaasna.",
     "faq3_q": "Meeshaalee barnootaa eenyutu qopheessa?",
@@ -166,7 +166,7 @@
   "chat": {
     "new_chat": "Haasawa Haaraa",
     "recent_conversations": "Waliin Dubbii Dhiyeenyaa",
-    "guide_name": "ScamShield Guide",
+    "guide_name": "Tebaqi Guide",
     "guide_subtitle": "Waan jedhame xiinxaluu fi mallattoolee akeekkachiisaa addaan baasuuf si gargaara.",
     "empty_title": "Har'a qorannoo keerratti akkamittin si gargaaruu danda'a?",
     "empty_desc": "Waan shakkisiisaa ta'e asitti garagalchi, waa'ee tooftaa gowwoomsaa baramaa gaafadhu, yookaan haala adda ta'e waliin haa xiinxallu. Waan dhugaa yookaan soba ta'e sitti hin himu, garuu ofii keetii akka bira geessuuf si gargaara.",
@@ -205,7 +205,7 @@
     "link_about": "Waa'ee Keenya",
     "link_privacy": "Iccitii Eeguu",
     "link_terms": "Haala Tajaajilaa",
-    "copyright": "© {{year}} ScamShield. Tajaajila uummataa dijitaalaa yaad-rimee irratti hundaa'e.",
+    "copyright": "© {{year}} Tebaqi. Tajaajila uummataa dijitaalaa yaad-rimee irratti hundaa'e.",
     "not_detector": "Meeshaa gowwoomsaa adda baasu dhugaa miti"
   }
 }

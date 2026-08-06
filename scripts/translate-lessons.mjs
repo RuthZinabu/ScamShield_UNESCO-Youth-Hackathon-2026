@@ -15,10 +15,10 @@ const LANGUAGES = {
 };
 
 const KEEP_UNTRANSLATED =
-  "ScamShield AI, SIFT, Snopes, AFP Fact Check, PolitiFact, Full Fact, PolitiFact, PayPal, UNESCO, LinkedIn, WhatsApp, TikTok, GPTZero, Bitwarden, 1Password, uBlock Origin, Firefox, Brave, Hive Moderation, Reddit, Facebook, HTTP, HTTPS, 2FA";
+  "Tebaqi, SIFT, Snopes, AFP Fact Check, PolitiFact, Full Fact, PolitiFact, PayPal, UNESCO, LinkedIn, WhatsApp, TikTok, GPTZero, Bitwarden, 1Password, uBlock Origin, Firefox, Brave, Hive Moderation, Reddit, Facebook, HTTP, HTTPS, 2FA";
 
 const enLessons = JSON.parse(
-  readFileSync("artifacts/scamshield/src/locales/lessons/en.json", "utf8")
+  readFileSync("artifacts/Tebaqi/src/locales/lessons/en.json", "utf8")
 );
 
 async function callOpenRouter(messages, maxTokens = 3000) {
@@ -28,7 +28,7 @@ async function callOpenRouter(messages, maxTokens = 3000) {
       Authorization: `Bearer ${OPENROUTER_KEY}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "https://replit.com",
-      "X-Title": "ScamShield AI",
+      "X-Title": "Tebaqi",
     },
     body: JSON.stringify({
       model: "openai/gpt-4o-mini",
@@ -91,7 +91,7 @@ async function sleep(ms) {
 
 async function main() {
   for (const [code, langDesc] of Object.entries(LANGUAGES)) {
-    const outPath = `artifacts/scamshield/src/locales/lessons/${code}.json`;
+    const outPath = `artifacts/Tebaqi/src/locales/lessons/${code}.json`;
     let existing = {};
     if (existsSync(outPath)) {
       try {

@@ -22,7 +22,7 @@ args = "artifacts/api-server: API Server"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "artifacts/scamshield: web"
+args = "artifacts/Tebaqi: web"
 
 [[workflows.workflow]]
 name = "artifacts/api-server: API Server"
@@ -37,12 +37,12 @@ waitForPort = 8080
 outputType = "console"
 
 [[workflows.workflow]]
-name = "artifacts/scamshield: web"
+name = "artifacts/Tebaqi: web"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=24814 BASE_PATH=/ pnpm --filter @workspace/scamshield run dev"
+args = "PORT=24814 BASE_PATH=/ pnpm --filter @workspace/Tebaqi run dev"
 waitForPort = 24814
 
 [workflows.workflow.metadata]

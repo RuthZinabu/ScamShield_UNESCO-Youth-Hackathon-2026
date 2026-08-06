@@ -1,6 +1,6 @@
 {
   "nav": {
-    "brand": "ScamShield",
+    "brand": "Tebaqi",
     "verify": "Hubi",
     "learn": "Baro",
     "community": "Bulshada",
@@ -11,7 +11,7 @@
     "badge": "Aqoonta Warbaahinta & Macluumaadka",
     "hero_line1": "Fikir Kahor",
     "hero_line2": "Inta Aadan Rumaysan.",
-    "hero_subtitle": "ScamShield kaliya kuuma sheego waxa runta ah ama beenta ah. Waxaan kugu hagaynaa inaad iswaydiiso su'aalaha saxda ah, garato calaamadaha digniinta, oo aad si kalsooni leh ugu dhex marto dunida dhijitaalka ah.",
+    "hero_subtitle": "Tebaqi kaliya kuuma sheego waxa runta ah ama beenta ah. Waxaan kugu hagaynaa inaad iswaydiiso su'aalaha saxda ah, garato calaamadaha digniinta, oo aad si kalsooni leh ugu dhex marto dunida dhijitaalka ah.",
     "cta_verify": "Hubi Mawduuca",
     "cta_learn": "Bilow Barashada",
     "floating_label": "Fikirka Naqdiya",
@@ -19,7 +19,7 @@
     "stat1_label": "isticmaalayaasha ah ayaa dareemaya kalsooni dheeraad ah online-ka",
     "stat2_label": "casharro la dhammaystiray bishaan",
     "stat3_label": "warbixinnada khiyaanada ee la falanqeeyay",
-    "how_title": "Sida ScamShield kuu Siiyo Awoodda",
+    "how_title": "Sida Tebaqi kuu Siiyo Awoodda",
     "how_subtitle": "Hadafkayagu waa inaan dhisno adkaysigaaga dhijitaalka ah annagoo adeegsanayna tababar la hagayo iyo wacyigelinta bulshada.",
     "feature1_title": "Falanqee & Milicsi",
     "feature1_desc": "Gudbi xiriiriyeyaasha (links), iimayllada, ama qoraallada shakiga leh. AI-geennu wuxuu muujinayaa tilmaamayaasha kalsoonida iyo calaamadaha digniinta, ka dibna wuxuu kugu dhiirigelinayaa su'aalo aad baaritaan dheeraad ah ku samayso.",
@@ -37,7 +37,7 @@
     "faq_title": "Su'aalaha Badanaa La Iswaydiiyo",
     "faq_subtitle": "Baro wax badan oo ku saabsan sida madal-kayagu u shaqeeyo.",
     "faq1_q": "Ma kani waa qalab si toos ah u ogaada khiyaanada?",
-    "faq1_a": "Maya. ScamShield waa qalab waxbarasho. Ma samayno go'aanno rasmi ah adiga magacaaga. Beddelkeeda, waxaan muujinnaa calaamadaha digniinta iyo tilmaamayaasha kalsoonida, waxaana kugu hagaynaa habka hubinta si aad u dhisato xirfadahaaga fikirka naqdiya.",
+    "faq1_a": "Maya. Tebaqi waa qalab waxbarasho. Ma samayno go'aanno rasmi ah adiga magacaaga. Beddelkeeda, waxaan muujinnaa calaamadaha digniinta iyo tilmaamayaasha kalsoonida, waxaana kugu hagaynaa habka hubinta si aad u dhisato xirfadahaaga fikirka naqdiya.",
     "faq2_q": "Maxaa ku dhaca mawduuca aan hubiyo?",
     "faq2_a": "Mawduuca loo gudbiyo hubinta waxaa loo falanqeeyaa si ammaan ah waxaana si ku meel gaar ah loogu kaydiyaa kuuladaada maamulka ee gaarka ah. Waxaan ka saarnaa macluumaadka shakhsiga ah ee laguugu aqoonsan karo ka hor falanqaynta si aan u ilaalino sirtaada.",
     "faq3_q": "Yaa abuura qalabka waxbarashada?",
@@ -166,7 +166,7 @@
   "chat": {
     "new_chat": "Sheeko Cusub",
     "recent_conversations": "Wada sheekaysigii dhowaa",
-    "guide_name": "ScamShield Guide",
+    "guide_name": "Tebaqi Guide",
     "guide_subtitle": "Waxaan kaa caawinayaa inaad falanqeyso sheegashooyinka oo aad garato calaamadaha digniinta.",
     "empty_title": "Sideen kaaga caawin karaa baaritaanka maanta?",
     "empty_desc": "Ku dheji sheegasho shakileh, wax ka weydii xeelad khiyaano oo caan ah, ama aan si wadajir ah u falanqeyno xaalad gaar ah. Kuuma sheegi doono waxa runta ah ama beenta ah, laakiin waxaan kaa caawin doonaa inaad adigu ogaato.",
@@ -205,7 +205,7 @@
     "link_about": "Nagu Saabsan",
     "link_privacy": "Siyaasadda Khaaska ah",
     "link_terms": "Shuruudaha Adeegga",
-    "copyright": "© {{year}} ScamShield. Adeeg dadweyne oo dhijitaal ah oo fikrad ah.",
+    "copyright": "© {{year}} Tebaqi. Adeeg dadweyne oo dhijitaal ah oo fikrad ah.",
     "not_detector": "Ma aha qalab dhab ah oo ogaada khiyaanada"
   }
 }

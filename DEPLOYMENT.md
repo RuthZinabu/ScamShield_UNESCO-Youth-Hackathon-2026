@@ -1,4 +1,4 @@
-# ScamShield AI — Project Guide & Render Deployment
+# Tebaqi — Project Guide & Render Deployment
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@
 
 ## 1. Project Overview
 
-ScamShield AI is a **Media and Information Literacy (MIL)** platform that helps users think critically about digital content. It does **not** label things as scams — instead it educates users by surfacing warning signs, asking reflective questions, and teaching digital literacy skills.
+Tebaqi is a **Media and Information Literacy (MIL)** platform that helps users think critically about digital content. It does **not** label things as scams — instead it educates users by surfacing warning signs, asking reflective questions, and teaching digital literacy skills.
 
 **Key features:**
 
@@ -35,7 +35,7 @@ ScamShield AI is a **Media and Information Literacy (MIL)** platform that helps 
 ```
 Browser
   │
-  ├── React SPA (Vite)          artifacts/scamshield/
+  ├── React SPA (Vite)          artifacts/Tebaqi/
   │     └── calls /api/*  ──► Express API Server    artifacts/api-server/
   │                                   │
   │                                   ├── PostgreSQL (Drizzle ORM)   lib/db/
@@ -49,7 +49,7 @@ Browser
 | Service | What it is | Build command | Start command |
 |---|---|---|---|
 | **API Server** | Node.js / Express | `pnpm run build` (in `artifacts/api-server`) | `node --enable-source-maps ./dist/index.mjs` |
-| **Static Site** | React / Vite SPA | `pnpm run build` (in `artifacts/scamshield`) | *(served as static files)* |
+| **Static Site** | React / Vite SPA | `pnpm run build` (in `artifacts/Tebaqi`) | *(served as static files)* |
 
 Plus **one managed PostgreSQL database** on Render.
 
@@ -74,7 +74,7 @@ Plus **one managed PostgreSQL database** on Render.
 │   │           ├── lessons.ts        GET/POST /api/lessons/*
 │   │           └── reports.ts        GET/POST /api/reports/*
 │   │
-│   └── scamshield/          React SPA — Vite, Tailwind, shadcn/ui
+│   └── Tebaqi/          React SPA — Vite, Tailwind, shadcn/ui
 │       └── src/
 │           ├── App.tsx      Router (wouter) + providers
 │           ├── pages/       Home, Verify, Chat, Learn, LessonDetail,
@@ -275,7 +275,7 @@ You will create **three resources** on Render:
 
 1. Go to [render.com](https://render.com) → **New +** → **PostgreSQL**
 2. Fill in:
-   - **Name:** `scamshield-db` (or anything you like)
+   - **Name:** `Tebaqi-db` (or anything you like)
    - **Region:** Choose one closest to your users
    - **Plan:** Free (or Starter for production)
 3. Click **Create Database**
@@ -291,7 +291,7 @@ You will create **three resources** on Render:
 
 | Setting | Value |
 |---|---|
-| **Name** | `scamshield-api` |
+| **Name** | `Tebaqi-api` |
 | **Region** | Same as your database |
 | **Branch** | `main` |
 | **Root Directory** | *(leave blank — commands run from repo root)* |
@@ -310,7 +310,7 @@ You will create **three resources** on Render:
 | `PORT` | `10000` *(Render sets this automatically — you can leave it out)* |
 
 5. Click **Create Web Service**
-6. Wait for the first deploy to finish. Note the service URL (e.g. `https://scamshield-api.onrender.com`).
+6. Wait for the first deploy to finish. Note the service URL (e.g. `https://Tebaqi-api.onrender.com`).
 
 #### Push the database schema
 
@@ -332,10 +332,10 @@ This runs `drizzle-kit push` and creates all tables in your Render Postgres data
 
 | Setting | Value |
 |---|---|
-| **Name** | `scamshield-web` |
+| **Name** | `Tebaqi-web` |
 | **Branch** | `main` |
-| **Build Command** | `npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/scamshield run build` |
-| **Publish Directory** | `artifacts/scamshield/dist/public` |
+| **Build Command** | `npm install -g pnpm && pnpm install --frozen-lockfile && pnpm --filter @workspace/Tebaqi run build` |
+| **Publish Directory** | `artifacts/Tebaqi/dist/public` |
 
 4. Under **Environment Variables** (build-time), add:
 
@@ -354,19 +354,19 @@ In the static site settings → **Redirects/Rewrites**, add:
 
 | Source | Destination | Action |
 |---|---|---|
-| `/api/*` | `https://scamshield-api.onrender.com/api/*` | **Rewrite** |
+| `/api/*` | `https://Tebaqi-api.onrender.com/api/*` | **Rewrite** |
 
-> Replace `https://scamshield-api.onrender.com` with your actual API service URL from Step 2.
+> Replace `https://Tebaqi-api.onrender.com` with your actual API service URL from Step 2.
 
 ---
 
 ### Step 4 — Verify Everything Works
 
-1. Open your static site URL (e.g. `https://scamshield-web.onrender.com`)
+1. Open your static site URL (e.g. `https://Tebaqi-web.onrender.com`)
 2. Check the home page loads
 3. Go to **Verify** and paste some text → you should get an AI analysis result
 4. Go to **Chat** and send a message → you should see streaming responses
-5. Check the API health endpoint directly: `https://scamshield-api.onrender.com/api/healthz`
+5. Check the API health endpoint directly: `https://Tebaqi-api.onrender.com/api/healthz`
    - Should return: `{"status":"ok"}`
 
 ---
@@ -380,7 +380,7 @@ In the static site settings → **Redirects/Rewrites**, add:
 | `DATABASE_URL must be set` error in API logs | Env var missing | Add `DATABASE_URL` to the web service |
 | Tables don't exist errors | Schema never pushed | Run `pnpm --filter @workspace/db run push` |
 | Chat streams nothing | `GEMINI_API_KEY` missing | Check Render env vars; placeholder response means key is absent |
-| Frontend blank / 404 on refresh | Publish directory wrong | Must be `artifacts/scamshield/dist/public` |
+| Frontend blank / 404 on refresh | Publish directory wrong | Must be `artifacts/Tebaqi/dist/public` |
 
 ---
 

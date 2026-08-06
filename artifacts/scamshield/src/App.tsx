@@ -46,7 +46,7 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light" storageKey="scamshield-theme">
+    <ThemeProvider defaultTheme="light" storageKey="Tebaqi-theme">
       <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
