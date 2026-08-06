@@ -29,15 +29,15 @@ export default function Login() {
     const search = new URLSearchParams(window.location.search);
     const redirect = search.get("redirect") || "/dashboard";
 
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
-      response_type: "code",
-      scope: "openid email profile",
-      access_type: "offline",
-      prompt: "consent",
-      state: redirect,
-    });
+   const params = new URLSearchParams({
+  client_id: clientId,
+  redirect_uri: redirectUri,
+  response_type: "code",
+  scope: "openid email profile",
+  access_type: "offline",
+  prompt: "consent",
+  state: redirect,
+});
 
     window.location.assign(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
   };
