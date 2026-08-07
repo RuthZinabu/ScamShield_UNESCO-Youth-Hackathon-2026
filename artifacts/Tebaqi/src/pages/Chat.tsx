@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { getAuthSession } from "@/lib/auth";
+import { useToast } from "@/hooks/use-toast";
 import { useListConversations, useCreateConversation, useGetConversation, getListConversationsQueryKey, getGetConversationQueryKey } from "@workspace/api-client-react";
 import { API_BASE_URL } from "@/lib/api-config";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,6 +14,7 @@ import { useLocation, useRoute } from "wouter";
 import type { ChatMessage } from "@workspace/api-client-react/src/generated/api.schemas";
 
 export default function Chat() {
+  const { toast } = useToast();
   const [, params] = useRoute("/chat/:conversationId");
   const [, setLocation] = useLocation();
   const parsedConversationId = params?.conversationId ? Number(params.conversationId) : null;
@@ -40,8 +43,24 @@ export default function Chat() {
     }
   }, [messages, streamingMessage]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isStreaming) return;
+const handleSend = async () => {
+  if (!input.trim() || isStreaming) return;
+
+  const session = getAuthSession();
+
+  if (!session?.token) {
+    toast({
+      title: "Login Required",
+      description: "Please log in first to use the AI assistant.",
+      variant: "destructive",
+    });
+
+    setTimeout(() => {
+      setLocation("/login?redirect=/chat");
+    }, 1500);
+
+    return;
+  }
 
     let convId = activeId;
     const userMsg = input.trim();

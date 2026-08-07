@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
+import { getAuthSession } from "@/lib/auth";
 import {
   Form,
   FormControl,
@@ -42,6 +43,7 @@ const CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
 };
 
 export default function Verify() {
+  const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState<AnalysisInputContentType>("text");
   const [result, setResult] = useState<Analysis | null>(null);
   const { toast } = useToast();
@@ -64,9 +66,26 @@ export default function Verify() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setResult(null);
-    createAnalysis.mutate(
+function onSubmit(values: z.infer<typeof formSchema>) {
+  const session = getAuthSession();
+
+  if (!session?.token) {
+    toast({
+      title: "Login Required",
+      description: "Please log in first to analyze content.",
+      variant: "destructive",
+    });
+
+    setTimeout(() => {
+      setLocation(`/login?redirect=/verify`);
+    }, 1500);
+
+    return;
+  }
+
+  setResult(null);
+
+  createAnalysis.mutate(
       {
         data: {
           contentType: values.contentType,
