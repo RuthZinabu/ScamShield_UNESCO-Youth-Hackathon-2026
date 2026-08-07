@@ -338,7 +338,7 @@ export async function runMILAnalysis(
   });
 
   const response = await client.chat.completions.create({
-    model: "qwen/qwen3-30b-a3b:free",
+    model: "google/gemma-4-31b-it:free",
     max_tokens: 2048,
     messages: [
       { role: "system", content: buildSystemPrompt(responseLanguage) },
