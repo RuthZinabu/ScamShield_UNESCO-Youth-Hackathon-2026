@@ -32,14 +32,22 @@ router.post("/auth/google/exchange", async (req, res) => {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: process.env.GOOGLE_REDIRECT_URI!,
+        redirect_uri: redirectUri ?? process.env.GOOGLE_REDIRECT_URI!,
         grant_type: "authorization_code",
       }),
     });
 
-    if (!tokenResponse.ok) {
-      throw new Error("Failed to exchange Google authorization code");
-    }
+   if (!tokenResponse.ok) {
+  const googleError = await tokenResponse.text();
+
+  console.error("========== GOOGLE TOKEN EXCHANGE FAILED ==========");
+  console.error("Status:", tokenResponse.status);
+  console.error("Google response:", googleError);
+  console.error("Frontend redirectUri:", redirectUri);
+  console.error("Env redirectUri:", process.env.GOOGLE_REDIRECT_URI);
+
+  throw new Error(googleError);
+}
 
     const tokenPayload = (await tokenResponse.json()) as { id_token?: string };
     if (!tokenPayload.id_token) {
@@ -76,10 +84,13 @@ router.post("/auth/google/exchange", async (req, res) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Failed to complete Google sign-in." });
-  }
+ } catch (error) {
+  console.error("GOOGLE LOGIN ERROR:", error);
+
+  res.status(500).json({
+    message: error instanceof Error ? error.message : "Unknown error",
+  });
+}
 });
 
 router.get("/auth/me", async (req, res) => {
