@@ -1,0 +1,188 @@
+Modify the existing Tebaqi Dashboard. Do NOT create a new analysis/history section or duplicate the existing cards.
+
+There is already an "Analysed Content" card under "Recent Activity" on the Dashboard. I want to enhance that existing functionality.
+
+Desired behavior
+
+Currently:
+
+Dashboard
+  ↓
+Recent Activity
+  ↓
+Analysed Content card
+
+
+The card already shows the content/question that the user analyzed.
+
+I want the existing card to become clickable.
+
+When the logged-in user clicks an "Analysed Content" activity item:
+
+Dashboard
+  ↓
+Recent Activity
+  ↓
+Analysed Content
+  ↓
+Click
+  ↓
+Open the existing Verify/analysis-result UI
+  ↓
+Display the COMPLETE SAVED AI RESULT
+
+
+IMPORTANT
+
+Do NOT run the AI analysis again.
+
+Do NOT call runMILAnalysis() when opening a historical analysis.
+
+The analysis result is already saved in the existing analyses.result database field.
+
+Use:
+
+GET /api/analyses/:id
+
+
+to retrieve the saved analysis.
+
+The saved result contains:
+
+{
+  contentCategory: string;
+  warningSigns: Array<{
+    title: string;
+    explanation: string;
+    severity: "low" | "medium" | "high";
+  }>;
+  trustIndicators: Array<{
+    title: string;
+    explanation: string;
+  }>;
+  missingInfo: string[];
+  reflectiveQuestions: string[];
+  verificationSteps: string[];
+  literacyLesson: string;
+  recommendedActions: string[];
+  educationalTip: string;
+}
+
+
+Display the same complete result UI currently used after a new analysis:
+
+Content category
+
+Warning signs
+
+Trust indicators
+
+Missing information
+
+Reflective questions
+
+Verification steps
+
+Literacy lesson
+
+Recommended actions
+
+Educational tip
+
+Routing
+
+Use the existing Wouter routing architecture.
+
+When the user clicks an existing Recent Activity analysis, navigate to something like:
+
+/verify/:analysisId
+
+
+or another appropriate existing route.
+
+The page should then fetch:
+
+GET /api/analyses/:analysisId
+
+
+and render the saved result.
+
+If the existing Verify page can be modified to support an analysisId route, reuse it instead of creating a duplicate result page.
+
+SECURITY — IMPORTANT
+
+The current:
+
+GET /api/analyses/:id
+
+
+must only return an analysis belonging to the currently authenticated user.
+
+Use the existing:
+
+getAuthenticatedUserId(req)
+
+
+and ensure both:
+
+analysis.id = requested ID
+AND
+analysis.userId = authenticated user ID
+
+
+are enforced.
+
+Return 401 if unauthenticated and 404 if the analysis does not belong to the user.
+
+Also check the existing DELETE and bookmark endpoints for the same ownership issue and fix them if necessary.
+
+Do NOT change
+
+The existing AI prompt
+
+Gemma 4 31B
+
+OpenRouter configuration
+
+The analyses database table
+
+The existing Dashboard design
+
+The existing Recent Activity section
+
+The existing "Analysed Content" cards
+
+Existing multilingual behavior
+
+Multilingual requirement
+
+The saved AI result must be displayed exactly as stored.
+
+If the original analysis was in Amharic, display the saved Amharic result.
+
+Do NOT translate historical results again.
+
+Final behavior
+
+New analysis:
+
+Verify
+→ AI analysis
+→ result displayed
+→ result saved to database
+→ Recent Activity updated
+
+
+Historical analysis:
+
+Dashboard
+→ Recent Activity
+→ click Analysed Content
+→ GET /api/analyses/:id
+→ display saved result
+→ NO AI call
+
+
+First inspect the existing Dashboard Recent Activity component, Verify page, routing, analyses API route, and analyses schema. Reuse the existing components and API client wherever possible.
+
+Implement only the minimum changes necessary for this functionality.

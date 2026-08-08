@@ -1,0 +1,1 @@
+- [Package firewall workaround](package-firewall.md) — when the Replit registry blocks a transitive package, use a one-command public-registry override without changing project manifests.

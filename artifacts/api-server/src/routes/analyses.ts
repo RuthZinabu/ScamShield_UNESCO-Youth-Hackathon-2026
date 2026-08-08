@@ -106,10 +106,16 @@ router.get("/analyses/:id", async (req, res): Promise<void> => {
     return;
   }
 
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
   const [analysis] = await db
     .select()
     .from(analysesTable)
-    .where(eq(analysesTable.id, params.data.id));
+    .where(and(eq(analysesTable.id, params.data.id), eq(analysesTable.userId, userId)));
 
   if (!analysis) {
     res.status(404).json({ error: "Analysis not found" });
@@ -126,9 +132,15 @@ router.delete("/analyses/:id", async (req, res): Promise<void> => {
     return;
   }
 
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
   const [deleted] = await db
     .delete(analysesTable)
-    .where(eq(analysesTable.id, params.data.id))
+    .where(and(eq(analysesTable.id, params.data.id), eq(analysesTable.userId, userId)))
     .returning();
 
   if (!deleted) {
@@ -152,10 +164,16 @@ router.patch("/analyses/:id/bookmark", async (req, res): Promise<void> => {
     return;
   }
 
+  const userId = getAuthenticatedUserId(req);
+  if (!userId) {
+    res.status(401).json({ message: "Unauthorized" });
+    return;
+  }
+
   const [updated] = await db
     .update(analysesTable)
     .set({ isBookmarked: body.data.isBookmarked })
-    .where(eq(analysesTable.id, params.data.id))
+    .where(and(eq(analysesTable.id, params.data.id), eq(analysesTable.userId, userId)))
     .returning();
 
   if (!updated) {

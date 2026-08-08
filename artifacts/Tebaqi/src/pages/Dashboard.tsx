@@ -114,8 +114,8 @@ export default function Dashboard() {
                       report: <ShieldCheck className="w-4 h-4 text-purple-500" />,
                       achievement: <Medal className="w-4 h-4 text-amber-500" />
                     };
-                    return (
-                      <div key={item.id} className="p-4 sm:p-6 flex gap-4 hover:bg-muted/30 transition-colors">
+                    const activityContent = (
+                      <>
                         <div className="mt-1 shrink-0 w-8 h-8 rounded-full bg-background border flex items-center justify-center shadow-sm">
                           {icons[item.type]}
                         </div>
@@ -126,6 +126,26 @@ export default function Dashboard() {
                             {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
                           </p>
                         </div>
+                      </>
+                    );
+
+                    if (item.type === "analysis") {
+                      return (
+                        <button
+                          type="button"
+                          key={item.id}
+                          onClick={() => setLocation(`/verify/${item.id}`)}
+                          className="w-full text-left p-4 sm:p-6 flex gap-4 hover:bg-muted/30 focus-visible:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors"
+                          aria-label={`View saved analysis: ${item.description}`}
+                        >
+                          {activityContent}
+                        </button>
+                      );
+                    }
+
+                    return (
+                      <div key={item.id} className="p-4 sm:p-6 flex gap-4 hover:bg-muted/30 transition-colors">
+                        {activityContent}
                       </div>
                     );
                   })}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useRoute } from "wouter";
 import { useTranslation } from "react-i18next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,10 +19,16 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ShieldAlert, ShieldCheck, HelpCircle, Lightbulb, ListChecks, GraduationCap, AlertTriangle, ArrowRight, Loader2, Info, Search } from "lucide-react";
-import { useCreateAnalysis, getGetAnalysisStatsQueryKey } from "@workspace/api-client-react";
+import {
+  useCreateAnalysis,
+  getGetAnalysisStatsQueryKey,
+  getGetAnalysisQueryKey,
+  useGetAnalysis,
+  type Analysis,
+  type AnalysisInputContentType,
+} from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import type { Analysis, AnalysisInputContentType } from "@workspace/api-client-react/src/generated/api.schemas";
 
 const formSchema = z.object({
   contentType: z.enum(["text", "url", "email", "social-media", "job", "scholarship", "news", "general"]),
@@ -44,6 +50,12 @@ const CATEGORY_TRANSLATION_KEYS: Record<string, string> = {
 
 export default function Verify() {
   const [, setLocation] = useLocation();
+  const [, routeParams] = useRoute("/verify/:analysisId");
+  const parsedAnalysisId = routeParams?.analysisId ? Number(routeParams.analysisId) : null;
+  const historicalAnalysisId =
+    parsedAnalysisId !== null && Number.isInteger(parsedAnalysisId) && parsedAnalysisId > 0
+      ? parsedAnalysisId
+      : null;
   const [activeTab, setActiveTab] = useState<AnalysisInputContentType>("text");
   const [result, setResult] = useState<Analysis | null>(null);
   const { toast } = useToast();
@@ -56,6 +68,17 @@ export default function Verify() {
   const queryClient = useQueryClient();
 
   const createAnalysis = useCreateAnalysis();
+  const {
+    data: historicalAnalysis,
+    isLoading: historicalAnalysisLoading,
+    isError: historicalAnalysisError,
+  } = useGetAnalysis(historicalAnalysisId ?? 0, {
+    query: {
+      queryKey: getGetAnalysisQueryKey(historicalAnalysisId ?? 0),
+      enabled: historicalAnalysisId !== null,
+    },
+  });
+  const displayedResult = historicalAnalysisId !== null ? historicalAnalysis ?? null : result;
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -247,7 +270,21 @@ function onSubmit(values: z.infer<typeof formSchema>) {
 
         {/* Results Column */}
         <div className="w-full">
-          {!result ? (
+           {historicalAnalysisId !== null && historicalAnalysisLoading ? (
+             <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
+               <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+               <h3 className="text-lg font-semibold text-foreground mb-2">Loading saved analysis</h3>
+               <p className="text-muted-foreground max-w-sm">Retrieving the complete result from your analysis history.</p>
+             </div>
+           ) : historicalAnalysisId !== null && (historicalAnalysisError || !historicalAnalysis) ? (
+             <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-destructive/30 rounded-2xl bg-destructive/5">
+               <AlertTriangle className="w-10 h-10 text-destructive mb-4" />
+               <h3 className="text-lg font-semibold text-foreground mb-2">Saved analysis unavailable</h3>
+               <p className="text-muted-foreground max-w-sm text-sm">
+                 This analysis could not be loaded. It may not exist or may not belong to the signed-in account.
+               </p>
+             </div>
+           ) : !displayedResult ? (
             <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-border rounded-2xl bg-slate-50/50 dark:bg-slate-900/50">
               <div className="bg-background p-4 rounded-full shadow-sm mb-4">
                 <Search className="w-8 h-8 text-muted-foreground" />
@@ -255,7 +292,7 @@ function onSubmit(values: z.infer<typeof formSchema>) {
               <h3 className="text-lg font-semibold text-foreground mb-2">{t("verify.awaiting_title")}</h3>
               <p className="text-muted-foreground max-w-sm">{t("verify.awaiting_desc")}</p>
             </div>
-          ) : !result.result ? (
+           ) : !displayedResult.result ? (
             <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-destructive/30 rounded-2xl bg-destructive/5">
               <AlertTriangle className="w-10 h-10 text-destructive mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">{t("verify.error_title", "Analysis could not be completed")}</h3>
@@ -267,17 +304,22 @@ function onSubmit(values: z.infer<typeof formSchema>) {
                 <div className="bg-slate-100 dark:bg-slate-800/50 p-6 border-b flex justify-between items-center">
                   <div>
                     <h2 className="text-2xl font-bold font-display flex items-center gap-2">
-                      {t("verify.result_title")}
+                       {t("verify.result_title")}
                     </h2>
-                    <p className="text-sm text-muted-foreground mt-1 capitalize">{t("verify.result_category")}: {getLocalizedCategoryLabel(result.result.contentCategory)}</p>
+                     <p className="text-sm text-muted-foreground mt-1 capitalize">
+                       {t("verify.result_category")}:{" "}
+                       {historicalAnalysisId !== null
+                         ? displayedResult.result.contentCategory
+                         : getLocalizedCategoryLabel(displayedResult.result.contentCategory)}
+                     </p>
                   </div>
                   <div className="flex gap-2">
                     <div className="text-center px-4 py-2 bg-background rounded-lg border shadow-sm">
-                      <span className="block text-xl font-bold text-orange-500">{result.warningSignCount || 0}</span>
+                       <span className="block text-xl font-bold text-orange-500">{displayedResult.warningSignCount || 0}</span>
                       <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">{t("verify.warnings_label")}</span>
                     </div>
                     <div className="text-center px-4 py-2 bg-background rounded-lg border shadow-sm">
-                      <span className="block text-xl font-bold text-emerald-500">{result.trustIndicatorCount || 0}</span>
+                       <span className="block text-xl font-bold text-emerald-500">{displayedResult.trustIndicatorCount || 0}</span>
                       <span className="text-[10px] uppercase font-semibold text-muted-foreground tracking-wider">{t("verify.trust_label")}</span>
                     </div>
                   </div>
@@ -289,9 +331,9 @@ function onSubmit(values: z.infer<typeof formSchema>) {
                       <h3 className="font-semibold flex items-center gap-2 text-orange-700 dark:text-orange-400">
                         <ShieldAlert className="w-5 h-5" /> {t("verify.section_warning")}
                       </h3>
-                      {result.result.warningSigns.length > 0 ? (
+                       {displayedResult.result.warningSigns.length > 0 ? (
                         <ul className="space-y-3">
-                          {result.result.warningSigns.map((ws, i) => (
+                           {displayedResult.result.warningSigns.map((ws, i) => (
                             <li key={i} className="bg-orange-50 dark:bg-orange-950/20 p-3 rounded-xl border border-orange-100 dark:border-orange-900/50">
                               <span className="font-medium text-sm block mb-1">{ws.title}</span>
                               <span className="text-xs text-muted-foreground">{ws.explanation}</span>
@@ -306,9 +348,9 @@ function onSubmit(values: z.infer<typeof formSchema>) {
                       <h3 className="font-semibold flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
                         <ShieldCheck className="w-5 h-5" /> {t("verify.section_trust")}
                       </h3>
-                      {result.result.trustIndicators.length > 0 ? (
+                       {displayedResult.result.trustIndicators.length > 0 ? (
                         <ul className="space-y-3">
-                          {result.result.trustIndicators.map((ti, i) => (
+                           {displayedResult.result.trustIndicators.map((ti, i) => (
                             <li key={i} className="bg-emerald-50 dark:bg-emerald-950/20 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
                               <span className="font-medium text-sm block mb-1">{ti.title}</span>
                               <span className="text-xs text-muted-foreground">{ti.explanation}</span>
@@ -321,12 +363,49 @@ function onSubmit(values: z.infer<typeof formSchema>) {
                     </div>
                   </div>
 
+                  <div className="grid sm:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h3 className="font-semibold flex items-center gap-2 text-foreground">
+                        <Info className="w-5 h-5 text-muted-foreground" /> {t("verify.section_missing_info", "Missing information")}
+                      </h3>
+                      {displayedResult.result.missingInfo.length > 0 ? (
+                        <ul className="space-y-2">
+                          {displayedResult.result.missingInfo.map((info, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground shrink-0 mt-2" />
+                              <span>{info}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-muted-foreground italic">{t("verify.no_missing_info", "No missing information identified.")}</p>
+                      )}
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="font-semibold flex items-center gap-2 text-primary">
+                        <ShieldCheck className="w-5 h-5" /> {t("verify.section_recommended_actions", "Recommended actions")}
+                      </h3>
+                      {displayedResult.result.recommendedActions.length > 0 ? (
+                        <ul className="space-y-2">
+                          {displayedResult.result.recommendedActions.map((action, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                              <ArrowRight className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                              <span>{action}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-sm text-muted-foreground italic">{t("verify.no_recommended_actions", "No recommended actions provided.")}</p>
+                      )}
+                    </div>
+                  </div>
+
                   <div>
                     <h3 className="font-semibold flex items-center gap-2 text-primary mb-4">
                       <HelpCircle className="w-5 h-5" /> {t("verify.section_questions")}
                     </h3>
                     <div className="grid gap-3">
-                      {result.result.reflectiveQuestions.map((q, i) => (
+                       {displayedResult.result.reflectiveQuestions.map((q, i) => (
                         <div key={i} className="flex gap-3 items-start bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border">
                           <span className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold shrink-0">{i + 1}</span>
                           <p className="text-sm font-medium pt-0.5">{q}</p>
@@ -340,7 +419,7 @@ function onSubmit(values: z.infer<typeof formSchema>) {
                       <ListChecks className="w-5 h-5" /> {t("verify.section_steps")}
                     </h3>
                     <ul className="space-y-2">
-                      {result.result.verificationSteps.map((step, i) => (
+                       {displayedResult.result.verificationSteps.map((step, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                           <ArrowRight className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                           <span>{step}</span>
@@ -354,13 +433,13 @@ function onSubmit(values: z.infer<typeof formSchema>) {
                       <GraduationCap className="w-5 h-5" /> {t("verify.section_lesson")}
                     </h3>
                     <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                      {result.result.literacyLesson}
+                       {displayedResult.result.literacyLesson}
                     </p>
                     <div className="bg-background rounded-xl p-4 border flex items-start gap-3 mt-4">
                       <Lightbulb className="w-5 h-5 text-amber-500 shrink-0" />
                       <div>
                         <span className="font-semibold text-sm block mb-1">{t("verify.quick_tip")}</span>
-                        <span className="text-sm text-muted-foreground">{result.result.educationalTip}</span>
+                         <span className="text-sm text-muted-foreground">{displayedResult.result.educationalTip}</span>
                       </div>
                     </div>
                   </div>
