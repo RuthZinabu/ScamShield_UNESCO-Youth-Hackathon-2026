@@ -1,0 +1,287 @@
+Update the existing Tebaqi Community Reports feature to add a simple moderation/approval workflow.
+
+IMPORTANT DATABASE REQUIREMENT
+
+Make only one database schema change:
+
+Add a status column to the existing reports table.
+
+Do NOT change, remove, rename, or recreate any existing columns.
+
+The new column should support:
+
+pending
+approved
+rejected
+
+
+Use the existing Drizzle ORM/database migration system in the project.
+
+Set the default status for newly submitted reports to:
+
+pending
+
+
+Existing reports should also receive an appropriate default status so the migration does not break existing data. Prefer approved for existing reports so current community content remains visible.
+
+1. Report submission
+
+When a user submits a new community report:
+
+User fills report
+        ↓
+Clicks Submit
+        ↓
+Backend validates request
+        ↓
+Save report with:
+status = "pending"
+        ↓
+Return successful response
+
+
+Do NOT call any AI model for report moderation.
+
+Do NOT use Gemma/OpenRouter for this feature.
+
+The goal is to avoid consuming AI API limits.
+
+After successful submission, show a dialog/modal to the user:
+
+Report submitted for review
+
+"Your report has been submitted and is under review. It will be posted to the community after passing our verification checks."
+
+Button:
+
+OK
+
+When the user clicks OK, close the dialog and return them to the Community page or reset the report form using the existing application behavior.
+
+2. Community page
+
+Modify the existing Community reports API/query so that users only see:
+
+status = "approved"
+
+
+Do NOT display:
+
+pending
+rejected
+
+
+Keep all existing Community functionality such as:
+
+Report cards
+
+Upvotes
+
+Categories
+
+Evidence links
+
+Existing styling
+
+Existing pagination/filtering if present
+
+Do not redesign the Community page unnecessarily.
+
+3. Admin moderation page
+
+Create an admin-only moderation interface using  env authentication for user name and password
+
+/dashboard/admin/reports
+
+
+Reuse the project's existing Dashboard components and styling.
+
+The page should show reports whose status is:
+
+pending
+
+
+For each pending report, display the existing report information, including where appropriate:
+
+Title
+
+Description
+
+Category
+
+Country
+
+Language
+
+Evidence URL
+
+Submitted date
+
+Provide two buttons:
+
+[ Approve ]
+[ Reject ]
+
+
+4. Approve behavior
+
+When the admin clicks:
+
+Approve
+
+
+update only:
+
+status = "approved"
+
+
+The report should then become visible on the Community page.
+
+Do not create a duplicate report.
+
+5. Reject behavior
+
+When the admin clicks:
+
+Reject
+
+
+update only:
+
+status = "rejected"
+
+
+The report should no longer appear in the public Community page.
+
+Do not delete the report from the database.
+
+DO NOT modify unrelated database tables.
+
+Normal users must NOT be able to:
+
+View the admin moderation page
+
+Approve reports
+
+Reject reports
+
+Change report status
+
+7. API
+
+Reuse the existing reports routes and API client conventions.
+
+Add only the minimum endpoints needed, for example:
+
+GET /api/reports/pending
+PATCH /api/reports/:id/status
+
+
+or adapt the existing reports API if it already supports these operations.
+
+The status update endpoint should accept only:
+
+approved
+rejected
+
+
+from an authorized administrator.
+
+Do not allow clients to arbitrarily set another user's report to approved/rejected.
+
+8. Existing reports
+
+During the database migration:
+
+existing reports → approved
+new reports → pending
+
+
+This is important because existing Community reports should continue appearing after deployment.
+
+9. Do NOT use AI moderation
+
+This feature must NOT call:
+
+runMILAnalysis()
+
+
+and must NOT call:
+
+OpenRouter
+Gemma
+Google AI
+
+
+The moderation process is intentionally human/admin-based to avoid consuming AI API limits.
+
+10. Do NOT break existing functionality
+
+Before making changes, inspect:
+
+Existing reports Drizzle schema
+
+Existing reports API/routes
+
+Existing Community page
+
+Existing report submission form
+
+Existing authentication
+
+Existing Dashboard
+
+Existing user/role system
+
+Existing API client/Zod schemas
+
+Existing migration setup
+
+Reuse existing components and patterns.
+
+Do not rewrite the entire Community page.
+
+Do not change the existing AI analysis functionality.
+
+Do not change the existing analyses table.
+
+Do not change the existing users table unless absolutely required by an already-existing authorization system.
+
+The ONLY required database schema change is:
+
+reports.status
+
+
+Final user flow
+
+New report:
+
+User submits report
+        ↓
+status = pending
+        ↓
+Dialog:
+"Your report has been submitted for review.
+It will be posted to the community after passing
+our verification checks."
+        ↓
+OK
+
+
+Admin:
+
+Admin Dashboard
+      ↓
+Report Moderation
+      ↓
+Pending reports
+      ↓
+Approve / Reject
+
+
+Community:
+
+Only status = approved reports are publicly visible
+
+
+Implement this using the existing project's architecture and styling. After implementation, run the relevant type-check/build/migration checks and fix any errors introduced by these changes.

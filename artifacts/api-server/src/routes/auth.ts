@@ -25,6 +25,14 @@ router.post("/auth/google/exchange", async (req, res) => {
       return;
     }
 
+    const configuredRedirectUri = process.env.GOOGLE_REDIRECT_URI;
+    if (configuredRedirectUri && redirectUri && configuredRedirectUri !== redirectUri) {
+      res.status(400).json({
+        message: "Google OAuth redirect URI mismatch. The browser and server must use the same callback URL.",
+      });
+      return;
+    }
+
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
@@ -32,7 +40,14 @@ router.post("/auth/google/exchange", async (req, res) => {
         code,
         client_id: clientId,
         client_secret: clientSecret,
-        redirect_uri: redirectUri ?? process.env.GOOGLE_REDIRECT_URI!,
+ 
+        //redirect_uri: redirectUri ?? process.env.GOOGLE_REDIRECT_URI!,
+ 
+        // Google binds the authorization code to the exact URI used by the
+        // browser. Use that same value for the exchange, falling back to the
+        // server setting for clients that do not send it.
+        redirect_uri: redirectUri || configuredRedirectUri || "",
+ 
         grant_type: "authorization_code",
       }),
     });
