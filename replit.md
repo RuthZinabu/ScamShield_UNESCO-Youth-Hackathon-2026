@@ -4,12 +4,16 @@ A Media and Information Literacy (MIL) platform that helps users think criticall
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm install` — install workspace dependencies
+- `pnpm --filter @workspace/api-server run dev` — run the API server (workflow port 8080)
+- `PORT=24814 BASE_PATH=/ pnpm --filter @workspace/Tebaqi run dev` — run the web app
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required runtime env: `DATABASE_URL` — provisioned PostgreSQL connection string
+- Google sign-in secrets: `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
+- Google Cloud Console must list the exact deployed web URL ending in `/login` under Authorized redirect URIs. The browser and API use that same URI for the OAuth exchange.
 
 ## Stack
 
@@ -38,7 +42,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Vite builds require both `PORT` and `BASE_PATH`; use the same values as the web workflow.
+- Google OAuth redirect URIs are exact-match values. If the Replit preview/deployment domain changes, update Google Cloud Console to match the new URL ending in `/login`.
 
 ## Pointers
 

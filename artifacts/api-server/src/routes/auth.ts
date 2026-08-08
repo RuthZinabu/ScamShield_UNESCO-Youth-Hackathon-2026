@@ -5,6 +5,17 @@ import { signJwt, upsertGoogleUser } from "../lib/auth";
 
 const router: IRouter = Router();
 
+router.get("/auth/google/config", (_req, res) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+
+  if (!clientId) {
+    res.status(503).json({ message: "Google OAuth is not configured on the server." });
+    return;
+  }
+
+  res.json({ clientId });
+});
+
 router.post("/auth/google/exchange", async (req, res) => {
   const { code, redirectUri } = req.body as {
     code?: string;

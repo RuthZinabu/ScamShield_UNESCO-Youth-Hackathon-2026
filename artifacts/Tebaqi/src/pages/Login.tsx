@@ -19,10 +19,23 @@ export default function Login() {
     return "http://localhost:3000/login";
   }, []);
 
-  const handleGoogleSignIn = () => {
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
-    if (!clientId) {
-      setError("Google OAuth is not configured for this deployment yet.");
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    let clientId: string;
+    try {
+      const configResponse = await fetch(
+        `${import.meta.env.VITE_API_URL || ""}/api/auth/google/config`,
+      );
+      const config = (await configResponse.json()) as { clientId?: string; message?: string };
+      if (!configResponse.ok || !config.clientId) {
+        throw new Error(config.message || "Google OAuth is not configured for this deployment yet.");
+      }
+      clientId = config.clientId;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Google sign-in is unavailable.");
+      setIsLoading(false);
       return;
     }
 

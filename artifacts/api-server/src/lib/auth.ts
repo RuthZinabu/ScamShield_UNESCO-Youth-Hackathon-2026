@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 
-const JWT_SECRET = process.env.JWT_SECRET || "Tebaqi-dev-secret";
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || "Tebaqi-dev-secret";
 const JWT_EXPIRES_IN = "7d";
 
 export type AuthenticatedUser = {
